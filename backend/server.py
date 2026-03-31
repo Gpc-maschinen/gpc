@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, Depends
+from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, Depends, File, UploadFile
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
@@ -16,6 +16,7 @@ import uuid
 from datetime import datetime, timezone, timedelta
 import bcrypt
 import jwt
+import requests
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
@@ -24,6 +25,56 @@ db = client[os.environ['DB_NAME']]
 
 # JWT Config
 JWT_ALGORITHM = "HS256"
+
+# Storage Config
+STORAGE_URL = "https://integrations.emergentagent.com/objstore/api/v1/storage"
+EMERGENT_KEY = os.environ.get("EMERGENT_LLM_KEY")
+APP_NAME = "gpc-maschinen"
+storage_key = None
+
+MIME_TYPES = {
+    "jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png",
+    "gif": "image/gif", "webp": "image/webp", "pdf": "application/pdf"
+}
+
+def init_storage():
+    """Initialize storage - call once at startup"""
+    global storage_key
+    if storage_key:
+        return storage_key
+    try:
+        resp = requests.post(f"{STORAGE_URL}/init", json={"emergent_key": EMERGENT_KEY}, timeout=30)
+        resp.raise_for_status()
+        storage_key = resp.json()["storage_key"]
+        return storage_key
+    except Exception as e:
+        logging.error(f"Storage init failed: {e}")
+        return None
+
+def put_object(path: str, data: bytes, content_type: str) -> dict:
+    """Upload file to storage"""
+    key = init_storage()
+    if not key:
+        raise HTTPException(status_code=500, detail="Storage nicht verfügbar")
+    resp = requests.put(
+        f"{STORAGE_URL}/objects/{path}",
+        headers={"X-Storage-Key": key, "Content-Type": content_type},
+        data=data, timeout=120
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+def get_object(path: str) -> tuple:
+    """Download file from storage"""
+    key = init_storage()
+    if not key:
+        raise HTTPException(status_code=500, detail="Storage nicht verfügbar")
+    resp = requests.get(
+        f"{STORAGE_URL}/objects/{path}",
+        headers={"X-Storage-Key": key}, timeout=60
+    )
+    resp.raise_for_status()
+    return resp.content, resp.headers.get("Content-Type", "application/octet-stream")
 
 def get_jwt_secret() -> str:
     return os.environ["JWT_SECRET"]
@@ -352,6 +403,69 @@ async def get_me(user: dict = Depends(get_current_user)):
     return user
 
 # ==================== ADMIN ROUTES ====================
+
+# File Upload
+@admin_router.post("/upload")
+async def admin_upload_file(file: UploadFile = File(...), user: dict = Depends(get_current_user)):
+    """Upload an image file and return the URL"""
+    # Validate file type
+    ext = file.filename.split(".")[-1].lower() if "." in file.filename else ""
+    if ext not in ["jpg", "jpeg", "png", "gif", "webp"]:
+        raise HTTPException(status_code=400, detail="Nur Bildformate erlaubt (jpg, png, gif, webp)")
+    
+    # Read file
+    data = await file.read()
+    
+    # Max 10MB
+    if len(data) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Datei zu groß (max. 10MB)")
+    
+    # Generate unique path
+    file_id = str(uuid.uuid4())
+    path = f"{APP_NAME}/products/{file_id}.{ext}"
+    content_type = MIME_TYPES.get(ext, "application/octet-stream")
+    
+    try:
+        result = put_object(path, data, content_type)
+        
+        # Store reference in DB
+        file_doc = {
+            "id": file_id,
+            "storage_path": result["path"],
+            "original_filename": file.filename,
+            "content_type": content_type,
+            "size": result.get("size", len(data)),
+            "is_deleted": False,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.files.insert_one(file_doc)
+        
+        # Return the download URL
+        return {
+            "url": f"/api/files/{result['path']}",
+            "path": result["path"],
+            "filename": file.filename
+        }
+    except Exception as e:
+        logging.error(f"Upload failed: {e}")
+        raise HTTPException(status_code=500, detail="Upload fehlgeschlagen")
+
+# File Download (for displaying images)
+@api_router.get("/files/{path:path}")
+async def get_file(path: str):
+    """Serve uploaded files"""
+    try:
+        record = await db.files.find_one({"storage_path": path, "is_deleted": False})
+        if not record:
+            raise HTTPException(status_code=404, detail="Datei nicht gefunden")
+        
+        data, content_type = get_object(path)
+        return Response(content=data, media_type=record.get("content_type", content_type))
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Download failed: {e}")
+        raise HTTPException(status_code=500, detail="Download fehlgeschlagen")
 
 # Categories
 @admin_router.get("/categories")

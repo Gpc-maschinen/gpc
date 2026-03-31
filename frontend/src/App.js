@@ -1654,19 +1654,56 @@ const ProductForm = ({ product, categories, onSave }) => {
     stock: product?.stock || 10,
     specifications: product?.specifications || {}
   });
-  const [newImageUrl, setNewImageUrl] = useState("");
   const [specKey, setSpecKey] = useState("");
   const [specValue, setSpecValue] = useState("");
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const addImage = () => {
-    if (newImageUrl.trim()) {
-      setFormData({ ...formData, images: [...formData.images, newImageUrl.trim()] });
-      setNewImageUrl("");
+  const handleFileUpload = async (e, isMain = false) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    if (!validTypes.includes(file.type)) {
+      toast.error("Nur Bildformate erlaubt (JPG, PNG, GIF, WebP)");
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Datei zu groß (max. 10MB)");
+      return;
+    }
+
+    setUploading(true);
+    const uploadFormData = new FormData();
+    uploadFormData.append("file", file);
+
+    try {
+      const res = await axios.post(`${API}/admin/upload`, uploadFormData, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      
+      const imageUrl = `${BACKEND_URL}${res.data.url}`;
+      
+      if (isMain) {
+        setFormData({ ...formData, image_url: imageUrl });
+      } else {
+        setFormData({ ...formData, images: [...formData.images, imageUrl] });
+      }
+      toast.success("Bild hochgeladen");
+    } catch (e) {
+      console.error("Upload error:", e);
+      toast.error("Upload fehlgeschlagen");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
     }
   };
 
@@ -1754,26 +1791,59 @@ const ProductForm = ({ product, categories, onSave }) => {
 
       {/* Main Image */}
       <div>
-        <Label className="label-brutal">Hauptbild URL *</Label>
-        <Input name="image_url" value={formData.image_url} onChange={handleChange} required className="input-brutal" placeholder="https://..." />
+        <Label className="label-brutal">Hauptbild *</Label>
+        <div className="flex gap-2 items-start">
+          <div className="flex-1">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleFileUpload(e, true)}
+              className="hidden"
+              id="main-image-upload"
+              disabled={uploading}
+            />
+            <label
+              htmlFor="main-image-upload"
+              className={`btn-secondary w-full flex items-center justify-center gap-2 cursor-pointer ${uploading ? 'opacity-50' : ''}`}
+            >
+              <Image className="w-4 h-4" />
+              {uploading ? "Wird hochgeladen..." : "Bild hochladen"}
+            </label>
+          </div>
+        </div>
         {formData.image_url && (
-          <img src={formData.image_url} alt="Preview" className="mt-2 w-32 h-32 object-cover border" />
+          <div className="mt-2 relative inline-block">
+            <img src={formData.image_url} alt="Hauptbild" className="w-32 h-32 object-cover border" />
+            <button
+              type="button"
+              onClick={() => setFormData({ ...formData, image_url: "" })}
+              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+            >
+              ×
+            </button>
+          </div>
         )}
       </div>
 
       {/* Additional Images */}
       <div>
         <Label className="label-brutal">Weitere Bilder</Label>
-        <div className="flex gap-2 mb-2">
-          <Input
-            value={newImageUrl}
-            onChange={(e) => setNewImageUrl(e.target.value)}
-            className="input-brutal"
-            placeholder="Bild-URL eingeben"
+        <div className="mb-2">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleFileUpload(e, false)}
+            className="hidden"
+            id="additional-image-upload"
+            disabled={uploading}
           />
-          <button type="button" onClick={addImage} className="btn-secondary px-4">
+          <label
+            htmlFor="additional-image-upload"
+            className={`btn-secondary inline-flex items-center gap-2 cursor-pointer ${uploading ? 'opacity-50' : ''}`}
+          >
             <Plus className="w-4 h-4" />
-          </button>
+            {uploading ? "Wird hochgeladen..." : "Bild hinzufügen"}
+          </label>
         </div>
         <div className="flex gap-2 flex-wrap">
           {formData.images.map((img, idx) => (
@@ -1823,7 +1893,7 @@ const ProductForm = ({ product, categories, onSave }) => {
         </div>
       </div>
 
-      <Button type="submit" className="btn-primary w-full" disabled={loading}>
+      <Button type="submit" className="btn-primary w-full" disabled={loading || uploading}>
         {loading ? "Wird gespeichert..." : (product ? "Aktualisieren" : "Erstellen")}
       </Button>
     </form>
