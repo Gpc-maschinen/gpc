@@ -1,0 +1,105 @@
+{
+  "theme": "light",
+  "archetype": "4 (Swiss & High-Contrast)",
+  "design_philosophy": "Industrial Swiss Brutalism. Emphasizes raw geometric precision, full-bleed rectangles, and stark contrast to reflect the exact engineering of machinery. No rounded corners. Thick borders, grid-like structure, and technical layout prioritized over decorative fluff. Language strictly German.",
+  "colors": {
+    "background": "#F4F4F5",
+    "surface": "#FFFFFF",
+    "primary": "#FF3B30",
+    "primary_hover": "#D63028",
+    "text_main": "#09090B",
+    "text_muted": "#71717A",
+    "border": "#E4E4E7",
+    "accent_neutral": "#27272A",
+    "status_success": "#16A34A"
+  },
+  "typography": {
+    "headings": {
+      "font_family": "Chivo, sans-serif",
+      "weights": ["800", "900"],
+      "tracking": "tracking-tighter",
+      "usage": "Heavy, authoritative text. No Inter for headings."
+    },
+    "body": {
+      "font_family": "IBM Plex Sans, sans-serif",
+      "weights": ["400", "500", "600"],
+      "usage": "High legibility, technical documentation feel."
+    },
+    "scale": {
+      "h1": "text-5xl md:text-6xl",
+      "h2": "text-3xl md:text-4xl",
+      "h3": "text-xl md:text-2xl",
+      "body": "text-base",
+      "labels": "text-xs tracking-[0.2em] uppercase"
+    }
+  },
+  "layout_and_spacing": {
+    "grid_system": "Bento 'Control Room' for specs, and 'Tetris' for marketing hero sections. Use wide gaps for hero (gap-8), tight gaps for specs (gap-4).",
+    "spacing_scale": "Generous paddings (p-6, p-8, p-12) within stark bordered containers.",
+    "borders": "border-collapse styles. 1px or 2px solid black/gray lines outlining structural grids.",
+    "radius": "rounded-none",
+    "shadows": "No soft shadows. Use hard 4px offset solid shadows (Neo-brutalist) or no shadow at all. Pure functional flat design."
+  },
+  "components": {
+    "buttons": "Sharp edges (rounded-none). Primary buttons use Signal Red (#FF3B30) background with stark white text. Hover states increase brightness and add a 1px inner stroke.",
+    "cards": "Flat background, 1px solid border (border-border), rounded-none, no shadow. Hover: border darkens to black.",
+    "forms": "Use Shadcn Form primitives. Sharp inputs (rounded-none), thick borders on focus. Strict invoice/bank transfer fields.",
+    "navigation": "Solid white background, sticky nav with thick bottom border. Hamburger on mobile, fully visible links on desktop."
+  },
+  "pages_and_features": {
+    "home_catalog": {
+      "hero": "Full bleed rectangular hero image with sharp black overlay (bg-black/40). Heavy H1 on the left. Primary CTA: 'Maschinen ansehen' or 'Angebot anfragen'.",
+      "filters": "Left sidebar or top bar with stark rectangular dropdowns (Shadcn Select). Filters: Kategorie, Preis.",
+      "grid": "CSS Grid (grid-cols-1 md:grid-cols-3). Each product cell has a hard border."
+    },
+    "product_detail": {
+      "layout": "Split screen: massive product image on the left, technical specs and Add to Cart on the right. 'Angebotsanfrage' (Quote Request) button next to Add to Cart.",
+      "specs": "Use tables or grid borders to list technical details."
+    },
+    "cart_and_checkout": {
+      "cart": "Slide-out or dedicated page with clear table of items.",
+      "checkout": "Single page form. No account creation. Payment method strictly labeled 'Rechnung / Überweisung' (Invoice / Bank Transfer)."
+    },
+    "contact": {
+      "layout": "Grid split with a large form on one side and company contact details on the other."
+    }
+  },
+  "images": {
+    "hero": {
+      "url": "https://images.unsplash.com/photo-1761519609252-3b868e540398?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzh8MHwxfHNlYXJjaHwxfHxpbmR1c3RyaWFsJTIwZmFjdG9yeSUyMG1hY2hpbmVyeXxlbnwwfHx8fDE3NzQ5ODY1NTF8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Industrial workshop with machinery and large windows, used as main hero background."
+    },
+    "products": [
+      {
+        "url": "https://images.unsplash.com/photo-1691052657402-90b45c0f6dca?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAxODF8MHwxfHNlYXJjaHwxfHxleGNhdmF0b3IlMjBtYWNoaW5lfGVufDB8fHx8MTc3NDk4NjU1OHww&ixlib=rb-4.1.0&q=85",
+        "name": "Schwerlast-Bagger X-200"
+      },
+      {
+        "url": "https://images.pexels.com/photos/33748032/pexels-photo-33748032.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "name": "Präzisions-CNC-Fräsmaschine"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1764114441097-6a475eca993d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzh8MHwxfHNlYXJjaHw0fHxpbmR1c3RyaWFsJTIwZmFjdG9yeSUyMG1hY2hpbmVyeXxlbnwwfHx8fDE3NzQ5ODY1NTF8MA&ixlib=rb-4.1.0&q=85",
+        "name": "Industrielle Drehmaschine PRO"
+      },
+      {
+        "url": "https://images.pexels.com/photos/34207359/pexels-photo-34207359.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "name": "Automatisierter Roboterarm R-50"
+      }
+    ],
+    "logos": [
+      {
+        "url": "https://images.unsplash.com/photo-1771795220707-bcacbcfc48a1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTV8MHwxfHNlYXJjaHwxfHxwYXJ0bmVyJTIwY29tcGFueSUyMGxvZ28lMjBibGFjayUyMGFuZCUyMHdoaXRlfGVufDB8fHx8MTc3NDk4NjU1Mnww&ixlib=rb-4.1.0&q=85",
+        "description": "Partner company logo 1"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1627405484824-44a57ab19198?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTV8MHwxfHNlYXJjaHwyfHxwYXJ0bmVyJTIwY29tcGFueSUyMGxvZ28lMjBibGFjayUyMGFuZCUyMHdoaXRlfGVufDB8fHx8MTc3NDk4NjU1Mnww&ixlib=rb-4.1.0&q=85",
+        "description": "Partner company logo 2"
+      }
+    ]
+  },
+  "testing": {
+    "attributes": "All interactive elements, buttons, inputs, links must include `data-testid` (e.g., `data-testid=\"add-to-cart-button\"`)."
+  },
+  "language": "Deutsch (German) strictly. E.g., Warenkorb, Kasse, Angebot anfragen, In den Warenkorb, Kaufen."
+}
