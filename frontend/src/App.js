@@ -293,8 +293,8 @@ const Home = () => {
             </div>
           ) : (
             <div className="product-grid">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
+              {products.map((product, index) => (
+                <ProductCard key={`${product.id}-${index}`} product={product} onAddToCart={addToCart} />
               ))}
             </div>
           )}
@@ -418,14 +418,14 @@ const ProductsPage = () => {
               
               <div className="mb-6">
                 <Label className="label-brutal">Kategorie</Label>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory} data-testid="category-filter">
-                  <SelectTrigger className="rounded-none border-2">
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger className="rounded-none border-2" data-testid="category-filter">
                     <SelectValue placeholder="Alle Kategorien" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Alle Kategorien</SelectItem>
+                    <SelectItem value="all" data-testid="category-all">Alle Kategorien</SelectItem>
                     {categories.map((cat) => (
-                      <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      <SelectItem key={cat} value={cat} data-testid={`category-${cat}`}>{cat}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -480,8 +480,8 @@ const ProductsPage = () => {
               <>
                 <p className="text-[#71717A] mb-4">{filteredProducts.length} Produkte gefunden</p>
                 <div className="product-grid">
-                  {filteredProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
+                  {filteredProducts.map((product, index) => (
+                    <ProductCard key={`${product.id}-${index}`} product={product} onAddToCart={addToCart} />
                   ))}
                 </div>
               </>
