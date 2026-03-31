@@ -1279,17 +1279,6 @@ const ContactPage = () => {
               <div className="space-y-6">
                 <div className="flex gap-4">
                   <div className="w-10 h-10 bg-[#F4F4F5] flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-5 h-5 text-[#FF3B30]" />
-                  </div>
-                  <div>
-                    <p className="label-brutal">Telefon</p>
-                    <p className="font-semibold">+49 (0) 2205 123 456</p>
-                    <p className="text-sm text-[#71717A]">Mo-Fr 8:00 - 17:00 Uhr</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 bg-[#F4F4F5] flex items-center justify-center flex-shrink-0">
                     <Mail className="w-5 h-5 text-[#FF3B30]" />
                   </div>
                   <div>
@@ -2220,7 +2209,6 @@ const WiderrufsrechtPage = () => {
               <p className="font-semibold">G.P.C. Maschinen-Vertriebs-GmbH</p>
               <p>Hauptstr. 180</p>
               <p>D-51503 Rösrath</p>
-              <p>Telefon: +49 (0) 2205 123 456</p>
               <p>E-Mail: widerruf@gpc-maschinen.de</p>
             </div>
           </section>
@@ -2254,8 +2242,7 @@ const DatenschutzPage = () => {
             <p>G.P.C. Maschinen-Vertriebs-GmbH</p>
             <p>Hauptstr. 180</p>
             <p>D-51503 Rösrath</p>
-            <p className="mt-2">Telefon: +49 (0) 2205 123 456</p>
-            <p>E-Mail: datenschutz@gpc-maschinen.de</p>
+            <p className="mt-2">E-Mail: datenschutz@gpc-maschinen.de</p>
           </section>
         </div>
       </div>
@@ -2286,14 +2273,6 @@ const ImpressumPage = () => {
             <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Kontakt</h2>
             <table className="specs-table">
               <tbody>
-                <tr>
-                  <td>Telefon:</td>
-                  <td>+49 (0) 2205 123 456</td>
-                </tr>
-                <tr>
-                  <td>Fax:</td>
-                  <td>+49 (0) 2205 123 457</td>
-                </tr>
                 <tr>
                   <td>E-Mail:</td>
                   <td>info@gpc-maschinen.de</td>
