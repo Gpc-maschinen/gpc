@@ -99,7 +99,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center gap-2" data-testid="logo-link">
             <Package className="w-8 h-8 text-[#FF3B30]" />
-            <span className="font-bold text-xl tracking-tight">G.P.C. <span className="text-[#FF3B30]">MASCHINEN</span></span>
+            <span className="font-bold text-xl tracking-tight">G.P.<span className="text-[#FF3B30]">C</span></span>
           </Link>
 
           {/* Desktop Menu */}
@@ -1559,6 +1559,11 @@ const ImpressumPage = () => {
           </section>
 
           <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Geschäftsführer</h2>
+            <p>Marius Weitz</p>
+          </section>
+
+          <section className="mb-8">
             <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Umsatzsteuer-ID</h2>
             <p>Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:</p>
             <p className="font-semibold mt-2">DE154879120</p>
@@ -1787,7 +1792,7 @@ const Footer = () => {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Package className="w-8 h-8 text-[#FF3B30]" />
-              <span className="font-bold text-xl text-white">G.P.C. <span className="text-[#FF3B30]">MASCHINEN</span></span>
+              <span className="font-bold text-xl text-white">G.P.<span className="text-[#FF3B30]">C</span></span>
             </div>
             <p className="text-[#E4E4E7] text-sm">
               G.P.C. Maschinen-Vertriebs-GmbH - Ihr Partner für hochwertige Industriemaschinen.
