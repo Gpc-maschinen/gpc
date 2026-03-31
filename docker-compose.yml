@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6
+    container_name: gpc-mongodb
+    restart: always
+    volumes:
+      - mongodb_data:/data/db
+    command: mongod --wiredTigerCacheSizeGB 0.25
+    networks:
+      - gpc-network
+
+  backend:
+    build: ./backend
+    container_name: gpc-backend
+    restart: always
+    ports:
+      - "8001:8001"
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017
+      - DB_NAME=gpc_store
+      - CORS_ORIGINS=*
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - EMERGENT_LLM_KEY=${EMERGENT_LLM_KEY}
+    depends_on:
+      - mongodb
+    networks:
+      - gpc-network
+
+  frontend:
+    build: ./frontend
+    container_name: gpc-frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - gpc-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  gpc-network:
+    driver: bridge
