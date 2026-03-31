@@ -158,58 +158,81 @@ const Navbar = () => {
   const cartCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b-2 border-black" data-testid="navbar">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center gap-2" data-testid="logo-link">
-            <Package className="w-8 h-8 text-[#FF3B30]" />
-            <span className="font-bold text-xl tracking-tight">G.P.C</span>
-          </Link>
+    <>
+      <nav className="sticky top-0 z-50 bg-white border-b-2 border-black" data-testid="navbar">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <Link to="/" className="flex items-center gap-2" data-testid="logo-link">
+              <Package className="w-8 h-8 text-[#FF3B30]" />
+              <span className="font-bold text-xl tracking-tight">G.P.C</span>
+            </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link to="/" className="nav-link font-medium" data-testid="nav-home">Startseite</Link>
-            <Link to="/produkte" className="nav-link font-medium" data-testid="nav-products">Produkte</Link>
-            <Link to="/kontakt" className="nav-link font-medium" data-testid="nav-contact">Kontakt</Link>
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center gap-8">
+              <Link to="/" className="nav-link font-medium" data-testid="nav-home">Startseite</Link>
+              <Link to="/produkte" className="nav-link font-medium" data-testid="nav-products">Produkte</Link>
+              <Link to="/kontakt" className="nav-link font-medium" data-testid="nav-contact">Kontakt</Link>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <button 
+                className="relative p-2" 
+                data-testid="cart-button"
+                onClick={() => setCartOpen(true)}
+              >
+                <ShoppingCart className="w-6 h-6" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-[#FF3B30] text-white text-xs w-5 h-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Mobile Menu Button */}
+              <button className="md:hidden p-2" onClick={() => setIsOpen(!isOpen)} data-testid="mobile-menu-button">
+                {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <Sheet open={cartOpen} onOpenChange={setCartOpen}>
-              <SheetTrigger asChild>
-                <button className="relative p-2" data-testid="cart-button">
-                  <ShoppingCart className="w-6 h-6" />
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-[#FF3B30] text-white text-xs w-5 h-5 flex items-center justify-center">
-                      {cartCount}
-                    </span>
-                  )}
-                </button>
-              </SheetTrigger>
-              <SheetContent className="w-full sm:max-w-lg">
-                <SheetHeader>
-                  <SheetTitle className="font-bold text-2xl">Warenkorb</SheetTitle>
-                </SheetHeader>
-                <CartSidebar onClose={() => setCartOpen(false)} />
-              </SheetContent>
-            </Sheet>
+          {/* Mobile Menu */}
+          {isOpen && (
+            <div className="md:hidden py-4 border-t border-gray-200">
+              <Link to="/" className="block py-2 font-medium" onClick={() => setIsOpen(false)}>Startseite</Link>
+              <Link to="/produkte" className="block py-2 font-medium" onClick={() => setIsOpen(false)}>Produkte</Link>
+              <Link to="/kontakt" className="block py-2 font-medium" onClick={() => setIsOpen(false)}>Kontakt</Link>
+            </div>
+          )}
+        </div>
+      </nav>
 
-            {/* Mobile Menu Button */}
-            <button className="md:hidden p-2" onClick={() => setIsOpen(!isOpen)} data-testid="mobile-menu-button">
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+      {/* Cart Sidebar Overlay */}
+      {cartOpen && (
+        <div className="fixed inset-0 z-[100]" data-testid="cart-overlay">
+          {/* Dark backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setCartOpen(false)}
+          />
+          {/* Cart panel */}
+          <div className="absolute right-0 top-0 h-full w-full sm:w-[450px] bg-white shadow-xl flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-[#E4E4E7]">
+              <h2 className="font-bold text-2xl">Warenkorb</h2>
+              <button 
+                onClick={() => setCartOpen(false)}
+                className="p-2 hover:bg-[#F4F4F5]"
+                data-testid="close-cart"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <CartSidebar onClose={() => setCartOpen(false)} />
+            </div>
           </div>
         </div>
-
-        {/* Mobile Menu */}
-        {isOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200">
-            <Link to="/" className="block py-2 font-medium" onClick={() => setIsOpen(false)}>Startseite</Link>
-            <Link to="/produkte" className="block py-2 font-medium" onClick={() => setIsOpen(false)}>Produkte</Link>
-            <Link to="/kontakt" className="block py-2 font-medium" onClick={() => setIsOpen(false)}>Kontakt</Link>
-          </div>
-        )}
-      </div>
-    </nav>
+      )}
+    </>
   );
 };
 
@@ -219,8 +242,23 @@ const CartSidebar = ({ onClose }) => {
   const navigate = useNavigate();
 
   const handleCheckout = () => {
-    if (onClose) onClose();
-    navigate("/kasse");
+    // Erst Sheet schließen, dann navigieren
+    if (onClose) {
+      onClose();
+    }
+    // Kurzes Delay damit das Sheet Zeit hat zu schließen
+    setTimeout(() => {
+      navigate("/kasse");
+    }, 100);
+  };
+
+  const handleContinueShopping = () => {
+    if (onClose) {
+      onClose();
+    }
+    setTimeout(() => {
+      navigate("/produkte");
+    }, 100);
   };
 
   if (cart.items.length === 0) {
@@ -229,7 +267,7 @@ const CartSidebar = ({ onClose }) => {
         <ShoppingCart className="w-16 h-16 text-gray-300 mb-4" />
         <p className="text-[#71717A]">Ihr Warenkorb ist leer</p>
         <button 
-          onClick={() => { if (onClose) onClose(); navigate("/produkte"); }}
+          onClick={handleContinueShopping}
           className="mt-4 btn-primary" 
           data-testid="continue-shopping"
         >
