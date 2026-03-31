@@ -1,18 +1,17 @@
 # Maschinen Store - PRD
 
 ## Original Problem Statement
-"Baue mir einen Online-Store für Maschinen" - Ein allgemeines E-Commerce Template für Maschinenverkauf.
+"Baue mir einen Online-Store für Maschinen" - E-Commerce für G.P.C. Maschinen-Vertriebs-GmbH.
 
 ## User Choices
-- Allgemeine Template, nicht spezialisiert
-- Produktkatalog mit Filteroptionen
+- Produktkatalog mit Kategorien und Filtern
 - Warenkorb & Checkout
-- Angebotsanfragen
-- Zahlung nur per Rechnung/Überweisung (keine Online-Zahlung)
-- Kein Admin-Panel
-- Kein Kundenkonto
-- Kein Produktvergleich
+- Zahlung nur per Rechnung/Überweisung
+- Admin-Panel (gesichert mit JWT Auth)
+- Statische Seiten (Impressum, AGB, Datenschutz, Widerrufsrecht, Kontakt)
+- Bild-Upload für Produkte via Emergent Object Storage
 - Nur Deutsch
+- Deployment auf eigenen Ubuntu 22.04 VPS via Docker
 
 ## Architecture
 - **Backend**: FastAPI with MongoDB (Motor async driver)
@@ -20,65 +19,57 @@
 - **Design**: Swiss Brutalist / High-Contrast aesthetic
 - **Fonts**: Chivo (headings), IBM Plex Sans (body)
 - **Primary Color**: Signal Red (#FF3B30)
+- **Deployment**: Docker Compose + Nginx + Let's Encrypt SSL
 
-## What's Been Implemented (January 2025)
+## What's Been Implemented
 
 ### Backend API Endpoints
-- `GET /api/products` - List products with category/price filters
-- `GET /api/products/categories` - Get all categories
-- `GET /api/products/{id}` - Get product details
-- `GET /api/cart/{session_id}` - Get cart
-- `POST /api/cart/{session_id}/add` - Add to cart
-- `PUT /api/cart/{session_id}/update` - Update cart item
-- `DELETE /api/cart/{session_id}/remove/{product_id}` - Remove from cart
-- `DELETE /api/cart/{session_id}/clear` - Clear cart
-- `POST /api/orders` - Create order (Invoice/Bank Transfer)
-- `GET /api/orders/{order_number}` - Get order details
-- `POST /api/quotes` - Create quote request
-- `POST /api/contact` - Submit contact form
+- `POST /api/auth/login` - Admin Login
+- `GET /api/auth/me` - Auth Status
+- `POST /api/upload` - Bild-Upload (Emergent Object Storage)
+- `GET/POST/PUT/DELETE /api/products` - Produkt-CRUD
+- `GET /api/products/categories` - Kategorien
+- `POST /api/orders` - Bestellung aufgeben
+- `GET /api/orders/{order_number}` - Bestelldetails
+- `POST /api/quotes` - Angebotsanfrage
+- `POST /api/contact` - Kontaktformular
+- `GET/POST/PUT/DELETE /api/admin/*` - Admin-Endpunkte
 
 ### Frontend Pages
-- Homepage with Hero, Featured Products, Trust Section
-- Products page with Category & Price filters
-- Product Detail page with specifications
-- Cart sidebar with quantity controls
-- Checkout page with customer form
-- Order confirmation page
-- Quote request page (per product)
-- Contact page
+- Homepage mit Hero, Featured Products
+- Produktseite mit Kategorie- & Preisfilter
+- Produktdetailseite
+- Warenkorb-Sidebar (Custom, kein Shadcn Sheet)
+- Checkout mit Kundenformular
+- Bestellbestätigung
+- Angebotsanfrage
+- Kontaktseite
+- Impressum, AGB, Datenschutz, Widerrufsrecht
+- Admin Panel (Login, Produkt-, Kategorien-, Bestell-Verwaltung)
 
-### Sample Products (6 machines)
-- Schwerlast-Bagger X-200 (Baumaschinen)
-- Präzisions-CNC-Fräsmaschine (CNC-Maschinen)
-- Industrielle Drehmaschine PRO (CNC-Maschinen)
-- Automatisierter Roboterarm R-50 (Robotik)
-- Hydraulische Abkantpresse 200T (Blechbearbeitung)
-- Laser-Schneidanlage LS-3000 (Lasertechnik)
+### Deployment
+- Docker Compose (MongoDB + Backend + Frontend)
+- Nginx Reverse Proxy Konfiguration
+- Let's Encrypt SSL
+- deploy.sh Script & DEPLOYMENT.md Anleitung
+- GitHub Repo: https://github.com/Gpc-maschinen/gpc
 
-## Prioritized Backlog
+## Completed Tasks - All ✅
+- P0: Produktkatalog, Warenkorb, Checkout, Angebotsanfragen, Kontakt
+- P0: Admin Panel mit JWT Auth und Bild-Upload
+- P0: Rechtliche Seiten mit echten Firmendaten
+- P0: VPS Deployment-Anleitung mit GitHub-URL fertiggestellt
 
-### P0 - Complete ✅
-- Product catalog with filters
-- Shopping cart functionality
-- Checkout with invoice/bank transfer
-- Quote request system
-- Contact form
+## Backlog
 
-### P1 - Future Enhancements
-- Admin panel for product management
-- Email notifications for orders/quotes
-- Customer accounts with order history
-- Product search functionality
-- Pagination for large catalogs
+### P1 - Nächste Schritte
+- E-Mail-Benachrichtigungen für Bestellungen/Anfragen
+- Produktsuche
+- Weitere Produktkategorien und -artikel
 
 ### P2 - Nice to Have
-- Multi-language support (DE/EN)
-- Product comparison feature
-- PDF quote/invoice generation
-- Stock management
-- Integration with shipping providers
-
-## Next Action Items
-1. Add email notifications for orders and quote requests
-2. Implement product search functionality
-3. Add more product categories and items
+- Multi-Language (DE/EN)
+- Produktvergleich
+- PDF Angebote/Rechnungen
+- Lagerverwaltung
+- Versand-Integration
