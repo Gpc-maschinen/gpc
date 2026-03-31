@@ -13,25 +13,25 @@
     {
       "test": "Products endpoint with German content",
       "success": true,
-      "details": "Found 12 products",
+      "details": "Found 6 products",
       "response_data": null
     },
     {
       "test": "Product categories with German names",
       "success": true,
-      "details": "Categories: ['Baumaschinen', 'CNC-Maschinen', 'Robotik', 'Blechbearbeitung', 'Lasertechnik']",
+      "details": "Categories: ['Baumaschinen', 'CNC-Maschinen', 'Robotik', 'Blechbearbeitung', 'Lasertechnik', 'Test Kategorie', 'Juden']",
       "response_data": null
     },
     {
       "test": "Product category filter",
       "success": true,
-      "details": "Found 2 Baumaschinen",
+      "details": "Found 1 Baumaschinen",
       "response_data": null
     },
     {
       "test": "Product price filter",
       "success": true,
-      "details": "Found 4 products in price range",
+      "details": "Found 2 products in price range",
       "response_data": null
     },
     {
@@ -73,7 +73,7 @@
     {
       "test": "Order creation with German content",
       "success": true,
-      "details": "Order: ORD-20260331-E650B2E2",
+      "details": "Order: ORD-20260331-55AA21D7",
       "response_data": null
     },
     {
@@ -85,7 +85,7 @@
     {
       "test": "Quote request with German format",
       "success": true,
-      "details": "Quote: ANF-20260331-883A844A",
+      "details": "Quote: ANF-20260331-EA5E6E4A",
       "response_data": null
     },
     {

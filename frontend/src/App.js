@@ -153,6 +153,7 @@ const ProtectedRoute = ({ children }) => {
 // Navbar Component
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const { cart } = useCart();
   const cartCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -173,7 +174,7 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <Sheet>
+            <Sheet open={cartOpen} onOpenChange={setCartOpen}>
               <SheetTrigger asChild>
                 <button className="relative p-2" data-testid="cart-button">
                   <ShoppingCart className="w-6 h-6" />
@@ -188,7 +189,7 @@ const Navbar = () => {
                 <SheetHeader>
                   <SheetTitle className="font-bold text-2xl">Warenkorb</SheetTitle>
                 </SheetHeader>
-                <CartSidebar />
+                <CartSidebar onClose={() => setCartOpen(false)} />
               </SheetContent>
             </Sheet>
 
@@ -213,17 +214,27 @@ const Navbar = () => {
 };
 
 // Cart Sidebar
-const CartSidebar = () => {
+const CartSidebar = ({ onClose }) => {
   const { cart, updateCartItem, removeFromCart } = useCart();
+  const navigate = useNavigate();
+
+  const handleCheckout = () => {
+    if (onClose) onClose();
+    navigate("/kasse");
+  };
 
   if (cart.items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-64 text-center">
         <ShoppingCart className="w-16 h-16 text-gray-300 mb-4" />
         <p className="text-[#71717A]">Ihr Warenkorb ist leer</p>
-        <Link to="/produkte" className="mt-4 btn-primary" data-testid="continue-shopping">
+        <button 
+          onClick={() => { if (onClose) onClose(); navigate("/produkte"); }}
+          className="mt-4 btn-primary" 
+          data-testid="continue-shopping"
+        >
           Produkte ansehen
-        </Link>
+        </button>
       </div>
     );
   }
@@ -270,9 +281,13 @@ const CartSidebar = () => {
           <span className="font-semibold">Gesamt:</span>
           <span className="text-2xl font-bold">{cart.total.toLocaleString('de-DE')} €</span>
         </div>
-        <Link to="/kasse" className="btn-primary w-full block text-center" data-testid="checkout-button">
+        <button 
+          onClick={handleCheckout}
+          className="btn-primary w-full" 
+          data-testid="checkout-button"
+        >
           Zur Kasse
-        </Link>
+        </button>
       </div>
     </div>
   );
