@@ -1247,6 +1247,200 @@ const QuoteRequestPage = () => {
   );
 };
 
+// AGB Page
+const AGBPage = () => {
+  return (
+    <div className="py-8 bg-[#F4F4F5] min-h-screen" data-testid="agb-page">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <p className="label-brutal mb-2">Rechtliches</p>
+          <h1 className="text-4xl md:text-5xl font-bold">Allgemeine Geschäftsbedingungen</h1>
+        </div>
+
+        <div className="bg-white border border-[#E4E4E7] p-8">
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">§ 1 Geltungsbereich</h2>
+            <p className="text-[#71717A]">
+              (1) Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle Verträge zwischen der 
+              Maschinen Store GmbH, Industriestraße 123, 70469 Stuttgart (nachfolgend "Verkäufer") und 
+              dem Kunden (nachfolgend "Käufer") über den Kauf von Maschinen und Industrieanlagen.
+            </p>
+            <p className="text-[#71717A] mt-2">
+              (2) Abweichende Bedingungen des Käufers werden nicht anerkannt, es sei denn, der Verkäufer 
+              stimmt ihrer Geltung ausdrücklich schriftlich zu.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">§ 2 Vertragsschluss</h2>
+            <p className="text-[#71717A]">
+              (1) Die Darstellung der Produkte im Online-Shop stellt kein rechtlich bindendes Angebot, 
+              sondern eine Aufforderung zur Bestellung dar.
+            </p>
+            <p className="text-[#71717A] mt-2">
+              (2) Mit der Bestellung erklärt der Käufer verbindlich, die bestellte Ware erwerben zu wollen. 
+              Der Vertrag kommt zustande, wenn der Verkäufer die Bestellung durch eine Auftragsbestätigung 
+              per E-Mail annimmt.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">§ 3 Preise und Zahlung</h2>
+            <p className="text-[#71717A]">
+              (1) Alle angegebenen Preise sind Nettopreise zuzüglich der gesetzlichen Mehrwertsteuer.
+            </p>
+            <p className="text-[#71717A] mt-2">
+              (2) Die Zahlung erfolgt per Rechnung mit einem Zahlungsziel von 14 Tagen nach Rechnungserhalt 
+              per Überweisung auf das in der Rechnung angegebene Konto.
+            </p>
+            <p className="text-[#71717A] mt-2">
+              (3) Bei Bestellungen über 50.000 € kann eine Anzahlung von 30% vereinbart werden.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">§ 4 Lieferung</h2>
+            <p className="text-[#71717A]">
+              (1) Die Lieferzeit wird individuell vereinbart und in der Auftragsbestätigung mitgeteilt.
+            </p>
+            <p className="text-[#71717A] mt-2">
+              (2) Die Lieferung erfolgt ab Werk (EXW) gemäß Incoterms 2020, sofern nicht anders vereinbart.
+            </p>
+            <p className="text-[#71717A] mt-2">
+              (3) Teillieferungen sind zulässig, soweit sie dem Käufer zumutbar sind.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">§ 5 Eigentumsvorbehalt</h2>
+            <p className="text-[#71717A]">
+              Die gelieferte Ware bleibt bis zur vollständigen Bezahlung aller Forderungen aus der 
+              Geschäftsbeziehung Eigentum des Verkäufers.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">§ 6 Gewährleistung</h2>
+            <p className="text-[#71717A]">
+              (1) Die Gewährleistungsfrist für neue Maschinen beträgt 12 Monate ab Lieferung.
+            </p>
+            <p className="text-[#71717A] mt-2">
+              (2) Mängelansprüche bestehen nicht bei natürlichem Verschleiß oder Schäden, die durch 
+              unsachgemäße Behandlung entstanden sind.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">§ 7 Schlussbestimmungen</h2>
+            <p className="text-[#71717A]">
+              (1) Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts.
+            </p>
+            <p className="text-[#71717A] mt-2">
+              (2) Gerichtsstand ist Stuttgart.
+            </p>
+            <p className="text-[#71717A] mt-4 text-sm">
+              Stand: Januar 2025
+            </p>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Widerrufsrecht Page
+const WiderrufsrechtPage = () => {
+  return (
+    <div className="py-8 bg-[#F4F4F5] min-h-screen" data-testid="widerrufsrecht-page">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <p className="label-brutal mb-2">Rechtliches</p>
+          <h1 className="text-4xl md:text-5xl font-bold">Widerrufsbelehrung</h1>
+        </div>
+
+        <div className="bg-white border border-[#E4E4E7] p-8">
+          <div className="bg-[#FEF3C7] border border-[#D97706] p-4 mb-8">
+            <p className="font-semibold text-[#D97706]">Hinweis für Geschäftskunden</p>
+            <p className="text-sm mt-1">
+              Das Widerrufsrecht gilt nur für Verbraucher im Sinne des § 13 BGB. Geschäftskunden 
+              (B2B) sind vom Widerrufsrecht ausgeschlossen.
+            </p>
+          </div>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Widerrufsrecht</h2>
+            <p className="text-[#71717A]">
+              Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.
+            </p>
+            <p className="text-[#71717A] mt-2">
+              Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag, an dem Sie oder ein von Ihnen benannter 
+              Dritter, der nicht der Beförderer ist, die Waren in Besitz genommen haben bzw. hat.
+            </p>
+            <p className="text-[#71717A] mt-2">
+              Um Ihr Widerrufsrecht auszuüben, müssen Sie uns
+            </p>
+            <div className="bg-[#F4F4F5] p-4 my-4">
+              <p className="font-semibold">Maschinen Store GmbH</p>
+              <p>Industriestraße 123</p>
+              <p>70469 Stuttgart</p>
+              <p>Telefon: +49 (0) 711 123 456 78</p>
+              <p>E-Mail: widerruf@maschinenstore.de</p>
+            </div>
+            <p className="text-[#71717A]">
+              mittels einer eindeutigen Erklärung (z.B. ein mit der Post versandter Brief oder E-Mail) 
+              über Ihren Entschluss, diesen Vertrag zu widerrufen, informieren.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Folgen des Widerrufs</h2>
+            <p className="text-[#71717A]">
+              Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen erhalten 
+              haben, einschließlich der Lieferkosten (mit Ausnahme der zusätzlichen Kosten, die sich daraus 
+              ergeben, dass Sie eine andere Art der Lieferung als die von uns angebotene, günstigste 
+              Standardlieferung gewählt haben), unverzüglich und spätestens binnen vierzehn Tagen ab dem Tag 
+              zurückzuzahlen, an dem die Mitteilung über Ihren Widerruf dieses Vertrags bei uns eingegangen ist.
+            </p>
+            <p className="text-[#71717A] mt-2">
+              Für diese Rückzahlung verwenden wir dasselbe Zahlungsmittel, das Sie bei der ursprünglichen 
+              Transaktion eingesetzt haben, es sei denn, mit Ihnen wurde ausdrücklich etwas anderes vereinbart.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Ausschluss des Widerrufsrechts</h2>
+            <p className="text-[#71717A]">
+              Das Widerrufsrecht besteht nicht bei Verträgen zur Lieferung von Waren, die nicht vorgefertigt 
+              sind und für deren Herstellung eine individuelle Auswahl oder Bestimmung durch den Verbraucher 
+              maßgeblich ist oder die eindeutig auf die persönlichen Bedürfnisse des Verbrauchers zugeschnitten sind.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Muster-Widerrufsformular</h2>
+            <p className="text-[#71717A] mb-4">
+              (Wenn Sie den Vertrag widerrufen wollen, dann füllen Sie bitte dieses Formular aus und senden Sie es zurück.)
+            </p>
+            <div className="bg-[#F4F4F5] p-4 border-l-4 border-[#27272A]">
+              <p>An: Maschinen Store GmbH, Industriestraße 123, 70469 Stuttgart, E-Mail: widerruf@maschinenstore.de</p>
+              <p className="mt-2">Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über den Kauf der folgenden Waren (*):</p>
+              <p className="mt-2">_______________________________________________</p>
+              <p className="mt-2">Bestellt am (*) / erhalten am (*):</p>
+              <p className="mt-2">_______________________________________________</p>
+              <p className="mt-2">Name des/der Verbraucher(s):</p>
+              <p className="mt-2">_______________________________________________</p>
+              <p className="mt-2">Anschrift des/der Verbraucher(s):</p>
+              <p className="mt-2">_______________________________________________</p>
+              <p className="mt-4">Datum: _____________ Unterschrift: _____________</p>
+              <p className="mt-4 text-sm text-[#71717A]">(*) Unzutreffendes streichen.</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Datenschutz Page
 const DatenschutzPage = () => {
   return (
@@ -1622,8 +1816,8 @@ const Footer = () => {
             <ul className="space-y-2 text-sm">
               <li><Link to="/impressum">Impressum</Link></li>
               <li><Link to="/datenschutz">Datenschutz</Link></li>
-              <li><a href="#">AGB</a></li>
-              <li><a href="#">Widerrufsrecht</a></li>
+              <li><Link to="/agb">AGB</Link></li>
+              <li><Link to="/widerrufsrecht">Widerrufsrecht</Link></li>
             </ul>
           </div>
         </div>
@@ -1655,6 +1849,8 @@ function App() {
               <Route path="/kontakt" element={<ContactPage />} />
               <Route path="/impressum" element={<ImpressumPage />} />
               <Route path="/datenschutz" element={<DatenschutzPage />} />
+              <Route path="/agb" element={<AGBPage />} />
+              <Route path="/widerrufsrecht" element={<WiderrufsrechtPage />} />
             </Routes>
           </main>
           <Footer />
