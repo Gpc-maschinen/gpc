@@ -99,7 +99,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center gap-2" data-testid="logo-link">
             <Package className="w-8 h-8 text-[#FF3B30]" />
-            <span className="font-bold text-xl tracking-tight">MASCHINEN<span className="text-[#FF3B30]">STORE</span></span>
+            <span className="font-bold text-xl tracking-tight">G.P.C. <span className="text-[#FF3B30]">MASCHINEN</span></span>
           </Link>
 
           {/* Desktop Menu */}
@@ -1262,7 +1262,7 @@ const AGBPage = () => {
             <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">§ 1 Geltungsbereich</h2>
             <p className="text-[#71717A]">
               (1) Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle Verträge zwischen der 
-              Maschinen Store GmbH, Industriestraße 123, 70469 Stuttgart (nachfolgend "Verkäufer") und 
+              G.P.C. Maschinen-Vertriebs-GmbH, Hauptstr. 180, D-51503 Rösrath (nachfolgend "Verkäufer") und 
               dem Kunden (nachfolgend "Käufer") über den Kauf von Maschinen und Industrieanlagen.
             </p>
             <p className="text-[#71717A] mt-2">
@@ -1336,7 +1336,7 @@ const AGBPage = () => {
               (1) Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts.
             </p>
             <p className="text-[#71717A] mt-2">
-              (2) Gerichtsstand ist Stuttgart.
+              (2) Gerichtsstand ist Köln.
             </p>
             <p className="text-[#71717A] mt-4 text-sm">
               Stand: Januar 2025
@@ -1380,11 +1380,11 @@ const WiderrufsrechtPage = () => {
               Um Ihr Widerrufsrecht auszuüben, müssen Sie uns
             </p>
             <div className="bg-[#F4F4F5] p-4 my-4">
-              <p className="font-semibold">Maschinen Store GmbH</p>
-              <p>Industriestraße 123</p>
-              <p>70469 Stuttgart</p>
-              <p>Telefon: +49 (0) 711 123 456 78</p>
-              <p>E-Mail: widerruf@maschinenstore.de</p>
+              <p className="font-semibold">G.P.C. Maschinen-Vertriebs-GmbH</p>
+              <p>Hauptstr. 180</p>
+              <p>D-51503 Rösrath</p>
+              <p>Telefon: +49 (0) 2205 123 456</p>
+              <p>E-Mail: widerruf@gpc-maschinen.de</p>
             </div>
             <p className="text-[#71717A]">
               mittels einer eindeutigen Erklärung (z.B. ein mit der Post versandter Brief oder E-Mail) 
@@ -1422,7 +1422,7 @@ const WiderrufsrechtPage = () => {
               (Wenn Sie den Vertrag widerrufen wollen, dann füllen Sie bitte dieses Formular aus und senden Sie es zurück.)
             </p>
             <div className="bg-[#F4F4F5] p-4 border-l-4 border-[#27272A]">
-              <p>An: Maschinen Store GmbH, Industriestraße 123, 70469 Stuttgart, E-Mail: widerruf@maschinenstore.de</p>
+              <p>An: G.P.C. Maschinen-Vertriebs-GmbH, Hauptstr. 180, D-51503 Rösrath, E-Mail: widerruf@gpc-maschinen.de</p>
               <p className="mt-2">Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über den Kauf der folgenden Waren (*):</p>
               <p className="mt-2">_______________________________________________</p>
               <p className="mt-2">Bestellt am (*) / erhalten am (*):</p>
@@ -1464,11 +1464,11 @@ const DatenschutzPage = () => {
 
           <section className="mb-8">
             <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">2. Verantwortliche Stelle</h2>
-            <p>Maschinen Store GmbH</p>
-            <p>Industriestraße 123</p>
-            <p>70469 Stuttgart</p>
-            <p className="mt-2">Telefon: +49 (0) 711 123 456 78</p>
-            <p>E-Mail: datenschutz@maschinenstore.de</p>
+            <p>G.P.C. Maschinen-Vertriebs-GmbH</p>
+            <p>Hauptstr. 180</p>
+            <p>D-51503 Rösrath</p>
+            <p className="mt-2">Telefon: +49 (0) 2205 123 456</p>
+            <p>E-Mail: datenschutz@gpc-maschinen.de</p>
           </section>
 
           <section className="mb-8">
@@ -1508,9 +1508,9 @@ const ImpressumPage = () => {
         <div className="bg-white border border-[#E4E4E7] p-8">
           <section className="mb-8">
             <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Angaben gemäß § 5 TMG</h2>
-            <p className="font-semibold">Maschinen Store GmbH</p>
-            <p>Industriestraße 123</p>
-            <p>70469 Stuttgart</p>
+            <p className="font-semibold">G.P.C. Maschinen-Vertriebs-GmbH</p>
+            <p>Hauptstr. 180</p>
+            <p>D-51503 Rösrath</p>
             <p>Deutschland</p>
           </section>
 
@@ -1520,24 +1520,18 @@ const ImpressumPage = () => {
               <tbody>
                 <tr>
                   <td>Telefon:</td>
-                  <td>+49 (0) 711 123 456 78</td>
+                  <td>+49 (0) 2205 123 456</td>
                 </tr>
                 <tr>
                   <td>Fax:</td>
-                  <td>+49 (0) 711 123 456 79</td>
+                  <td>+49 (0) 2205 123 457</td>
                 </tr>
                 <tr>
                   <td>E-Mail:</td>
-                  <td>info@maschinenstore.de</td>
+                  <td>info@gpc-maschinen.de</td>
                 </tr>
               </tbody>
             </table>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Vertretungsberechtigte Geschäftsführer</h2>
-            <p>Thomas Müller</p>
-            <p>Sandra Weber</p>
           </section>
 
           <section className="mb-8">
@@ -1546,11 +1540,19 @@ const ImpressumPage = () => {
               <tbody>
                 <tr>
                   <td>Registergericht:</td>
-                  <td>Amtsgericht Stuttgart</td>
+                  <td>Amtsgericht Köln</td>
                 </tr>
                 <tr>
                   <td>Registernummer:</td>
-                  <td>HRB 784521</td>
+                  <td>HRB 46673</td>
+                </tr>
+                <tr>
+                  <td>LEI:</td>
+                  <td>5299001SB2BT5RZXLR15</td>
+                </tr>
+                <tr>
+                  <td>EUID:</td>
+                  <td>DER3306.HRB46673</td>
                 </tr>
               </tbody>
             </table>
@@ -1559,14 +1561,14 @@ const ImpressumPage = () => {
           <section className="mb-8">
             <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Umsatzsteuer-ID</h2>
             <p>Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:</p>
-            <p className="font-semibold mt-2">DE 314 159 265</p>
+            <p className="font-semibold mt-2">DE154879120</p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
-            <p>Thomas Müller</p>
-            <p>Industriestraße 123</p>
-            <p>70469 Stuttgart</p>
+            <p>G.P.C. Maschinen-Vertriebs-GmbH</p>
+            <p>Hauptstr. 180</p>
+            <p>D-51503 Rösrath</p>
           </section>
 
           <section className="mb-8">
@@ -1740,7 +1742,7 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <p className="label-brutal">Telefon</p>
-                    <p className="font-semibold">+49 (0) 123 456 789</p>
+                    <p className="font-semibold">+49 (0) 2205 123 456</p>
                     <p className="text-sm text-[#71717A]">Mo-Fr 8:00 - 17:00 Uhr</p>
                   </div>
                 </div>
@@ -1751,7 +1753,7 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <p className="label-brutal">E-Mail</p>
-                    <p className="font-semibold">info@maschinenstore.de</p>
+                    <p className="font-semibold">info@gpc-maschinen.de</p>
                   </div>
                 </div>
 
@@ -1761,9 +1763,9 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <p className="label-brutal">Adresse</p>
-                    <p className="font-semibold">Maschinen Store GmbH</p>
-                    <p className="text-[#71717A]">Industriestraße 123</p>
-                    <p className="text-[#71717A]">12345 Musterstadt</p>
+                    <p className="font-semibold">G.P.C. Maschinen-Vertriebs-GmbH</p>
+                    <p className="text-[#71717A]">Hauptstr. 180</p>
+                    <p className="text-[#71717A]">D-51503 Rösrath</p>
                     <p className="text-[#71717A]">Deutschland</p>
                   </div>
                 </div>
@@ -1785,10 +1787,10 @@ const Footer = () => {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Package className="w-8 h-8 text-[#FF3B30]" />
-              <span className="font-bold text-xl text-white">MASCHINEN<span className="text-[#FF3B30]">STORE</span></span>
+              <span className="font-bold text-xl text-white">G.P.C. <span className="text-[#FF3B30]">MASCHINEN</span></span>
             </div>
             <p className="text-[#E4E4E7] text-sm">
-              Ihr Partner für hochwertige Industriemaschinen. Qualität und Service seit über 25 Jahren.
+              G.P.C. Maschinen-Vertriebs-GmbH - Ihr Partner für hochwertige Industriemaschinen.
             </p>
           </div>
 
@@ -1823,7 +1825,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-[#3f3f46] mt-8 pt-8 text-center text-sm text-[#71717A]">
-          <p>© 2025 Maschinen Store GmbH. Alle Rechte vorbehalten.</p>
+          <p>© 2025 G.P.C. Maschinen-Vertriebs-GmbH. Alle Rechte vorbehalten.</p>
         </div>
       </div>
     </footer>
