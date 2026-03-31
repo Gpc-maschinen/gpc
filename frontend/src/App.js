@@ -263,7 +263,7 @@ const CartSidebar = ({ onClose }) => {
 
   if (cart.items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 text-center">
+      <div className="flex flex-col items-center justify-center h-full px-4 text-center">
         <ShoppingCart className="w-16 h-16 text-gray-300 mb-4" />
         <p className="text-[#71717A]">Ihr Warenkorb ist leer</p>
         <button 
@@ -278,13 +278,13 @@ const CartSidebar = ({ onClose }) => {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full px-4">
       <div className="flex-1 overflow-auto py-4">
         {cart.items.map((item) => (
-          <div key={item.product_id} className="cart-item" data-testid={`cart-item-${item.product_id}`}>
-            <img src={item.image_url} alt={item.name} className="w-20 h-20 object-cover" />
-            <div className="flex-1">
-              <h4 className="font-semibold text-sm">{item.name}</h4>
+          <div key={item.product_id} className="flex items-center gap-4 py-4 border-b border-[#E4E4E7]" data-testid={`cart-item-${item.product_id}`}>
+            <img src={item.image_url} alt={item.name} className="w-20 h-20 object-cover flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <h4 className="font-semibold text-sm truncate">{item.name}</h4>
               <p className="text-[#FF3B30] font-bold">{item.price.toLocaleString('de-DE')} €</p>
               <div className="flex items-center gap-2 mt-2">
                 <button
@@ -305,7 +305,7 @@ const CartSidebar = ({ onClose }) => {
               </div>
             </div>
             <button
-              className="p-2 text-[#71717A] hover:text-[#FF3B30]"
+              className="p-2 text-[#71717A] hover:text-[#FF3B30] flex-shrink-0"
               onClick={() => removeFromCart(item.product_id)}
               data-testid={`remove-${item.product_id}`}
             >
@@ -314,7 +314,7 @@ const CartSidebar = ({ onClose }) => {
           </div>
         ))}
       </div>
-      <div className="border-t border-[#E4E4E7] pt-4">
+      <div className="border-t border-[#E4E4E7] py-4">
         <div className="flex justify-between items-center mb-4">
           <span className="font-semibold">Gesamt:</span>
           <span className="text-2xl font-bold">{cart.total.toLocaleString('de-DE')} €</span>
