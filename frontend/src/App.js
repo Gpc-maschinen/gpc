@@ -1247,6 +1247,160 @@ const QuoteRequestPage = () => {
   );
 };
 
+// Datenschutz Page
+const DatenschutzPage = () => {
+  return (
+    <div className="py-8 bg-[#F4F4F5] min-h-screen" data-testid="datenschutz-page">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <p className="label-brutal mb-2">Rechtliches</p>
+          <h1 className="text-4xl md:text-5xl font-bold">Datenschutzerklärung</h1>
+        </div>
+
+        <div className="bg-white border border-[#E4E4E7] p-8">
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">1. Datenschutz auf einen Blick</h2>
+            <h3 className="font-semibold mt-4 mb-2">Allgemeine Hinweise</h3>
+            <p className="text-[#71717A]">
+              Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen 
+              Daten passiert, wenn Sie diese Website besuchen. Personenbezogene Daten sind alle Daten, mit 
+              denen Sie persönlich identifiziert werden können.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">2. Verantwortliche Stelle</h2>
+            <p>Maschinen Store GmbH</p>
+            <p>Industriestraße 123</p>
+            <p>70469 Stuttgart</p>
+            <p className="mt-2">Telefon: +49 (0) 711 123 456 78</p>
+            <p>E-Mail: datenschutz@maschinenstore.de</p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">3. Datenerfassung auf dieser Website</h2>
+            <h3 className="font-semibold mt-4 mb-2">Kontaktformular und Bestellungen</h3>
+            <p className="text-[#71717A]">
+              Wenn Sie uns per Kontaktformular oder Bestellung Anfragen zukommen lassen, werden Ihre 
+              Angaben aus dem Formular inklusive der von Ihnen dort angegebenen Kontaktdaten zwecks 
+              Bearbeitung der Anfrage und für den Fall von Anschlussfragen bei uns gespeichert.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">4. Ihre Rechte</h2>
+            <p className="text-[#71717A]">
+              Sie haben jederzeit das Recht auf unentgeltliche Auskunft über Ihre gespeicherten 
+              personenbezogenen Daten, deren Herkunft und Empfänger und den Zweck der Datenverarbeitung 
+              sowie ein Recht auf Berichtigung oder Löschung dieser Daten.
+            </p>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Impressum Page
+const ImpressumPage = () => {
+  return (
+    <div className="py-8 bg-[#F4F4F5] min-h-screen" data-testid="impressum-page">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <p className="label-brutal mb-2">Rechtliches</p>
+          <h1 className="text-4xl md:text-5xl font-bold">Impressum</h1>
+        </div>
+
+        <div className="bg-white border border-[#E4E4E7] p-8">
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Angaben gemäß § 5 TMG</h2>
+            <p className="font-semibold">Maschinen Store GmbH</p>
+            <p>Industriestraße 123</p>
+            <p>70469 Stuttgart</p>
+            <p>Deutschland</p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Kontakt</h2>
+            <table className="specs-table">
+              <tbody>
+                <tr>
+                  <td>Telefon:</td>
+                  <td>+49 (0) 711 123 456 78</td>
+                </tr>
+                <tr>
+                  <td>Fax:</td>
+                  <td>+49 (0) 711 123 456 79</td>
+                </tr>
+                <tr>
+                  <td>E-Mail:</td>
+                  <td>info@maschinenstore.de</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Vertretungsberechtigte Geschäftsführer</h2>
+            <p>Thomas Müller</p>
+            <p>Sandra Weber</p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Registereintrag</h2>
+            <table className="specs-table">
+              <tbody>
+                <tr>
+                  <td>Registergericht:</td>
+                  <td>Amtsgericht Stuttgart</td>
+                </tr>
+                <tr>
+                  <td>Registernummer:</td>
+                  <td>HRB 784521</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Umsatzsteuer-ID</h2>
+            <p>Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:</p>
+            <p className="font-semibold mt-2">DE 314 159 265</p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
+            <p>Thomas Müller</p>
+            <p>Industriestraße 123</p>
+            <p>70469 Stuttgart</p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">EU-Streitschlichtung</h2>
+            <p className="text-[#71717A]">
+              Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: 
+              <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer" className="text-[#FF3B30] hover:underline ml-1">
+                https://ec.europa.eu/consumers/odr/
+              </a>
+            </p>
+            <p className="text-[#71717A] mt-2">
+              Unsere E-Mail-Adresse finden Sie oben im Impressum.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Verbraucherstreitbeilegung / Universalschlichtungsstelle</h2>
+            <p className="text-[#71717A]">
+              Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer 
+              Verbraucherschlichtungsstelle teilzunehmen.
+            </p>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Contact Page
 const ContactPage = () => {
   const [submitting, setSubmitting] = useState(false);
@@ -1466,8 +1620,8 @@ const Footer = () => {
           <div>
             <h3 className="font-bold text-white mb-4">Rechtliches</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#">Impressum</a></li>
-              <li><a href="#">Datenschutz</a></li>
+              <li><Link to="/impressum">Impressum</Link></li>
+              <li><Link to="/datenschutz">Datenschutz</Link></li>
               <li><a href="#">AGB</a></li>
               <li><a href="#">Widerrufsrecht</a></li>
             </ul>
@@ -1499,6 +1653,8 @@ function App() {
               <Route path="/bestellung/:orderNumber" element={<OrderConfirmationPage />} />
               <Route path="/angebot/:productId" element={<QuoteRequestPage />} />
               <Route path="/kontakt" element={<ContactPage />} />
+              <Route path="/impressum" element={<ImpressumPage />} />
+              <Route path="/datenschutz" element={<DatenschutzPage />} />
             </Routes>
           </main>
           <Footer />
