@@ -5,91 +5,91 @@
   "success_rate": 100.0,
   "test_details": [
     {
-      "test": "Root endpoint with German message",
+      "test": "Admin login successful",
+      "success": true,
+      "details": "Admin: admin@gpc-maschinen.de",
+      "response_data": null
+    },
+    {
+      "test": "Protected route security",
+      "success": true,
+      "details": "Correctly returns 401 without auth",
+      "response_data": null
+    },
+    {
+      "test": "Admin user info",
+      "success": true,
+      "details": "Authenticated as: admin@gpc-maschinen.de",
+      "response_data": null
+    },
+    {
+      "test": "Admin dashboard stats",
+      "success": true,
+      "details": "Products: 13, Categories: 6, Orders: 2, Quotes: 2",
+      "response_data": null
+    },
+    {
+      "test": "Admin products list",
+      "success": true,
+      "details": "Found 13 products",
+      "response_data": null
+    },
+    {
+      "test": "Admin categories list",
+      "success": true,
+      "details": "Found 6 categories",
+      "response_data": null
+    },
+    {
+      "test": "Admin orders list",
+      "success": true,
+      "details": "Found 2 orders",
+      "response_data": null
+    },
+    {
+      "test": "Admin quotes list",
+      "success": true,
+      "details": "Found 2 quotes",
+      "response_data": null
+    },
+    {
+      "test": "Admin create category",
+      "success": true,
+      "details": "Created category: Test Kategorie",
+      "response_data": null
+    },
+    {
+      "test": "Admin update category",
       "success": true,
       "details": "",
       "response_data": null
     },
     {
-      "test": "Products endpoint with German content",
-      "success": true,
-      "details": "Found 12 products",
-      "response_data": null
-    },
-    {
-      "test": "Product categories with German names",
-      "success": true,
-      "details": "Categories: ['Baumaschinen', 'CNC-Maschinen', 'Robotik', 'Blechbearbeitung', 'Lasertechnik']",
-      "response_data": null
-    },
-    {
-      "test": "Product category filter",
-      "success": true,
-      "details": "Found 2 Baumaschinen",
-      "response_data": null
-    },
-    {
-      "test": "Product price filter",
-      "success": true,
-      "details": "Found 4 products in price range",
-      "response_data": null
-    },
-    {
-      "test": "Product detail with specifications",
-      "success": true,
-      "details": "Product: Schwerlast-Bagger X-200",
-      "response_data": null
-    },
-    {
-      "test": "Get empty cart",
+      "test": "Admin delete category",
       "success": true,
       "details": "",
       "response_data": null
     },
     {
-      "test": "Add to cart",
+      "test": "Admin create product with multiple images",
+      "success": true,
+      "details": "Created product: Test Maschine XY-2026",
+      "response_data": null
+    },
+    {
+      "test": "Admin update product",
       "success": true,
       "details": "",
       "response_data": null
     },
     {
-      "test": "Get cart with items",
-      "success": true,
-      "details": "Total: 370000.0",
-      "response_data": null
-    },
-    {
-      "test": "Update cart item",
+      "test": "Admin delete product",
       "success": true,
       "details": "",
       "response_data": null
     },
     {
-      "test": "Remove from cart",
-      "success": true,
-      "details": "",
-      "response_data": null
-    },
-    {
-      "test": "Order creation with German content",
-      "success": true,
-      "details": "Order: ORD-20260331-E650B2E2",
-      "response_data": null
-    },
-    {
-      "test": "Order retrieval with complete data",
-      "success": true,
-      "details": "",
-      "response_data": null
-    },
-    {
-      "test": "Quote request with German format",
-      "success": true,
-      "details": "Quote: ANF-20260331-883A844A",
-      "response_data": null
-    },
-    {
-      "test": "Contact form submission",
+      "test": "Admin logout",
       "success": true,
       "details": "",
       "response_data": null

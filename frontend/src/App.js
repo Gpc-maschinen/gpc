@@ -1,18 +1,62 @@
 import { useState, useEffect, createContext, useContext } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route, Link, useParams, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, useParams, useNavigate, Navigate } from "react-router-dom";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
-import { ShoppingCart, Menu, X, Phone, Mail, MapPin, ChevronRight, Plus, Minus, Trash2, Send, Package, ArrowLeft } from "lucide-react";
+import { ShoppingCart, Menu, X, Phone, Mail, MapPin, ChevronRight, Plus, Minus, Trash2, Send, Package, ArrowLeft, LogOut, Settings, BarChart3, FolderOpen, Box, FileText, MessageSquare, Edit, Eye, Save, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+
+// Auth Context
+const AuthContext = createContext();
+
+const useAuth = () => useContext(AuthContext);
+
+const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const checkAuth = async () => {
+    try {
+      const res = await axios.get(`${API}/auth/me`, { withCredentials: true });
+      setUser(res.data);
+    } catch (e) {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const login = async (email, password) => {
+    const res = await axios.post(`${API}/auth/login`, { email, password }, { withCredentials: true });
+    setUser(res.data);
+    return res.data;
+  };
+
+  const logout = async () => {
+    await axios.post(`${API}/auth/logout`, {}, { withCredentials: true });
+    setUser(null);
+  };
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ user, loading, login, logout, checkAuth }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
 // Cart Context
 const CartContext = createContext();
@@ -87,6 +131,25 @@ const CartProvider = ({ children }) => {
   );
 };
 
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="spinner" />
+      </div>
+    );
+  }
+  
+  if (!user) {
+    return <Navigate to="/admin/login" replace />;
+  }
+  
+  return children;
+};
+
 // Navbar Component
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -152,7 +215,6 @@ const Navbar = () => {
 // Cart Sidebar
 const CartSidebar = () => {
   const { cart, updateCartItem, removeFromCart } = useCart();
-  const navigate = useNavigate();
 
   if (cart.items.length === 0) {
     return (
@@ -499,6 +561,7 @@ const ProductDetailPage = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(0);
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
@@ -533,6 +596,8 @@ const ProductDetailPage = () => {
     );
   }
 
+  const allImages = [product.image_url, ...(product.images || [])].filter(Boolean);
+
   return (
     <div className="py-8 bg-[#F4F4F5] min-h-screen" data-testid="product-detail-page">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -550,10 +615,23 @@ const ProductDetailPage = () => {
             {/* Product Image */}
             <div className="border-b lg:border-b-0 lg:border-r border-[#E4E4E7]">
               <img
-                src={product.image_url}
+                src={allImages[selectedImage] || product.image_url}
                 alt={product.name}
-                className="w-full h-96 lg:h-full object-cover"
+                className="w-full h-96 lg:h-[500px] object-cover"
               />
+              {allImages.length > 1 && (
+                <div className="flex gap-2 p-4 overflow-x-auto">
+                  {allImages.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedImage(idx)}
+                      className={`w-20 h-20 flex-shrink-0 border-2 ${selectedImage === idx ? 'border-[#FF3B30]' : 'border-[#E4E4E7]'}`}
+                    >
+                      <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Product Info */}
@@ -609,7 +687,7 @@ const ProductDetailPage = () => {
               </div>
 
               {/* Specifications */}
-              {Object.keys(product.specifications).length > 0 && (
+              {Object.keys(product.specifications || {}).length > 0 && (
                 <div>
                   <h3 className="font-bold text-lg mb-4 border-b border-[#E4E4E7] pb-2">Technische Daten</h3>
                   <table className="specs-table">
@@ -714,47 +792,19 @@ const CheckoutPage = () => {
               <div className="form-grid mb-8">
                 <div>
                   <Label className="label-brutal">Name *</Label>
-                  <Input
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="input-brutal"
-                    data-testid="checkout-name"
-                  />
+                  <Input name="name" value={formData.name} onChange={handleChange} required className="input-brutal" data-testid="checkout-name" />
                 </div>
                 <div>
                   <Label className="label-brutal">E-Mail *</Label>
-                  <Input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="input-brutal"
-                    data-testid="checkout-email"
-                  />
+                  <Input type="email" name="email" value={formData.email} onChange={handleChange} required className="input-brutal" data-testid="checkout-email" />
                 </div>
                 <div>
                   <Label className="label-brutal">Telefon *</Label>
-                  <Input
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
-                    className="input-brutal"
-                    data-testid="checkout-phone"
-                  />
+                  <Input name="phone" value={formData.phone} onChange={handleChange} required className="input-brutal" data-testid="checkout-phone" />
                 </div>
                 <div>
                   <Label className="label-brutal">Firma (optional)</Label>
-                  <Input
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
-                    className="input-brutal"
-                    data-testid="checkout-company"
-                  />
+                  <Input name="company" value={formData.company} onChange={handleChange} className="input-brutal" data-testid="checkout-company" />
                 </div>
               </div>
 
@@ -763,46 +813,19 @@ const CheckoutPage = () => {
               <div className="form-grid mb-8">
                 <div className="full-width">
                   <Label className="label-brutal">Straße & Hausnummer *</Label>
-                  <Input
-                    name="street"
-                    value={formData.street}
-                    onChange={handleChange}
-                    required
-                    className="input-brutal"
-                    data-testid="checkout-street"
-                  />
+                  <Input name="street" value={formData.street} onChange={handleChange} required className="input-brutal" data-testid="checkout-street" />
                 </div>
                 <div>
                   <Label className="label-brutal">PLZ *</Label>
-                  <Input
-                    name="postal_code"
-                    value={formData.postal_code}
-                    onChange={handleChange}
-                    required
-                    className="input-brutal"
-                    data-testid="checkout-postal"
-                  />
+                  <Input name="postal_code" value={formData.postal_code} onChange={handleChange} required className="input-brutal" data-testid="checkout-postal" />
                 </div>
                 <div>
                   <Label className="label-brutal">Stadt *</Label>
-                  <Input
-                    name="city"
-                    value={formData.city}
-                    onChange={handleChange}
-                    required
-                    className="input-brutal"
-                    data-testid="checkout-city"
-                  />
+                  <Input name="city" value={formData.city} onChange={handleChange} required className="input-brutal" data-testid="checkout-city" />
                 </div>
                 <div className="full-width">
                   <Label className="label-brutal">Land</Label>
-                  <Input
-                    name="country"
-                    value={formData.country}
-                    onChange={handleChange}
-                    className="input-brutal"
-                    data-testid="checkout-country"
-                  />
+                  <Input name="country" value={formData.country} onChange={handleChange} className="input-brutal" data-testid="checkout-country" />
                 </div>
               </div>
 
@@ -817,23 +840,10 @@ const CheckoutPage = () => {
 
               <div className="mb-8">
                 <Label className="label-brutal">Anmerkungen (optional)</Label>
-                <Textarea
-                  name="notes"
-                  value={formData.notes}
-                  onChange={handleChange}
-                  rows={3}
-                  className="input-brutal"
-                  placeholder="Besondere Wünsche oder Anmerkungen zur Lieferung..."
-                  data-testid="checkout-notes"
-                />
+                <Textarea name="notes" value={formData.notes} onChange={handleChange} rows={3} className="input-brutal" placeholder="Besondere Wünsche oder Anmerkungen zur Lieferung..." data-testid="checkout-notes" />
               </div>
 
-              <Button
-                type="submit"
-                className="btn-primary w-full"
-                disabled={loading}
-                data-testid="submit-order-button"
-              >
+              <Button type="submit" className="btn-primary w-full" disabled={loading} data-testid="submit-order-button">
                 {loading ? "Wird verarbeitet..." : "Bestellung aufgeben"}
               </Button>
             </form>
@@ -1093,10 +1103,7 @@ const QuoteRequestPage = () => {
   return (
     <div className="py-8 bg-[#F4F4F5] min-h-screen" data-testid="quote-request-page">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-[#71717A] hover:text-[#09090B] mb-6"
-        >
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-[#71717A] hover:text-[#09090B] mb-6">
           <ArrowLeft className="w-4 h-4" />
           Zurück
         </button>
@@ -1107,21 +1114,11 @@ const QuoteRequestPage = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Form */}
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="bg-white border border-[#E4E4E7] p-6">
               <div className="mb-6">
                 <Label className="label-brutal">Gewünschte Menge *</Label>
-                <Input
-                  type="number"
-                  name="quantity"
-                  value={formData.quantity}
-                  onChange={handleChange}
-                  min="1"
-                  required
-                  className="input-brutal max-w-32"
-                  data-testid="quote-quantity"
-                />
+                <Input type="number" name="quantity" value={formData.quantity} onChange={handleChange} min="1" required className="input-brutal max-w-32" data-testid="quote-quantity" />
               </div>
 
               <h2 className="text-xl font-bold mb-6 border-b border-[#E4E4E7] pb-4">Ihre Kontaktdaten</h2>
@@ -1129,108 +1126,45 @@ const QuoteRequestPage = () => {
               <div className="form-grid mb-8">
                 <div>
                   <Label className="label-brutal">Name *</Label>
-                  <Input
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="input-brutal"
-                    data-testid="quote-name"
-                  />
+                  <Input name="name" value={formData.name} onChange={handleChange} required className="input-brutal" data-testid="quote-name" />
                 </div>
                 <div>
                   <Label className="label-brutal">E-Mail *</Label>
-                  <Input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="input-brutal"
-                    data-testid="quote-email"
-                  />
+                  <Input type="email" name="email" value={formData.email} onChange={handleChange} required className="input-brutal" data-testid="quote-email" />
                 </div>
                 <div>
                   <Label className="label-brutal">Telefon *</Label>
-                  <Input
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
-                    className="input-brutal"
-                    data-testid="quote-phone"
-                  />
+                  <Input name="phone" value={formData.phone} onChange={handleChange} required className="input-brutal" data-testid="quote-phone" />
                 </div>
                 <div>
                   <Label className="label-brutal">Firma (optional)</Label>
-                  <Input
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
-                    className="input-brutal"
-                    data-testid="quote-company"
-                  />
+                  <Input name="company" value={formData.company} onChange={handleChange} className="input-brutal" data-testid="quote-company" />
                 </div>
                 <div className="full-width">
                   <Label className="label-brutal">Straße & Hausnummer *</Label>
-                  <Input
-                    name="street"
-                    value={formData.street}
-                    onChange={handleChange}
-                    required
-                    className="input-brutal"
-                    data-testid="quote-street"
-                  />
+                  <Input name="street" value={formData.street} onChange={handleChange} required className="input-brutal" data-testid="quote-street" />
                 </div>
                 <div>
                   <Label className="label-brutal">PLZ *</Label>
-                  <Input
-                    name="postal_code"
-                    value={formData.postal_code}
-                    onChange={handleChange}
-                    required
-                    className="input-brutal"
-                    data-testid="quote-postal"
-                  />
+                  <Input name="postal_code" value={formData.postal_code} onChange={handleChange} required className="input-brutal" data-testid="quote-postal" />
                 </div>
                 <div>
                   <Label className="label-brutal">Stadt *</Label>
-                  <Input
-                    name="city"
-                    value={formData.city}
-                    onChange={handleChange}
-                    required
-                    className="input-brutal"
-                    data-testid="quote-city"
-                  />
+                  <Input name="city" value={formData.city} onChange={handleChange} required className="input-brutal" data-testid="quote-city" />
                 </div>
               </div>
 
               <div className="mb-8">
                 <Label className="label-brutal">Ihre Nachricht (optional)</Label>
-                <Textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows={4}
-                  className="input-brutal"
-                  placeholder="Besondere Anforderungen, Fragen oder Anmerkungen..."
-                  data-testid="quote-message"
-                />
+                <Textarea name="message" value={formData.message} onChange={handleChange} rows={4} className="input-brutal" placeholder="Besondere Anforderungen, Fragen oder Anmerkungen..." data-testid="quote-message" />
               </div>
 
-              <Button
-                type="submit"
-                className="btn-primary w-full"
-                disabled={submitting}
-                data-testid="submit-quote-button"
-              >
+              <Button type="submit" className="btn-primary w-full" disabled={submitting} data-testid="submit-quote-button">
                 {submitting ? "Wird gesendet..." : "Angebot anfragen"}
               </Button>
             </form>
           </div>
 
-          {/* Product Summary */}
           <div>
             <div className="bg-white border border-[#E4E4E7] p-6 sticky top-24">
               <h2 className="text-lg font-bold mb-4 border-b border-[#E4E4E7] pb-4">Produkt</h2>
@@ -1243,6 +1177,951 @@ const QuoteRequestPage = () => {
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+// Contact Page
+const ContactPage = () => {
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: ""
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      await axios.post(`${API}/contact`, formData);
+      setSubmitted(true);
+      toast.success("Nachricht erfolgreich gesendet!");
+    } catch (e) {
+      toast.error("Fehler beim Senden. Bitte versuchen Sie es erneut.");
+      console.error("Contact error:", e);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (submitted) {
+    return (
+      <div className="py-16 bg-[#F4F4F5] min-h-screen" data-testid="contact-success">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white border border-[#E4E4E7] p-8 text-center">
+            <div className="w-16 h-16 mx-auto mb-6 bg-[#DCFCE7] flex items-center justify-center">
+              <Mail className="w-8 h-8 text-[#16A34A]" />
+            </div>
+            <h1 className="text-3xl font-bold mb-4">Nachricht gesendet!</h1>
+            <p className="text-[#71717A] mb-8">
+              Vielen Dank für Ihre Nachricht. Wir werden uns schnellstmöglich bei Ihnen melden.
+            </p>
+            <Link to="/" className="btn-primary">Zur Startseite</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="py-8 bg-[#F4F4F5] min-h-screen" data-testid="contact-page">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <p className="label-brutal mb-2">Kontakt</p>
+          <h1 className="text-4xl md:text-5xl font-bold">Wir sind für Sie da</h1>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <form onSubmit={handleSubmit} className="bg-white border border-[#E4E4E7] p-6">
+              <div className="form-grid mb-6">
+                <div>
+                  <Label className="label-brutal">Name *</Label>
+                  <Input name="name" value={formData.name} onChange={handleChange} required className="input-brutal" data-testid="contact-name" />
+                </div>
+                <div>
+                  <Label className="label-brutal">E-Mail *</Label>
+                  <Input type="email" name="email" value={formData.email} onChange={handleChange} required className="input-brutal" data-testid="contact-email" />
+                </div>
+                <div>
+                  <Label className="label-brutal">Telefon (optional)</Label>
+                  <Input name="phone" value={formData.phone} onChange={handleChange} className="input-brutal" data-testid="contact-phone" />
+                </div>
+                <div>
+                  <Label className="label-brutal">Betreff *</Label>
+                  <Input name="subject" value={formData.subject} onChange={handleChange} required className="input-brutal" data-testid="contact-subject" />
+                </div>
+                <div className="full-width">
+                  <Label className="label-brutal">Ihre Nachricht *</Label>
+                  <Textarea name="message" value={formData.message} onChange={handleChange} required rows={6} className="input-brutal" data-testid="contact-message" />
+                </div>
+              </div>
+
+              <Button type="submit" className="btn-primary" disabled={submitting} data-testid="submit-contact-button">
+                {submitting ? "Wird gesendet..." : "Nachricht senden"}
+              </Button>
+            </form>
+          </div>
+
+          <div>
+            <div className="bg-white border border-[#E4E4E7] p-6">
+              <h2 className="text-lg font-bold mb-6 border-b border-[#E4E4E7] pb-4">Kontaktdaten</h2>
+              
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 bg-[#F4F4F5] flex items-center justify-center flex-shrink-0">
+                    <Phone className="w-5 h-5 text-[#FF3B30]" />
+                  </div>
+                  <div>
+                    <p className="label-brutal">Telefon</p>
+                    <p className="font-semibold">+49 (0) 2205 123 456</p>
+                    <p className="text-sm text-[#71717A]">Mo-Fr 8:00 - 17:00 Uhr</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 bg-[#F4F4F5] flex items-center justify-center flex-shrink-0">
+                    <Mail className="w-5 h-5 text-[#FF3B30]" />
+                  </div>
+                  <div>
+                    <p className="label-brutal">E-Mail</p>
+                    <p className="font-semibold">info@gpc-maschinen.de</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 bg-[#F4F4F5] flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-5 h-5 text-[#FF3B30]" />
+                  </div>
+                  <div>
+                    <p className="label-brutal">Adresse</p>
+                    <p className="font-semibold">G.P.C. Maschinen-Vertriebs-GmbH</p>
+                    <p className="text-[#71717A]">Hauptstr. 180</p>
+                    <p className="text-[#71717A]">D-51503 Rösrath</p>
+                    <p className="text-[#71717A]">Deutschland</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Admin Login Page
+const AdminLoginPage = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { login, user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/admin");
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      await login(email, password);
+      navigate("/admin");
+    } catch (e) {
+      const detail = e.response?.data?.detail;
+      if (typeof detail === "string") {
+        setError(detail);
+      } else if (Array.isArray(detail)) {
+        setError(detail.map(d => d.msg || JSON.stringify(d)).join(" "));
+      } else {
+        setError("Anmeldung fehlgeschlagen");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F4F4F5] flex items-center justify-center p-4" data-testid="admin-login-page">
+      <div className="w-full max-w-md">
+        <div className="bg-white border border-[#E4E4E7] p-8">
+          <div className="flex items-center gap-2 justify-center mb-8">
+            <Settings className="w-8 h-8 text-[#FF3B30]" />
+            <span className="font-bold text-2xl">Admin Panel</span>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-600 p-3 mb-6 text-sm">
+                {error}
+              </div>
+            )}
+
+            <div className="mb-4">
+              <Label className="label-brutal">E-Mail</Label>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="input-brutal"
+                data-testid="admin-email"
+              />
+            </div>
+
+            <div className="mb-6">
+              <Label className="label-brutal">Passwort</Label>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="input-brutal"
+                data-testid="admin-password"
+              />
+            </div>
+
+            <Button type="submit" className="btn-primary w-full" disabled={loading} data-testid="admin-login-button">
+              {loading ? "Wird angemeldet..." : "Anmelden"}
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <Link to="/" className="text-[#71717A] hover:text-[#09090B] text-sm">
+              ← Zurück zum Shop
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Admin Dashboard
+const AdminDashboard = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await axios.get(`${API}/admin/stats`, { withCredentials: true });
+        setStats(res.data);
+      } catch (e) {
+        console.error("Error fetching stats:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/admin/login");
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F4F4F5]" data-testid="admin-dashboard">
+      {/* Admin Header */}
+      <header className="bg-white border-b border-[#E4E4E7] sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-2">
+              <Settings className="w-6 h-6 text-[#FF3B30]" />
+              <span className="font-bold text-xl">Admin Panel</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-[#71717A]">{user?.email}</span>
+              <button onClick={handleLogout} className="flex items-center gap-2 text-[#71717A] hover:text-[#FF3B30]">
+                <LogOut className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats */}
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="spinner" />
+          </div>
+        ) : stats && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-white border border-[#E4E4E7] p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <Box className="w-5 h-5 text-[#FF3B30]" />
+                <span className="text-sm text-[#71717A]">Produkte</span>
+              </div>
+              <p className="text-3xl font-bold">{stats.products}</p>
+            </div>
+            <div className="bg-white border border-[#E4E4E7] p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <FolderOpen className="w-5 h-5 text-[#FF3B30]" />
+                <span className="text-sm text-[#71717A]">Kategorien</span>
+              </div>
+              <p className="text-3xl font-bold">{stats.categories}</p>
+            </div>
+            <div className="bg-white border border-[#E4E4E7] p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <FileText className="w-5 h-5 text-[#FF3B30]" />
+                <span className="text-sm text-[#71717A]">Bestellungen</span>
+              </div>
+              <p className="text-3xl font-bold">{stats.orders}</p>
+              {stats.pending_orders > 0 && (
+                <p className="text-sm text-[#D97706]">{stats.pending_orders} ausstehend</p>
+              )}
+            </div>
+            <div className="bg-white border border-[#E4E4E7] p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <MessageSquare className="w-5 h-5 text-[#FF3B30]" />
+                <span className="text-sm text-[#71717A]">Anfragen</span>
+              </div>
+              <p className="text-3xl font-bold">{stats.quotes}</p>
+              {stats.new_quotes > 0 && (
+                <p className="text-sm text-[#16A34A]">{stats.new_quotes} neu</p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Tabs */}
+        <Tabs defaultValue="products" className="w-full">
+          <TabsList className="mb-6 bg-white border border-[#E4E4E7] p-1 rounded-none">
+            <TabsTrigger value="products" className="rounded-none data-[state=active]:bg-[#FF3B30] data-[state=active]:text-white">Produkte</TabsTrigger>
+            <TabsTrigger value="categories" className="rounded-none data-[state=active]:bg-[#FF3B30] data-[state=active]:text-white">Kategorien</TabsTrigger>
+            <TabsTrigger value="orders" className="rounded-none data-[state=active]:bg-[#FF3B30] data-[state=active]:text-white">Bestellungen</TabsTrigger>
+            <TabsTrigger value="quotes" className="rounded-none data-[state=active]:bg-[#FF3B30] data-[state=active]:text-white">Anfragen</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="products">
+            <AdminProducts />
+          </TabsContent>
+
+          <TabsContent value="categories">
+            <AdminCategories />
+          </TabsContent>
+
+          <TabsContent value="orders">
+            <AdminOrders />
+          </TabsContent>
+
+          <TabsContent value="quotes">
+            <AdminQuotes />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
+
+// Admin Products
+const AdminProducts = () => {
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      const [productsRes, categoriesRes] = await Promise.all([
+        axios.get(`${API}/admin/products`, { withCredentials: true }),
+        axios.get(`${API}/admin/categories`, { withCredentials: true })
+      ]);
+      setProducts(productsRes.data);
+      setCategories(categoriesRes.data);
+    } catch (e) {
+      console.error("Error:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleDelete = async (productId) => {
+    if (!window.confirm("Produkt wirklich löschen?")) return;
+    try {
+      await axios.delete(`${API}/admin/products/${productId}`, { withCredentials: true });
+      toast.success("Produkt gelöscht");
+      fetchData();
+    } catch (e) {
+      toast.error("Fehler beim Löschen");
+    }
+  };
+
+  return (
+    <div className="bg-white border border-[#E4E4E7]">
+      <div className="p-4 border-b border-[#E4E4E7] flex justify-between items-center">
+        <h2 className="font-bold text-lg">Produkte verwalten</h2>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <button className="btn-primary text-sm flex items-center gap-2" onClick={() => setEditingProduct(null)}>
+              <Plus className="w-4 h-4" /> Neues Produkt
+            </button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editingProduct ? "Produkt bearbeiten" : "Neues Produkt"}</DialogTitle>
+            </DialogHeader>
+            <ProductForm
+              product={editingProduct}
+              categories={categories}
+              onSave={() => {
+                setIsDialogOpen(false);
+                fetchData();
+              }}
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <div className="spinner" />
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-[#F4F4F5]">
+              <tr>
+                <th className="text-left p-4 text-sm font-semibold">Bild</th>
+                <th className="text-left p-4 text-sm font-semibold">Name</th>
+                <th className="text-left p-4 text-sm font-semibold">Kategorie</th>
+                <th className="text-left p-4 text-sm font-semibold">Preis</th>
+                <th className="text-left p-4 text-sm font-semibold">Lager</th>
+                <th className="text-left p-4 text-sm font-semibold">Aktionen</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((product) => (
+                <tr key={product.id} className="border-b border-[#E4E4E7]">
+                  <td className="p-4">
+                    <img src={product.image_url} alt={product.name} className="w-16 h-16 object-cover" />
+                  </td>
+                  <td className="p-4 font-medium">{product.name}</td>
+                  <td className="p-4 text-[#71717A]">{product.category}</td>
+                  <td className="p-4 font-bold">{product.price.toLocaleString('de-DE')} €</td>
+                  <td className="p-4">{product.stock}</td>
+                  <td className="p-4">
+                    <div className="flex gap-2">
+                      <button
+                        className="p-2 hover:bg-[#F4F4F5]"
+                        onClick={() => {
+                          setEditingProduct(product);
+                          setIsDialogOpen(true);
+                        }}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        className="p-2 hover:bg-red-50 text-red-600"
+                        onClick={() => handleDelete(product.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Product Form
+const ProductForm = ({ product, categories, onSave }) => {
+  const [formData, setFormData] = useState({
+    name: product?.name || "",
+    description: product?.description || "",
+    price: product?.price || "",
+    category: product?.category || "",
+    image_url: product?.image_url || "",
+    images: product?.images || [],
+    stock: product?.stock || 10,
+    specifications: product?.specifications || {}
+  });
+  const [newImageUrl, setNewImageUrl] = useState("");
+  const [specKey, setSpecKey] = useState("");
+  const [specValue, setSpecValue] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const addImage = () => {
+    if (newImageUrl.trim()) {
+      setFormData({ ...formData, images: [...formData.images, newImageUrl.trim()] });
+      setNewImageUrl("");
+    }
+  };
+
+  const removeImage = (index) => {
+    const newImages = formData.images.filter((_, i) => i !== index);
+    setFormData({ ...formData, images: newImages });
+  };
+
+  const addSpec = () => {
+    if (specKey.trim() && specValue.trim()) {
+      setFormData({
+        ...formData,
+        specifications: { ...formData.specifications, [specKey.trim()]: specValue.trim() }
+      });
+      setSpecKey("");
+      setSpecValue("");
+    }
+  };
+
+  const removeSpec = (key) => {
+    const newSpecs = { ...formData.specifications };
+    delete newSpecs[key];
+    setFormData({ ...formData, specifications: newSpecs });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const data = {
+        ...formData,
+        price: parseFloat(formData.price),
+        stock: parseInt(formData.stock)
+      };
+
+      if (product) {
+        await axios.put(`${API}/admin/products/${product.id}`, data, { withCredentials: true });
+        toast.success("Produkt aktualisiert");
+      } else {
+        await axios.post(`${API}/admin/products`, data, { withCredentials: true });
+        toast.success("Produkt erstellt");
+      }
+      onSave();
+    } catch (e) {
+      toast.error("Fehler beim Speichern");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="col-span-2">
+          <Label className="label-brutal">Name *</Label>
+          <Input name="name" value={formData.name} onChange={handleChange} required className="input-brutal" />
+        </div>
+        <div className="col-span-2">
+          <Label className="label-brutal">Beschreibung *</Label>
+          <Textarea name="description" value={formData.description} onChange={handleChange} required rows={3} className="input-brutal" />
+        </div>
+        <div>
+          <Label className="label-brutal">Preis (€) *</Label>
+          <Input type="number" name="price" value={formData.price} onChange={handleChange} required step="0.01" className="input-brutal" />
+        </div>
+        <div>
+          <Label className="label-brutal">Lagerbestand</Label>
+          <Input type="number" name="stock" value={formData.stock} onChange={handleChange} className="input-brutal" />
+        </div>
+        <div className="col-span-2">
+          <Label className="label-brutal">Kategorie *</Label>
+          <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v })}>
+            <SelectTrigger className="rounded-none border-2">
+              <SelectValue placeholder="Kategorie wählen" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((cat) => (
+                <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Main Image */}
+      <div>
+        <Label className="label-brutal">Hauptbild URL *</Label>
+        <Input name="image_url" value={formData.image_url} onChange={handleChange} required className="input-brutal" placeholder="https://..." />
+        {formData.image_url && (
+          <img src={formData.image_url} alt="Preview" className="mt-2 w-32 h-32 object-cover border" />
+        )}
+      </div>
+
+      {/* Additional Images */}
+      <div>
+        <Label className="label-brutal">Weitere Bilder</Label>
+        <div className="flex gap-2 mb-2">
+          <Input
+            value={newImageUrl}
+            onChange={(e) => setNewImageUrl(e.target.value)}
+            className="input-brutal"
+            placeholder="Bild-URL eingeben"
+          />
+          <button type="button" onClick={addImage} className="btn-secondary px-4">
+            <Plus className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          {formData.images.map((img, idx) => (
+            <div key={idx} className="relative">
+              <img src={img} alt={`Bild ${idx + 1}`} className="w-20 h-20 object-cover border" />
+              <button
+                type="button"
+                onClick={() => removeImage(idx)}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Specifications */}
+      <div>
+        <Label className="label-brutal">Technische Daten</Label>
+        <div className="flex gap-2 mb-2">
+          <Input
+            value={specKey}
+            onChange={(e) => setSpecKey(e.target.value)}
+            className="input-brutal"
+            placeholder="Eigenschaft"
+          />
+          <Input
+            value={specValue}
+            onChange={(e) => setSpecValue(e.target.value)}
+            className="input-brutal"
+            placeholder="Wert"
+          />
+          <button type="button" onClick={addSpec} className="btn-secondary px-4">
+            <Plus className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="space-y-1">
+          {Object.entries(formData.specifications).map(([key, value]) => (
+            <div key={key} className="flex justify-between items-center bg-[#F4F4F5] p-2 text-sm">
+              <span><strong>{key}:</strong> {value}</span>
+              <button type="button" onClick={() => removeSpec(key)} className="text-red-500">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <Button type="submit" className="btn-primary w-full" disabled={loading}>
+        {loading ? "Wird gespeichert..." : (product ? "Aktualisieren" : "Erstellen")}
+      </Button>
+    </form>
+  );
+};
+
+// Admin Categories
+const AdminCategories = () => {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [formData, setFormData] = useState({ name: "", description: "", image_url: "" });
+
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get(`${API}/admin/categories`, { withCredentials: true });
+      setCategories(res.data);
+    } catch (e) {
+      console.error("Error:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingCategory) {
+        await axios.put(`${API}/admin/categories/${editingCategory.id}`, formData, { withCredentials: true });
+        toast.success("Kategorie aktualisiert");
+      } else {
+        await axios.post(`${API}/admin/categories`, formData, { withCredentials: true });
+        toast.success("Kategorie erstellt");
+      }
+      setIsDialogOpen(false);
+      setFormData({ name: "", description: "", image_url: "" });
+      setEditingCategory(null);
+      fetchCategories();
+    } catch (e) {
+      toast.error("Fehler beim Speichern");
+    }
+  };
+
+  const handleDelete = async (categoryId) => {
+    if (!window.confirm("Kategorie wirklich löschen?")) return;
+    try {
+      await axios.delete(`${API}/admin/categories/${categoryId}`, { withCredentials: true });
+      toast.success("Kategorie gelöscht");
+      fetchCategories();
+    } catch (e) {
+      toast.error("Fehler beim Löschen");
+    }
+  };
+
+  return (
+    <div className="bg-white border border-[#E4E4E7]">
+      <div className="p-4 border-b border-[#E4E4E7] flex justify-between items-center">
+        <h2 className="font-bold text-lg">Kategorien verwalten</h2>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <button
+              className="btn-primary text-sm flex items-center gap-2"
+              onClick={() => {
+                setEditingCategory(null);
+                setFormData({ name: "", description: "", image_url: "" });
+              }}
+            >
+              <Plus className="w-4 h-4" /> Neue Kategorie
+            </button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{editingCategory ? "Kategorie bearbeiten" : "Neue Kategorie"}</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label className="label-brutal">Name *</Label>
+                <Input
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                  className="input-brutal"
+                />
+              </div>
+              <div>
+                <Label className="label-brutal">Beschreibung</Label>
+                <Textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="input-brutal"
+                />
+              </div>
+              <div>
+                <Label className="label-brutal">Bild URL</Label>
+                <Input
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  className="input-brutal"
+                />
+              </div>
+              <Button type="submit" className="btn-primary w-full">
+                {editingCategory ? "Aktualisieren" : "Erstellen"}
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <div className="spinner" />
+        </div>
+      ) : (
+        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {categories.map((cat) => (
+            <div key={cat.id} className="border border-[#E4E4E7] p-4">
+              <h3 className="font-bold mb-1">{cat.name}</h3>
+              <p className="text-sm text-[#71717A] mb-4">{cat.description || "Keine Beschreibung"}</p>
+              <div className="flex gap-2">
+                <button
+                  className="btn-secondary text-sm py-1 px-3"
+                  onClick={() => {
+                    setEditingCategory(cat);
+                    setFormData({ name: cat.name, description: cat.description, image_url: cat.image_url });
+                    setIsDialogOpen(true);
+                  }}
+                >
+                  Bearbeiten
+                </button>
+                <button
+                  className="text-red-600 text-sm py-1 px-3 border border-red-200 hover:bg-red-50"
+                  onClick={() => handleDelete(cat.id)}
+                >
+                  Löschen
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Admin Orders
+const AdminOrders = () => {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const res = await axios.get(`${API}/admin/orders`, { withCredentials: true });
+        setOrders(res.data);
+      } catch (e) {
+        console.error("Error:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrders();
+  }, []);
+
+  return (
+    <div className="bg-white border border-[#E4E4E7]">
+      <div className="p-4 border-b border-[#E4E4E7]">
+        <h2 className="font-bold text-lg">Bestellungen</h2>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <div className="spinner" />
+        </div>
+      ) : orders.length === 0 ? (
+        <div className="p-8 text-center text-[#71717A]">Keine Bestellungen vorhanden</div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-[#F4F4F5]">
+              <tr>
+                <th className="text-left p-4 text-sm font-semibold">Bestellnr.</th>
+                <th className="text-left p-4 text-sm font-semibold">Kunde</th>
+                <th className="text-left p-4 text-sm font-semibold">Gesamt</th>
+                <th className="text-left p-4 text-sm font-semibold">Status</th>
+                <th className="text-left p-4 text-sm font-semibold">Datum</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order) => (
+                <tr key={order.id} className="border-b border-[#E4E4E7]">
+                  <td className="p-4 font-mono text-sm">{order.order_number}</td>
+                  <td className="p-4">
+                    <p className="font-medium">{order.customer.name}</p>
+                    <p className="text-sm text-[#71717A]">{order.customer.email}</p>
+                  </td>
+                  <td className="p-4 font-bold">{order.total.toLocaleString('de-DE')} €</td>
+                  <td className="p-4">
+                    <span className={`badge ${order.status === 'Ausstehend' ? 'badge-pending' : 'badge-success'}`}>
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className="p-4 text-sm text-[#71717A]">
+                    {new Date(order.created_at).toLocaleDateString('de-DE')}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Admin Quotes
+const AdminQuotes = () => {
+  const [quotes, setQuotes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchQuotes = async () => {
+      try {
+        const res = await axios.get(`${API}/admin/quotes`, { withCredentials: true });
+        setQuotes(res.data);
+      } catch (e) {
+        console.error("Error:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchQuotes();
+  }, []);
+
+  return (
+    <div className="bg-white border border-[#E4E4E7]">
+      <div className="p-4 border-b border-[#E4E4E7]">
+        <h2 className="font-bold text-lg">Angebotsanfragen</h2>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <div className="spinner" />
+        </div>
+      ) : quotes.length === 0 ? (
+        <div className="p-8 text-center text-[#71717A]">Keine Anfragen vorhanden</div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-[#F4F4F5]">
+              <tr>
+                <th className="text-left p-4 text-sm font-semibold">Anfragenr.</th>
+                <th className="text-left p-4 text-sm font-semibold">Produkt</th>
+                <th className="text-left p-4 text-sm font-semibold">Kunde</th>
+                <th className="text-left p-4 text-sm font-semibold">Menge</th>
+                <th className="text-left p-4 text-sm font-semibold">Status</th>
+                <th className="text-left p-4 text-sm font-semibold">Datum</th>
+              </tr>
+            </thead>
+            <tbody>
+              {quotes.map((quote) => (
+                <tr key={quote.id} className="border-b border-[#E4E4E7]">
+                  <td className="p-4 font-mono text-sm">{quote.quote_number}</td>
+                  <td className="p-4 font-medium">{quote.product_name}</td>
+                  <td className="p-4">
+                    <p className="font-medium">{quote.customer.name}</p>
+                    <p className="text-sm text-[#71717A]">{quote.customer.email}</p>
+                  </td>
+                  <td className="p-4">{quote.quantity}</td>
+                  <td className="p-4">
+                    <span className={`badge ${quote.status === 'Neu' ? 'badge-success' : 'badge-pending'}`}>
+                      {quote.status}
+                    </span>
+                  </td>
+                  <td className="p-4 text-sm text-[#71717A]">
+                    {new Date(quote.created_at).toLocaleDateString('de-DE')}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
@@ -1293,41 +2172,6 @@ const AGBPage = () => {
               (2) Die Zahlung erfolgt per Rechnung mit einem Zahlungsziel von 14 Tagen nach Rechnungserhalt 
               per Überweisung auf das in der Rechnung angegebene Konto.
             </p>
-            <p className="text-[#71717A] mt-2">
-              (3) Bei Bestellungen über 50.000 € kann eine Anzahlung von 30% vereinbart werden.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">§ 4 Lieferung</h2>
-            <p className="text-[#71717A]">
-              (1) Die Lieferzeit wird individuell vereinbart und in der Auftragsbestätigung mitgeteilt.
-            </p>
-            <p className="text-[#71717A] mt-2">
-              (2) Die Lieferung erfolgt ab Werk (EXW) gemäß Incoterms 2020, sofern nicht anders vereinbart.
-            </p>
-            <p className="text-[#71717A] mt-2">
-              (3) Teillieferungen sind zulässig, soweit sie dem Käufer zumutbar sind.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">§ 5 Eigentumsvorbehalt</h2>
-            <p className="text-[#71717A]">
-              Die gelieferte Ware bleibt bis zur vollständigen Bezahlung aller Forderungen aus der 
-              Geschäftsbeziehung Eigentum des Verkäufers.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">§ 6 Gewährleistung</h2>
-            <p className="text-[#71717A]">
-              (1) Die Gewährleistungsfrist für neue Maschinen beträgt 12 Monate ab Lieferung.
-            </p>
-            <p className="text-[#71717A] mt-2">
-              (2) Mängelansprüche bestehen nicht bei natürlichem Verschleiß oder Schäden, die durch 
-              unsachgemäße Behandlung entstanden sind.
-            </p>
           </section>
 
           <section>
@@ -1339,7 +2183,7 @@ const AGBPage = () => {
               (2) Gerichtsstand ist Köln.
             </p>
             <p className="text-[#71717A] mt-4 text-sm">
-              Stand: Januar 2025
+              Stand: Januar 2026
             </p>
           </section>
         </div>
@@ -1372,67 +2216,12 @@ const WiderrufsrechtPage = () => {
             <p className="text-[#71717A]">
               Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.
             </p>
-            <p className="text-[#71717A] mt-2">
-              Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag, an dem Sie oder ein von Ihnen benannter 
-              Dritter, der nicht der Beförderer ist, die Waren in Besitz genommen haben bzw. hat.
-            </p>
-            <p className="text-[#71717A] mt-2">
-              Um Ihr Widerrufsrecht auszuüben, müssen Sie uns
-            </p>
             <div className="bg-[#F4F4F5] p-4 my-4">
               <p className="font-semibold">G.P.C. Maschinen-Vertriebs-GmbH</p>
               <p>Hauptstr. 180</p>
               <p>D-51503 Rösrath</p>
               <p>Telefon: +49 (0) 2205 123 456</p>
               <p>E-Mail: widerruf@gpc-maschinen.de</p>
-            </div>
-            <p className="text-[#71717A]">
-              mittels einer eindeutigen Erklärung (z.B. ein mit der Post versandter Brief oder E-Mail) 
-              über Ihren Entschluss, diesen Vertrag zu widerrufen, informieren.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Folgen des Widerrufs</h2>
-            <p className="text-[#71717A]">
-              Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen erhalten 
-              haben, einschließlich der Lieferkosten (mit Ausnahme der zusätzlichen Kosten, die sich daraus 
-              ergeben, dass Sie eine andere Art der Lieferung als die von uns angebotene, günstigste 
-              Standardlieferung gewählt haben), unverzüglich und spätestens binnen vierzehn Tagen ab dem Tag 
-              zurückzuzahlen, an dem die Mitteilung über Ihren Widerruf dieses Vertrags bei uns eingegangen ist.
-            </p>
-            <p className="text-[#71717A] mt-2">
-              Für diese Rückzahlung verwenden wir dasselbe Zahlungsmittel, das Sie bei der ursprünglichen 
-              Transaktion eingesetzt haben, es sei denn, mit Ihnen wurde ausdrücklich etwas anderes vereinbart.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Ausschluss des Widerrufsrechts</h2>
-            <p className="text-[#71717A]">
-              Das Widerrufsrecht besteht nicht bei Verträgen zur Lieferung von Waren, die nicht vorgefertigt 
-              sind und für deren Herstellung eine individuelle Auswahl oder Bestimmung durch den Verbraucher 
-              maßgeblich ist oder die eindeutig auf die persönlichen Bedürfnisse des Verbrauchers zugeschnitten sind.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Muster-Widerrufsformular</h2>
-            <p className="text-[#71717A] mb-4">
-              (Wenn Sie den Vertrag widerrufen wollen, dann füllen Sie bitte dieses Formular aus und senden Sie es zurück.)
-            </p>
-            <div className="bg-[#F4F4F5] p-4 border-l-4 border-[#27272A]">
-              <p>An: G.P.C. Maschinen-Vertriebs-GmbH, Hauptstr. 180, D-51503 Rösrath, E-Mail: widerruf@gpc-maschinen.de</p>
-              <p className="mt-2">Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über den Kauf der folgenden Waren (*):</p>
-              <p className="mt-2">_______________________________________________</p>
-              <p className="mt-2">Bestellt am (*) / erhalten am (*):</p>
-              <p className="mt-2">_______________________________________________</p>
-              <p className="mt-2">Name des/der Verbraucher(s):</p>
-              <p className="mt-2">_______________________________________________</p>
-              <p className="mt-2">Anschrift des/der Verbraucher(s):</p>
-              <p className="mt-2">_______________________________________________</p>
-              <p className="mt-4">Datum: _____________ Unterschrift: _____________</p>
-              <p className="mt-4 text-sm text-[#71717A]">(*) Unzutreffendes streichen.</p>
             </div>
           </section>
         </div>
@@ -1454,11 +2243,9 @@ const DatenschutzPage = () => {
         <div className="bg-white border border-[#E4E4E7] p-8">
           <section className="mb-8">
             <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">1. Datenschutz auf einen Blick</h2>
-            <h3 className="font-semibold mt-4 mb-2">Allgemeine Hinweise</h3>
             <p className="text-[#71717A]">
               Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen 
-              Daten passiert, wenn Sie diese Website besuchen. Personenbezogene Daten sind alle Daten, mit 
-              denen Sie persönlich identifiziert werden können.
+              Daten passiert, wenn Sie diese Website besuchen.
             </p>
           </section>
 
@@ -1469,25 +2256,6 @@ const DatenschutzPage = () => {
             <p>D-51503 Rösrath</p>
             <p className="mt-2">Telefon: +49 (0) 2205 123 456</p>
             <p>E-Mail: datenschutz@gpc-maschinen.de</p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">3. Datenerfassung auf dieser Website</h2>
-            <h3 className="font-semibold mt-4 mb-2">Kontaktformular und Bestellungen</h3>
-            <p className="text-[#71717A]">
-              Wenn Sie uns per Kontaktformular oder Bestellung Anfragen zukommen lassen, werden Ihre 
-              Angaben aus dem Formular inklusive der von Ihnen dort angegebenen Kontaktdaten zwecks 
-              Bearbeitung der Anfrage und für den Fall von Anschlussfragen bei uns gespeichert.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">4. Ihre Rechte</h2>
-            <p className="text-[#71717A]">
-              Sie haben jederzeit das Recht auf unentgeltliche Auskunft über Ihre gespeicherten 
-              personenbezogenen Daten, deren Herkunft und Empfänger und den Zweck der Datenverarbeitung 
-              sowie ein Recht auf Berichtigung oder Löschung dieser Daten.
-            </p>
           </section>
         </div>
       </div>
@@ -1571,212 +2339,10 @@ const ImpressumPage = () => {
 
           <section className="mb-8">
             <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
-            <p>G.P.C. Maschinen-Vertriebs-GmbH</p>
+            <p>Marius Weitz</p>
             <p>Hauptstr. 180</p>
             <p>D-51503 Rösrath</p>
           </section>
-
-          <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">EU-Streitschlichtung</h2>
-            <p className="text-[#71717A]">
-              Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: 
-              <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer" className="text-[#FF3B30] hover:underline ml-1">
-                https://ec.europa.eu/consumers/odr/
-              </a>
-            </p>
-            <p className="text-[#71717A] mt-2">
-              Unsere E-Mail-Adresse finden Sie oben im Impressum.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Verbraucherstreitbeilegung / Universalschlichtungsstelle</h2>
-            <p className="text-[#71717A]">
-              Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer 
-              Verbraucherschlichtungsstelle teilzunehmen.
-            </p>
-          </section>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Contact Page
-const ContactPage = () => {
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    subject: "",
-    message: ""
-  });
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
-
-    try {
-      await axios.post(`${API}/contact`, formData);
-      setSubmitted(true);
-      toast.success("Nachricht erfolgreich gesendet!");
-    } catch (e) {
-      toast.error("Fehler beim Senden. Bitte versuchen Sie es erneut.");
-      console.error("Contact error:", e);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  if (submitted) {
-    return (
-      <div className="py-16 bg-[#F4F4F5] min-h-screen" data-testid="contact-success">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white border border-[#E4E4E7] p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-6 bg-[#DCFCE7] flex items-center justify-center">
-              <Mail className="w-8 h-8 text-[#16A34A]" />
-            </div>
-            <h1 className="text-3xl font-bold mb-4">Nachricht gesendet!</h1>
-            <p className="text-[#71717A] mb-8">
-              Vielen Dank für Ihre Nachricht. Wir werden uns schnellstmöglich bei Ihnen melden.
-            </p>
-            <Link to="/" className="btn-primary">Zur Startseite</Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="py-8 bg-[#F4F4F5] min-h-screen" data-testid="contact-page">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <p className="label-brutal mb-2">Kontakt</p>
-          <h1 className="text-4xl md:text-5xl font-bold">Wir sind für Sie da</h1>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Contact Form */}
-          <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="bg-white border border-[#E4E4E7] p-6">
-              <div className="form-grid mb-6">
-                <div>
-                  <Label className="label-brutal">Name *</Label>
-                  <Input
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="input-brutal"
-                    data-testid="contact-name"
-                  />
-                </div>
-                <div>
-                  <Label className="label-brutal">E-Mail *</Label>
-                  <Input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="input-brutal"
-                    data-testid="contact-email"
-                  />
-                </div>
-                <div>
-                  <Label className="label-brutal">Telefon (optional)</Label>
-                  <Input
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="input-brutal"
-                    data-testid="contact-phone"
-                  />
-                </div>
-                <div>
-                  <Label className="label-brutal">Betreff *</Label>
-                  <Input
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                    className="input-brutal"
-                    data-testid="contact-subject"
-                  />
-                </div>
-                <div className="full-width">
-                  <Label className="label-brutal">Ihre Nachricht *</Label>
-                  <Textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={6}
-                    className="input-brutal"
-                    data-testid="contact-message"
-                  />
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                className="btn-primary"
-                disabled={submitting}
-                data-testid="submit-contact-button"
-              >
-                {submitting ? "Wird gesendet..." : "Nachricht senden"}
-              </Button>
-            </form>
-          </div>
-
-          {/* Contact Info */}
-          <div>
-            <div className="bg-white border border-[#E4E4E7] p-6">
-              <h2 className="text-lg font-bold mb-6 border-b border-[#E4E4E7] pb-4">Kontaktdaten</h2>
-              
-              <div className="space-y-6">
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 bg-[#F4F4F5] flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-5 h-5 text-[#FF3B30]" />
-                  </div>
-                  <div>
-                    <p className="label-brutal">Telefon</p>
-                    <p className="font-semibold">+49 (0) 2205 123 456</p>
-                    <p className="text-sm text-[#71717A]">Mo-Fr 8:00 - 17:00 Uhr</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 bg-[#F4F4F5] flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-5 h-5 text-[#FF3B30]" />
-                  </div>
-                  <div>
-                    <p className="label-brutal">E-Mail</p>
-                    <p className="font-semibold">info@gpc-maschinen.de</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 bg-[#F4F4F5] flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-5 h-5 text-[#FF3B30]" />
-                  </div>
-                  <div>
-                    <p className="label-brutal">Adresse</p>
-                    <p className="font-semibold">G.P.C. Maschinen-Vertriebs-GmbH</p>
-                    <p className="text-[#71717A]">Hauptstr. 180</p>
-                    <p className="text-[#71717A]">D-51503 Rösrath</p>
-                    <p className="text-[#71717A]">Deutschland</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -1830,7 +2396,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-[#3f3f46] mt-8 pt-8 text-center text-sm text-[#71717A]">
-          <p>© 2025 G.P.C. Maschinen-Vertriebs-GmbH. Alle Rechte vorbehalten.</p>
+          <p>© 2026 G.P.C. Maschinen-Vertriebs-GmbH. Alle Rechte vorbehalten.</p>
         </div>
       </div>
     </footer>
@@ -1842,26 +2408,39 @@ function App() {
   return (
     <div className="App min-h-screen flex flex-col">
       <BrowserRouter>
-        <CartProvider>
-          <Toaster position="top-right" />
-          <Navbar />
-          <main className="flex-1">
+        <AuthProvider>
+          <CartProvider>
+            <Toaster position="top-right" />
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/produkte" element={<ProductsPage />} />
-              <Route path="/produkt/:id" element={<ProductDetailPage />} />
-              <Route path="/kasse" element={<CheckoutPage />} />
-              <Route path="/bestellung/:orderNumber" element={<OrderConfirmationPage />} />
-              <Route path="/angebot/:productId" element={<QuoteRequestPage />} />
-              <Route path="/kontakt" element={<ContactPage />} />
-              <Route path="/impressum" element={<ImpressumPage />} />
-              <Route path="/datenschutz" element={<DatenschutzPage />} />
-              <Route path="/agb" element={<AGBPage />} />
-              <Route path="/widerrufsrecht" element={<WiderrufsrechtPage />} />
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLoginPage />} />
+              <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+              
+              {/* Public Routes */}
+              <Route path="/*" element={
+                <>
+                  <Navbar />
+                  <main className="flex-1">
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/produkte" element={<ProductsPage />} />
+                      <Route path="/produkt/:id" element={<ProductDetailPage />} />
+                      <Route path="/kasse" element={<CheckoutPage />} />
+                      <Route path="/bestellung/:orderNumber" element={<OrderConfirmationPage />} />
+                      <Route path="/angebot/:productId" element={<QuoteRequestPage />} />
+                      <Route path="/kontakt" element={<ContactPage />} />
+                      <Route path="/impressum" element={<ImpressumPage />} />
+                      <Route path="/datenschutz" element={<DatenschutzPage />} />
+                      <Route path="/agb" element={<AGBPage />} />
+                      <Route path="/widerrufsrecht" element={<WiderrufsrechtPage />} />
+                    </Routes>
+                  </main>
+                  <Footer />
+                </>
+              } />
             </Routes>
-          </main>
-          <Footer />
-        </CartProvider>
+          </CartProvider>
+        </AuthProvider>
       </BrowserRouter>
     </div>
   );
