@@ -1,34 +1,210 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* App-specific styles */
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* Product Grid */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
+@media (min-width: 1024px) {
+    .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Product Card */
+.product-card {
+    background: white;
+    border: 1px solid #E4E4E7;
+    transition: all 0.2s ease;
+}
+
+.product-card:hover {
+    border-color: #09090B;
+    transform: translateY(-2px);
+}
+
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Filter Sidebar */
+.filter-sidebar {
+    background: white;
+    border: 1px solid #E4E4E7;
+    padding: 1.5rem;
+}
+
+/* Specs Table */
+.specs-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.specs-table tr {
+    border-bottom: 1px solid #E4E4E7;
+}
+
+.specs-table tr:last-child {
+    border-bottom: none;
+}
+
+.specs-table td {
+    padding: 0.75rem 0;
+}
+
+.specs-table td:first-child {
+    color: #71717A;
+    font-weight: 500;
+}
+
+.specs-table td:last-child {
+    text-align: right;
+    font-weight: 600;
+}
+
+/* Cart Item */
+.cart-item {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #E4E4E7;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+/* Form Layout */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.form-grid .full-width {
+    grid-column: 1 / -1;
+}
+
+/* Footer */
+.footer {
+    background: #27272A;
     color: white;
 }
 
-.App-link {
-    color: #61dafb;
+.footer a {
+    color: #E4E4E7;
+    transition: color 0.2s;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
+.footer a:hover {
+    color: #FF3B30;
+}
+
+/* Navigation */
+.nav-link {
+    position: relative;
+    padding-bottom: 0.25rem;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #FF3B30;
+    transition: width 0.2s;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* Quantity Controls */
+.quantity-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #E4E4E7;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.quantity-btn:hover {
+    background: #F4F4F5;
+    border-color: #09090B;
+}
+
+/* Loading Spinner */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #E4E4E7;
+    border-top-color: #FF3B30;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
     to {
         transform: rotate(360deg);
     }
+}
+
+/* Badge */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badge-success {
+    background: #DCFCE7;
+    color: #16A34A;
+}
+
+.badge-pending {
+    background: #FEF3C7;
+    color: #D97706;
 }

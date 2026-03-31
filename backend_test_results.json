@@ -1,0 +1,98 @@
+{
+  "total_tests": 15,
+  "passed_tests": 15,
+  "failed_tests": 0,
+  "success_rate": 100.0,
+  "test_details": [
+    {
+      "test": "Root endpoint with German message",
+      "success": true,
+      "details": "",
+      "response_data": null
+    },
+    {
+      "test": "Products endpoint with German content",
+      "success": true,
+      "details": "Found 12 products",
+      "response_data": null
+    },
+    {
+      "test": "Product categories with German names",
+      "success": true,
+      "details": "Categories: ['Baumaschinen', 'Blechbearbeitung', 'CNC-Maschinen', 'Lasertechnik', 'Robotik']",
+      "response_data": null
+    },
+    {
+      "test": "Product category filter",
+      "success": true,
+      "details": "Found 2 Baumaschinen",
+      "response_data": null
+    },
+    {
+      "test": "Product price filter",
+      "success": true,
+      "details": "Found 4 products in price range",
+      "response_data": null
+    },
+    {
+      "test": "Product detail with specifications",
+      "success": true,
+      "details": "Product: Schwerlast-Bagger X-200",
+      "response_data": null
+    },
+    {
+      "test": "Get empty cart",
+      "success": true,
+      "details": "",
+      "response_data": null
+    },
+    {
+      "test": "Add to cart",
+      "success": true,
+      "details": "",
+      "response_data": null
+    },
+    {
+      "test": "Get cart with items",
+      "success": true,
+      "details": "Total: 370000.0",
+      "response_data": null
+    },
+    {
+      "test": "Update cart item",
+      "success": true,
+      "details": "",
+      "response_data": null
+    },
+    {
+      "test": "Remove from cart",
+      "success": true,
+      "details": "",
+      "response_data": null
+    },
+    {
+      "test": "Order creation with German content",
+      "success": true,
+      "details": "Order: ORD-20260331-C58C5CBA",
+      "response_data": null
+    },
+    {
+      "test": "Order retrieval with complete data",
+      "success": true,
+      "details": "",
+      "response_data": null
+    },
+    {
+      "test": "Quote request with German format",
+      "success": true,
+      "details": "Quote: ANF-20260331-FE390379",
+      "response_data": null
+    },
+    {
+      "test": "Contact form submission",
+      "success": true,
+      "details": "",
+      "response_data": null
+    }
+  ]
+}
