@@ -650,14 +650,6 @@ async def get_products(category: Optional[str] = None, min_price: Optional[float
     
     products = await db.products.find(query, {"_id": 0}).to_list(100)
     
-    # If no products in DB, seed with sample data
-    if not products and not query:
-        for product in SAMPLE_PRODUCTS:
-            product_doc = {**product}
-            product_doc['created_at'] = datetime.now(timezone.utc).isoformat()
-            await db.products.insert_one(product_doc)
-        products = await db.products.find(query, {"_id": 0}).to_list(100)
-    
     return products
 
 @api_router.get("/products/categories")
