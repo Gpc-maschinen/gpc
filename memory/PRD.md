@@ -10,6 +10,7 @@
 - Admin-Panel (gesichert mit JWT Auth)
 - Statische Seiten (Impressum, AGB, Datenschutz, Widerrufsrecht, Kontakt)
 - Bild-Upload für Produkte via Emergent Object Storage
+- Telegram-Benachrichtigung bei neuen Bestellungen
 - Nur Deutsch
 - Deployment auf eigenen Ubuntu 22.04 VPS via Docker
 
@@ -20,6 +21,7 @@
 - **Fonts**: Chivo (headings), IBM Plex Sans (body)
 - **Primary Color**: Signal Red (#FF3B30)
 - **Deployment**: Docker Compose + Nginx + Let's Encrypt SSL
+- **Notifications**: Telegram Bot API
 
 ## What's Been Implemented
 
@@ -29,7 +31,7 @@
 - `POST /api/upload` - Bild-Upload (Emergent Object Storage)
 - `GET/POST/PUT/DELETE /api/products` - Produkt-CRUD
 - `GET /api/products/categories` - Kategorien
-- `POST /api/orders` - Bestellung aufgeben
+- `POST /api/orders` - Bestellung aufgeben + Telegram-Benachrichtigung
 - `GET /api/orders/{order_number}` - Bestelldetails
 - `POST /api/quotes` - Angebotsanfrage
 - `POST /api/contact` - Kontaktformular
@@ -50,15 +52,21 @@
 ### Deployment
 - Docker Compose (MongoDB + Backend + Frontend)
 - Nginx Reverse Proxy Konfiguration
-- Let's Encrypt SSL
+- Let's Encrypt SSL (HTTPS)
 - deploy.sh Script & DEPLOYMENT.md Anleitung
 - GitHub Repo: https://github.com/Gpc-maschinen/gpc
 
-## Completed Tasks - All ✅
-- P0: Produktkatalog, Warenkorb, Checkout, Angebotsanfragen, Kontakt
-- P0: Admin Panel mit JWT Auth und Bild-Upload
-- P0: Rechtliche Seiten mit echten Firmendaten
-- P0: VPS Deployment-Anleitung mit GitHub-URL fertiggestellt
+### Integrations
+- Emergent Object Storage (Bild-Upload)
+- Telegram Bot API (Bestellbenachrichtigungen an Gruppe)
+
+## Completed Tasks - All Done
+- Produktkatalog, Warenkorb, Checkout, Angebotsanfragen, Kontakt
+- Admin Panel mit JWT Auth und Bild-Upload
+- Rechtliche Seiten mit echten Firmendaten
+- VPS Deployment mit HTTPS
+- "Made with Emergent" Badge entfernt
+- Telegram-Benachrichtigung bei neuen Bestellungen
 
 ## Backlog
 
