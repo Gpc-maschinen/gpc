@@ -32,6 +32,46 @@ EMERGENT_KEY = os.environ.get("EMERGENT_LLM_KEY")
 APP_NAME = "gpc-maschinen"
 storage_key = None
 
+# Telegram Config
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+
+def send_telegram_order(order_doc):
+    """Send order details to Telegram group - runs in background"""
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        logging.warning("Telegram not configured, skipping notification")
+        return
+    try:
+        customer = order_doc["customer"]
+        items_text = ""
+        for item in order_doc["items"]:
+            items_text += f"  - {item['name']} x{item['quantity']} = {item['price'] * item['quantity']:.2f} EUR\n"
+        
+        message = (
+            f"NEUE BESTELLUNG\n\n"
+            f"Bestellnummer: {order_doc['order_number']}\n"
+            f"Datum: {order_doc['created_at']}\n\n"
+            f"Kunde:\n"
+            f"  Name: {customer['name']}\n"
+            f"  E-Mail: {customer['email']}\n"
+            f"  Telefon: {customer['phone']}\n"
+        )
+        if customer.get('company'):
+            message += f"  Firma: {customer['company']}\n"
+        message += (
+            f"  Adresse: {customer['street']}, {customer['postal_code']} {customer['city']}\n\n"
+            f"Artikel:\n{items_text}\n"
+            f"Gesamtbetrag: {order_doc['total']:.2f} EUR\n"
+            f"Zahlung: {order_doc['payment_method']}\n"
+        )
+        if order_doc.get('notes'):
+            message += f"Anmerkungen: {order_doc['notes']}\n"
+        
+        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+        requests.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": message}, timeout=10)
+    except Exception as e:
+        logging.error(f"Telegram notification failed: {e}")
+
 MIME_TYPES = {
     "jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png",
     "gif": "image/gif", "webp": "image/webp", "pdf": "application/pdf"
@@ -739,6 +779,9 @@ async def create_order(order_data: OrderCreate):
     
     await db.orders.insert_one(order_doc)
     await db.carts.delete_one({"session_id": order_data.session_id})
+    
+    # Telegram Benachrichtigung senden
+    send_telegram_order(order_doc)
     
     return order
 
