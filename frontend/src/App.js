@@ -541,26 +541,47 @@ const ProductsPage = () => {
           <h1 className="text-4xl md:text-5xl font-bold">Unsere Maschinen</h1>
         </div>
 
+        {/* Kategorie-Kacheln */}
+        {categories.length > 0 && (
+          <div className="mb-8" data-testid="category-tiles">
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => setSelectedCategory("all")}
+                className={`px-5 py-3 text-sm font-bold uppercase tracking-wider transition-all border-2 ${
+                  selectedCategory === "all"
+                    ? 'bg-[#18181B] text-white border-[#18181B]'
+                    : 'bg-white text-[#3F3F46] border-[#E4E4E7] hover:border-[#18181B]'
+                }`}
+                data-testid="category-tile-all"
+              >
+                Alle ({products.length})
+              </button>
+              {categories.map((cat) => {
+                const count = products.filter(p => p.category === cat).length;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-5 py-3 text-sm font-bold uppercase tracking-wider transition-all border-2 ${
+                      selectedCategory === cat
+                        ? 'bg-[#FF3B30] text-white border-[#FF3B30]'
+                        : 'bg-white text-[#3F3F46] border-[#E4E4E7] hover:border-[#FF3B30]'
+                    }`}
+                    data-testid={`category-tile-${cat}`}
+                  >
+                    {cat} ({count})
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filter Sidebar */}
           <div className="lg:w-64 flex-shrink-0">
             <div className="filter-sidebar sticky top-24">
               <h3 className="font-bold text-lg mb-4">Filter</h3>
-              
-              <div className="mb-6">
-                <Label className="label-brutal">Kategorie</Label>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="rounded-none border-2" data-testid="category-filter">
-                    <SelectValue placeholder="Alle Kategorien" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all" data-testid="category-all">Alle Kategorien</SelectItem>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat} value={cat} data-testid={`category-${cat}`}>{cat}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
 
               <div className="mb-6">
                 <Label className="label-brutal">Preis (€)</Label>
@@ -1712,6 +1733,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="categories" className="rounded-none data-[state=active]:bg-[#FF3B30] data-[state=active]:text-white">Kategorien</TabsTrigger>
             <TabsTrigger value="orders" className="rounded-none data-[state=active]:bg-[#FF3B30] data-[state=active]:text-white">Bestellungen</TabsTrigger>
             <TabsTrigger value="quotes" className="rounded-none data-[state=active]:bg-[#FF3B30] data-[state=active]:text-white">Anfragen</TabsTrigger>
+            <TabsTrigger value="settings" className="rounded-none data-[state=active]:bg-[#FF3B30] data-[state=active]:text-white">Einstellungen</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products">
@@ -1728,6 +1750,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="quotes">
             <AdminQuotes />
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <AdminSettings />
           </TabsContent>
         </Tabs>
       </div>
@@ -2792,6 +2818,162 @@ const AdminQuotes = () => {
           </table>
         </div>
       )}
+    </div>
+  );
+};
+
+// Admin Settings (Versandkosten)
+const AdminSettings = () => {
+  const [settings, setSettings] = useState({
+    shipping_costs: [],
+    free_shipping_threshold: 0,
+    shipping_note: ""
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [newZone, setNewZone] = useState("");
+  const [newCost, setNewCost] = useState("");
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const res = await axios.get(`${API}/admin/settings`, { withCredentials: true });
+      setSettings({
+        shipping_costs: res.data.shipping_costs || [],
+        free_shipping_threshold: res.data.free_shipping_threshold || 0,
+        shipping_note: res.data.shipping_note || ""
+      });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addShippingZone = () => {
+    if (!newZone.trim() || !newCost) return;
+    setSettings(prev => ({
+      ...prev,
+      shipping_costs: [...prev.shipping_costs, { zone: newZone.trim(), cost: parseFloat(newCost) }]
+    }));
+    setNewZone("");
+    setNewCost("");
+  };
+
+  const removeShippingZone = (index) => {
+    setSettings(prev => ({
+      ...prev,
+      shipping_costs: prev.shipping_costs.filter((_, i) => i !== index)
+    }));
+  };
+
+  const saveSettings = async () => {
+    setSaving(true);
+    try {
+      await axios.put(`${API}/admin/settings`, settings, { withCredentials: true });
+      toast.success("Einstellungen gespeichert");
+    } catch (e) {
+      toast.error("Speichern fehlgeschlagen");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) return <div className="flex justify-center py-12"><div className="spinner" /></div>;
+
+  return (
+    <div className="space-y-6" data-testid="admin-settings">
+      <h2 className="text-xl font-bold">Shop-Einstellungen</h2>
+
+      {/* Versandkosten */}
+      <div className="bg-white border border-[#E4E4E7] p-6">
+        <h3 className="font-bold text-lg mb-4">Versandkosten</h3>
+        
+        <div className="flex gap-2 mb-4">
+          <Input
+            value={newZone}
+            onChange={(e) => setNewZone(e.target.value)}
+            className="input-brutal flex-1"
+            placeholder="Zone/Beschreibung (z.B. Deutschland, EU, Spedition)"
+            data-testid="shipping-zone-input"
+          />
+          <Input
+            type="number"
+            value={newCost}
+            onChange={(e) => setNewCost(e.target.value)}
+            className="input-brutal w-32"
+            placeholder="Preis (€)"
+            step="0.01"
+            data-testid="shipping-cost-input"
+          />
+          <button type="button" onClick={addShippingZone} className="btn-secondary px-4" data-testid="add-shipping-zone">
+            <Plus className="w-4 h-4" />
+          </button>
+        </div>
+
+        {settings.shipping_costs.length > 0 ? (
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-[#F4F4F5]">
+                <th className="text-left p-3 text-sm font-semibold">Zone / Beschreibung</th>
+                <th className="text-left p-3 text-sm font-semibold">Kosten</th>
+                <th className="p-3 w-12"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {settings.shipping_costs.map((sc, idx) => (
+                <tr key={idx} className="border-b border-[#E4E4E7]">
+                  <td className="p-3">{sc.zone}</td>
+                  <td className="p-3 font-bold">{sc.cost.toLocaleString('de-DE')} €</td>
+                  <td className="p-3">
+                    <button onClick={() => removeShippingZone(idx)} className="text-red-500">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="text-[#71717A] text-sm">Keine Versandkosten konfiguriert.</p>
+        )}
+      </div>
+
+      {/* Kostenloser Versand ab */}
+      <div className="bg-white border border-[#E4E4E7] p-6">
+        <h3 className="font-bold text-lg mb-4">Kostenloser Versand</h3>
+        <div className="flex items-center gap-2">
+          <Label className="text-sm">Kostenloser Versand ab Bestellwert (€):</Label>
+          <Input
+            type="number"
+            value={settings.free_shipping_threshold}
+            onChange={(e) => setSettings({ ...settings, free_shipping_threshold: parseFloat(e.target.value) || 0 })}
+            className="input-brutal w-40"
+            step="0.01"
+            data-testid="free-shipping-input"
+          />
+        </div>
+        <p className="text-xs text-[#71717A] mt-1">0 = kein kostenloser Versand</p>
+      </div>
+
+      {/* Versandhinweis */}
+      <div className="bg-white border border-[#E4E4E7] p-6">
+        <h3 className="font-bold text-lg mb-4">Versandhinweis</h3>
+        <textarea
+          value={settings.shipping_note}
+          onChange={(e) => setSettings({ ...settings, shipping_note: e.target.value })}
+          className="w-full border-2 border-black p-3 text-sm min-h-[100px]"
+          placeholder="z.B. Lieferung per Spedition. Lieferzeit 5-10 Werktage. Versand nur innerhalb der EU."
+          data-testid="shipping-note-input"
+        />
+      </div>
+
+      <button onClick={saveSettings} disabled={saving} className="btn-primary w-full" data-testid="save-settings">
+        {saving ? "Wird gespeichert..." : "Einstellungen speichern"}
+      </button>
     </div>
   );
 };

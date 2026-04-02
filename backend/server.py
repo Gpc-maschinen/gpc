@@ -639,6 +639,42 @@ async def admin_get_stats(user: dict = Depends(get_current_user)):
         "new_quotes": new_quotes
     }
 
+# Shop Settings (Versandkosten etc.)
+@admin_router.get("/settings")
+async def admin_get_settings(user: dict = Depends(get_current_user)):
+    settings = await db.settings.find_one({"type": "shop"}, {"_id": 0})
+    if not settings:
+        settings = {
+            "type": "shop",
+            "shipping_costs": [],
+            "free_shipping_threshold": 0,
+            "shipping_note": ""
+        }
+        await db.settings.insert_one(settings)
+    return settings
+
+@admin_router.put("/settings")
+async def admin_update_settings(settings: dict, user: dict = Depends(get_current_user)):
+    update_data = {k: v for k, v in settings.items() if k != "type"}
+    await db.settings.update_one(
+        {"type": "shop"},
+        {"$set": update_data},
+        upsert=True
+    )
+    return {"message": "Einstellungen gespeichert"}
+
+# Public settings endpoint (for frontend to show shipping info)
+@api_router.get("/settings/shipping")
+async def get_shipping_settings():
+    settings = await db.settings.find_one({"type": "shop"}, {"_id": 0})
+    if not settings:
+        return {"shipping_costs": [], "free_shipping_threshold": 0, "shipping_note": ""}
+    return {
+        "shipping_costs": settings.get("shipping_costs", []),
+        "free_shipping_threshold": settings.get("free_shipping_threshold", 0),
+        "shipping_note": settings.get("shipping_note", "")
+    }
+
 # ==================== PUBLIC ROUTES ====================
 
 @api_router.get("/")
