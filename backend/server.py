@@ -82,7 +82,10 @@ def send_telegram_order(order_doc):
 
 MIME_TYPES = {
     "jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png",
-    "gif": "image/gif", "webp": "image/webp", "pdf": "application/pdf"
+    "gif": "image/gif", "webp": "image/webp", "pdf": "application/pdf",
+    "doc": "application/msword", "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "xls": "application/vnd.ms-excel", "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "zip": "application/zip", "txt": "text/plain"
 }
 
 def init_storage():
@@ -471,18 +474,19 @@ async def get_me(user: dict = Depends(get_current_user)):
 # File Upload
 @admin_router.post("/upload")
 async def admin_upload_file(file: UploadFile = File(...), user: dict = Depends(get_current_user)):
-    """Upload an image file and return the URL"""
+    """Upload an image or document file and return the URL"""
     # Validate file type
     ext = file.filename.split(".")[-1].lower() if "." in file.filename else ""
-    if ext not in ["jpg", "jpeg", "png", "gif", "webp"]:
-        raise HTTPException(status_code=400, detail="Nur Bildformate erlaubt (jpg, png, gif, webp)")
+    allowed = ["jpg", "jpeg", "png", "gif", "webp", "pdf", "doc", "docx", "xls", "xlsx", "zip", "txt"]
+    if ext not in allowed:
+        raise HTTPException(status_code=400, detail=f"Dateityp .{ext} nicht erlaubt")
     
     # Read file
     data = await file.read()
     
-    # Max 10MB
-    if len(data) > 10 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="Datei zu groß (max. 10MB)")
+    # Max 20MB
+    if len(data) > 20 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Datei zu groß (max. 20MB)")
     
     # Generate unique path
     file_id = str(uuid.uuid4())
