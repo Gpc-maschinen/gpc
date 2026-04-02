@@ -742,16 +742,37 @@ const ProductDetailPage = () => {
               {Object.keys(product.specifications || {}).length > 0 && (
                 <div>
                   <h3 className="font-bold text-lg mb-4 border-b border-[#E4E4E7] pb-2">Technische Daten</h3>
-                  <table className="specs-table">
-                    <tbody>
-                      {Object.entries(product.specifications).map(([key, value]) => (
-                        <tr key={key}>
-                          <td>{key}</td>
-                          <td>{value}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  {Object.entries(product.specifications).map(([group, specs]) => {
+                    // Handle grouped specs (object value) vs flat specs (string value)
+                    if (typeof specs === 'object' && specs !== null) {
+                      return (
+                        <div key={group} className="mb-4">
+                          <h4 className="font-bold text-sm uppercase tracking-wider text-[#71717A] mb-2">{group}</h4>
+                          <table className="specs-table">
+                            <tbody>
+                              {Object.entries(specs).map(([key, value]) => (
+                                <tr key={key}>
+                                  <td>{key}</td>
+                                  <td>{value}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      );
+                    }
+                    // Flat spec (backwards compatible)
+                    return (
+                      <table key={group} className="specs-table">
+                        <tbody>
+                          <tr>
+                            <td>{group}</td>
+                            <td>{specs}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -1708,8 +1729,32 @@ const ProductForm = ({ product, categories, onSave }) => {
   });
   const [specKey, setSpecKey] = useState("");
   const [specValue, setSpecValue] = useState("");
+  const [specGroup, setSpecGroup] = useState("Allgemein");
+  const [bulkText, setBulkText] = useState("");
+  const [showBulkPaste, setShowBulkPaste] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+
+  // Normalize old flat specs to grouped format
+  const normalizeSpecs = (specs) => {
+    if (!specs || Object.keys(specs).length === 0) return {};
+    // Check if already grouped (value is an object)
+    const firstValue = Object.values(specs)[0];
+    if (typeof firstValue === 'object' && firstValue !== null && !Array.isArray(firstValue)) {
+      return specs;
+    }
+    // Convert flat to grouped under "Allgemein"
+    return { "Allgemein": specs };
+  };
+
+  useEffect(() => {
+    if (product?.specifications) {
+      setFormData(prev => ({
+        ...prev,
+        specifications: normalizeSpecs(product.specifications)
+      }));
+    }
+  }, [product]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -1766,19 +1811,67 @@ const ProductForm = ({ product, categories, onSave }) => {
 
   const addSpec = () => {
     if (specKey.trim() && specValue.trim()) {
-      setFormData({
-        ...formData,
-        specifications: { ...formData.specifications, [specKey.trim()]: specValue.trim() }
-      });
+      const group = specGroup.trim() || "Allgemein";
+      const newSpecs = { ...formData.specifications };
+      if (!newSpecs[group]) newSpecs[group] = {};
+      newSpecs[group][specKey.trim()] = specValue.trim();
+      setFormData({ ...formData, specifications: newSpecs });
       setSpecKey("");
       setSpecValue("");
     }
   };
 
-  const removeSpec = (key) => {
+  const removeSpec = (group, key) => {
     const newSpecs = { ...formData.specifications };
-    delete newSpecs[key];
+    if (newSpecs[group]) {
+      delete newSpecs[group][key];
+      if (Object.keys(newSpecs[group]).length === 0) {
+        delete newSpecs[group];
+      }
+    }
     setFormData({ ...formData, specifications: newSpecs });
+  };
+
+  const removeGroup = (group) => {
+    const newSpecs = { ...formData.specifications };
+    delete newSpecs[group];
+    setFormData({ ...formData, specifications: newSpecs });
+  };
+
+  const parseBulkSpecs = () => {
+    if (!bulkText.trim()) return;
+    const lines = bulkText.split('\n').filter(l => l.trim());
+    const newSpecs = { ...formData.specifications };
+    let currentGroup = specGroup.trim() || "Allgemein";
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      // Line ending with ":" is a group header
+      if (trimmed.endsWith(':') && !trimmed.includes('\t') && trimmed.split(':').length === 2 && trimmed.split(':')[1] === '') {
+        currentGroup = trimmed.slice(0, -1).trim();
+        if (!newSpecs[currentGroup]) newSpecs[currentGroup] = {};
+        continue;
+      }
+      // Try to split by ":" or tab
+      let key, value;
+      if (trimmed.includes('\t')) {
+        [key, ...value] = trimmed.split('\t');
+        value = value.join('\t');
+      } else if (trimmed.includes(':')) {
+        [key, ...value] = trimmed.split(':');
+        value = value.join(':');
+      } else {
+        continue;
+      }
+      if (key?.trim() && value?.trim()) {
+        if (!newSpecs[currentGroup]) newSpecs[currentGroup] = {};
+        newSpecs[currentGroup][key.trim()] = value.trim();
+      }
+    }
+    setFormData({ ...formData, specifications: newSpecs });
+    setBulkText("");
+    setShowBulkPaste(false);
+    toast.success("Spezifikationen importiert");
   };
 
   const handleSubmit = async (e) => {
@@ -1915,31 +2008,83 @@ const ProductForm = ({ product, categories, onSave }) => {
 
       {/* Specifications */}
       <div>
-        <Label className="label-brutal">Technische Daten</Label>
-        <div className="flex gap-2 mb-2">
-          <Input
-            value={specKey}
-            onChange={(e) => setSpecKey(e.target.value)}
-            className="input-brutal"
-            placeholder="Eigenschaft"
-          />
-          <Input
-            value={specValue}
-            onChange={(e) => setSpecValue(e.target.value)}
-            className="input-brutal"
-            placeholder="Wert"
-          />
-          <button type="button" onClick={addSpec} className="btn-secondary px-4">
-            <Plus className="w-4 h-4" />
+        <div className="flex items-center justify-between mb-2">
+          <Label className="label-brutal">Technische Daten</Label>
+          <button
+            type="button"
+            onClick={() => setShowBulkPaste(!showBulkPaste)}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            {showBulkPaste ? "Einzeln eingeben" : "Liste einfügen"}
           </button>
         </div>
-        <div className="space-y-1">
-          {Object.entries(formData.specifications).map(([key, value]) => (
-            <div key={key} className="flex justify-between items-center bg-[#F4F4F5] p-2 text-sm">
-              <span><strong>{key}:</strong> {value}</span>
-              <button type="button" onClick={() => removeSpec(key)} className="text-red-500">
-                <X className="w-4 h-4" />
+
+        {showBulkPaste ? (
+          <div className="space-y-2">
+            <Input
+              value={specGroup}
+              onChange={(e) => setSpecGroup(e.target.value)}
+              className="input-brutal"
+              placeholder="Obergruppe (z.B. Motor, Hydraulik)"
+            />
+            <textarea
+              value={bulkText}
+              onChange={(e) => setBulkText(e.target.value)}
+              className="w-full border-2 border-black p-3 text-sm font-mono min-h-[200px]"
+              placeholder={"Spezifikationen einfügen, z.B.:\n\nMotor:\nLeistung: 150 kW\nDrehzahl: 2000 U/min\n\nHydraulik:\nDruck: 350 bar\nVolumen: 120 l\n\nOder einfach:\nGewicht: 5000 kg\nBreite: 2500 mm"}
+            />
+            <button type="button" onClick={parseBulkSpecs} className="btn-primary w-full">
+              Spezifikationen importieren
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <div className="flex gap-2 mb-2">
+              <Input
+                value={specGroup}
+                onChange={(e) => setSpecGroup(e.target.value)}
+                className="input-brutal w-1/3"
+                placeholder="Gruppe"
+              />
+              <Input
+                value={specKey}
+                onChange={(e) => setSpecKey(e.target.value)}
+                className="input-brutal"
+                placeholder="Eigenschaft"
+              />
+              <Input
+                value={specValue}
+                onChange={(e) => setSpecValue(e.target.value)}
+                className="input-brutal"
+                placeholder="Wert"
+              />
+              <button type="button" onClick={addSpec} className="btn-secondary px-4">
+                <Plus className="w-4 h-4" />
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Display grouped specs */}
+        <div className="space-y-3 mt-3">
+          {Object.entries(formData.specifications).map(([group, specs]) => (
+            <div key={group} className="border border-[#E4E4E7] rounded">
+              <div className="flex justify-between items-center bg-[#18181B] text-white px-3 py-1.5 text-sm font-bold">
+                <span>{group}</span>
+                <button type="button" onClick={() => removeGroup(group)} className="text-red-400 hover:text-red-300">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="divide-y divide-[#E4E4E7]">
+                {typeof specs === 'object' && specs !== null && Object.entries(specs).map(([key, value]) => (
+                  <div key={key} className="flex justify-between items-center px-3 py-1.5 text-sm">
+                    <span><strong>{key}:</strong> {value}</span>
+                    <button type="button" onClick={() => removeSpec(group, key)} className="text-red-500">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
         </div>
