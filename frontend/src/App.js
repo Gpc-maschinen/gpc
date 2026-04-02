@@ -239,6 +239,11 @@ const Navbar = () => {
 const CartSidebar = ({ onClose }) => {
   const { cart, updateCartItem, removeFromCart } = useCart();
   const navigate = useNavigate();
+  const [shippingInfo, setShippingInfo] = useState(null);
+
+  useEffect(() => {
+    axios.get(`${API}/settings/shipping`).then(res => setShippingInfo(res.data)).catch(() => {});
+  }, []);
 
   const handleCheckout = () => {
     // Erst Sheet schließen, dann navigieren
@@ -314,10 +319,22 @@ const CartSidebar = ({ onClose }) => {
         ))}
       </div>
       <div className="border-t border-[#E4E4E7] py-4">
-        <div className="flex justify-between items-center mb-4">
-          <span className="font-semibold">Gesamt:</span>
-          <span className="text-2xl font-bold">{cart.total.toLocaleString('de-DE')} €</span>
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-sm text-[#71717A]">Zwischensumme:</span>
+          <span className="font-semibold">{cart.total.toLocaleString('de-DE')} €</span>
         </div>
+        {shippingInfo && shippingInfo.shipping_costs.length > 0 && (
+          <div className="text-xs text-[#71717A] mb-2" data-testid="cart-shipping-info">
+            {shippingInfo.free_shipping_threshold > 0 && cart.total >= shippingInfo.free_shipping_threshold ? (
+              <span className="text-[#16A34A] font-semibold">Kostenloser Versand!</span>
+            ) : (
+              <span>zzgl. Versandkosten (ab {Math.min(...shippingInfo.shipping_costs.map(s => s.cost)).toLocaleString('de-DE')} €)</span>
+            )}
+          </div>
+        )}
+        {shippingInfo && shippingInfo.shipping_note && (
+          <p className="text-xs text-[#71717A] mb-3">{shippingInfo.shipping_note}</p>
+        )}
         <button 
           onClick={handleCheckout}
           className="btn-primary w-full" 
@@ -942,6 +959,8 @@ const CheckoutPage = () => {
   const { cart, sessionId, clearCart } = useCart();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [shippingInfo, setShippingInfo] = useState(null);
+  const [selectedZone, setSelectedZone] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -953,6 +972,19 @@ const CheckoutPage = () => {
     country: "Deutschland",
     notes: ""
   });
+
+  useEffect(() => {
+    axios.get(`${API}/settings/shipping`).then(res => {
+      setShippingInfo(res.data);
+      if (res.data.shipping_costs?.length === 1) {
+        setSelectedZone(res.data.shipping_costs[0].zone);
+      }
+    }).catch(() => {});
+  }, []);
+
+  const isFreeShipping = shippingInfo && shippingInfo.free_shipping_threshold > 0 && cart.total >= shippingInfo.free_shipping_threshold;
+  const shippingCost = isFreeShipping ? 0 : (shippingInfo?.shipping_costs?.find(s => s.zone === selectedZone)?.cost || 0);
+  const grandTotal = cart.total + shippingCost;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -975,6 +1007,7 @@ const CheckoutPage = () => {
           postal_code: formData.postal_code,
           country: formData.country
         },
+        shipping_zone: selectedZone || null,
         notes: formData.notes || null
       };
 
@@ -1056,6 +1089,36 @@ const CheckoutPage = () => {
                 </div>
               </div>
 
+              {/* Versandart */}
+              {shippingInfo && shippingInfo.shipping_costs.length > 0 && (
+                <>
+                  <h2 className="text-xl font-bold mb-6 border-b border-[#E4E4E7] pb-4">Versandart</h2>
+                  <div className="mb-8">
+                    {isFreeShipping ? (
+                      <div className="bg-[#DCFCE7] p-4 border-l-4 border-[#16A34A]" data-testid="free-shipping-badge">
+                        <p className="font-semibold text-[#16A34A]">Kostenloser Versand</p>
+                        <p className="text-sm text-[#71717A] mt-1">Ab einem Bestellwert von {shippingInfo.free_shipping_threshold.toLocaleString('de-DE')} € entfallen die Versandkosten.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {shippingInfo.shipping_costs.map((sc) => (
+                          <label key={sc.zone} className={`flex items-center justify-between p-4 border-2 cursor-pointer transition-all ${selectedZone === sc.zone ? 'border-[#FF3B30] bg-[#FFF5F5]' : 'border-[#E4E4E7] hover:border-[#A1A1AA]'}`} data-testid={`shipping-zone-${sc.zone}`}>
+                            <div className="flex items-center gap-3">
+                              <input type="radio" name="shipping_zone" value={sc.zone} checked={selectedZone === sc.zone} onChange={(e) => setSelectedZone(e.target.value)} className="accent-[#FF3B30]" />
+                              <span className="font-semibold">{sc.zone}</span>
+                            </div>
+                            <span className="font-bold">{sc.cost.toLocaleString('de-DE')} €</span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                    {shippingInfo.shipping_note && (
+                      <p className="text-xs text-[#71717A] mt-3">{shippingInfo.shipping_note}</p>
+                    )}
+                  </div>
+                </>
+              )}
+
               <h2 className="text-xl font-bold mb-6 border-b border-[#E4E4E7] pb-4">Zahlungsart</h2>
               
               <div className="bg-[#F4F4F5] p-4 mb-6 border-l-4 border-[#FF3B30]">
@@ -1095,11 +1158,19 @@ const CheckoutPage = () => {
               </div>
 
               <div className="border-t border-[#E4E4E7] pt-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold">Gesamt:</span>
-                  <span className="text-2xl font-bold">{cart.total.toLocaleString('de-DE')} €</span>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-[#71717A]">Zwischensumme:</span>
+                  <span className="font-semibold">{cart.total.toLocaleString('de-DE')} €</span>
                 </div>
-                <p className="text-xs text-[#71717A] mt-2">inkl. MwSt., zzgl. Versand</p>
+                <div className="flex justify-between items-center mb-2" data-testid="checkout-shipping-cost">
+                  <span className="text-sm text-[#71717A]">Versand:</span>
+                  <span className="font-semibold">{shippingCost > 0 ? `${shippingCost.toLocaleString('de-DE')} €` : (isFreeShipping ? 'Kostenlos' : '—')}</span>
+                </div>
+                <div className="flex justify-between items-center border-t border-[#E4E4E7] pt-3 mt-3">
+                  <span className="text-lg font-semibold">Gesamt:</span>
+                  <span className="text-2xl font-bold" data-testid="checkout-grand-total">{grandTotal.toLocaleString('de-DE')} €</span>
+                </div>
+                <p className="text-xs text-[#71717A] mt-2">inkl. MwSt.</p>
               </div>
             </div>
           </div>
@@ -1191,6 +1262,18 @@ const OrderConfirmationPage = () => {
           </div>
 
           <div className="border-t border-[#E4E4E7] pt-4 mt-4">
+            {order.shipping_cost > 0 && (
+              <>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm text-[#71717A]">Zwischensumme:</span>
+                  <span className="font-semibold">{(order.subtotal || (order.total - order.shipping_cost)).toLocaleString('de-DE')} €</span>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-[#71717A]">Versand{order.shipping_zone ? ` (${order.shipping_zone})` : ''}:</span>
+                  <span className="font-semibold">{order.shipping_cost.toLocaleString('de-DE')} €</span>
+                </div>
+              </>
+            )}
             <div className="flex justify-between items-center">
               <span className="text-lg font-semibold">Gesamtbetrag:</span>
               <span className="text-2xl font-bold">{order.total.toLocaleString('de-DE')} €</span>

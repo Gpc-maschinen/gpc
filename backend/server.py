@@ -61,6 +61,14 @@ def send_telegram_order(order_doc):
         message += (
             f"  Adresse: {customer['street']}, {customer['postal_code']} {customer['city']}\n\n"
             f"Artikel:\n{items_text}\n"
+        )
+        subtotal = order_doc.get('subtotal', order_doc['total'])
+        shipping_cost = order_doc.get('shipping_cost', 0)
+        if shipping_cost > 0:
+            message += f"Zwischensumme: {subtotal:.2f} EUR\n"
+            shipping_zone = order_doc.get('shipping_zone', '')
+            message += f"Versand ({shipping_zone}): {shipping_cost:.2f} EUR\n"
+        message += (
             f"Gesamtbetrag: {order_doc['total']:.2f} EUR\n"
             f"Zahlung: {order_doc['payment_method']}\n"
         )
@@ -261,7 +269,10 @@ class Order(BaseModel):
     order_number: str = Field(default_factory=lambda: f"ORD-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}")
     customer: CustomerInfo
     items: List[CartItem]
-    total: float
+    subtotal: float = 0
+    shipping_cost: float = 0
+    shipping_zone: Optional[str] = None
+    total: float = 0
     payment_method: str = "Rechnung / Überweisung"
     status: str = "Ausstehend"
     notes: Optional[str] = None
@@ -270,6 +281,7 @@ class Order(BaseModel):
 class OrderCreate(BaseModel):
     session_id: str
     customer: CustomerInfo
+    shipping_zone: Optional[str] = None
     notes: Optional[str] = None
 
 class QuoteRequest(BaseModel):
@@ -805,11 +817,31 @@ async def create_order(order_data: OrderCreate):
     if not cart or not cart.get("items"):
         raise HTTPException(status_code=400, detail="Warenkorb ist leer")
     
-    total = sum(item["price"] * item["quantity"] for item in cart["items"])
+    subtotal = sum(item["price"] * item["quantity"] for item in cart["items"])
+    
+    # Versandkosten berechnen
+    shipping_cost = 0.0
+    shipping_zone = order_data.shipping_zone
+    settings = await db.settings.find_one({"type": "shop"}, {"_id": 0})
+    if settings and shipping_zone:
+        free_threshold = settings.get("free_shipping_threshold", 0)
+        if free_threshold > 0 and subtotal >= free_threshold:
+            shipping_cost = 0.0
+            shipping_zone = f"{shipping_zone} (Kostenloser Versand)"
+        else:
+            for sc in settings.get("shipping_costs", []):
+                if sc["zone"] == shipping_zone:
+                    shipping_cost = sc["cost"]
+                    break
+    
+    total = subtotal + shipping_cost
     
     order = Order(
         customer=order_data.customer,
         items=cart["items"],
+        subtotal=subtotal,
+        shipping_cost=shipping_cost,
+        shipping_zone=shipping_zone,
         total=total,
         notes=order_data.notes
     )
