@@ -176,6 +176,7 @@ class Product(BaseModel):
     price: float
     sale_price: Optional[float] = None
     rating: float = 0
+    reviews: List[dict] = []
     category: str
     image_url: str
     images: List[str] = []
@@ -189,6 +190,7 @@ class ProductCreate(BaseModel):
     price: float
     sale_price: Optional[float] = None
     rating: float = 0
+    reviews: List[dict] = []
     category: str
     image_url: str
     images: List[str] = []
@@ -201,6 +203,7 @@ class ProductUpdate(BaseModel):
     price: Optional[float] = None
     sale_price: Optional[float] = None
     rating: Optional[float] = None
+    reviews: Optional[List[dict]] = None
     category: Optional[str] = None
     image_url: Optional[str] = None
     images: Optional[List[str]] = None

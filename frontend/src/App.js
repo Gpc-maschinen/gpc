@@ -811,6 +811,29 @@ const ProductDetailPage = () => {
                   })}
                 </div>
               )}
+
+              {/* Kundenbewertungen */}
+              {(product.reviews || []).length > 0 && (
+                <div>
+                  <h3 className="font-bold text-lg mb-4 border-b border-[#E4E4E7] pb-2">
+                    Kundenbewertungen ({product.reviews.length})
+                  </h3>
+                  <div className="space-y-4">
+                    {product.reviews.map((review, idx) => (
+                      <div key={idx} className="border-b border-[#E4E4E7] pb-4 last:border-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-bold">{review.name}</span>
+                          <span className="text-yellow-500">
+                            {'★'.repeat(Math.round(review.rating))}{'☆'.repeat(5 - Math.round(review.rating))}
+                          </span>
+                        </div>
+                        <p className="text-xs text-[#71717A] mb-2">{review.date}</p>
+                        <p className="text-sm">{review.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1782,6 +1805,7 @@ const ProductForm = ({ product, categories, onSave }) => {
     price: product?.price || "",
     sale_price: product?.sale_price || "",
     rating: product?.rating || 0,
+    reviews: product?.reviews || [],
     category: product?.category || "",
     image_url: product?.image_url || "",
     images: product?.images || [],
@@ -1795,6 +1819,9 @@ const ProductForm = ({ product, categories, onSave }) => {
   const [showBulkPaste, setShowBulkPaste] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [reviewName, setReviewName] = useState("");
+  const [reviewText, setReviewText] = useState("");
+  const [reviewRating, setReviewRating] = useState(5);
 
   // Normalize old flat specs to grouped format
   const normalizeSpecs = (specs) => {
@@ -1969,6 +1996,28 @@ const ProductForm = ({ product, categories, onSave }) => {
     setBulkText("");
     setShowBulkPaste(false);
     toast.success("Spezifikationen importiert");
+  };
+
+  const addReview = () => {
+    if (!reviewName.trim() || !reviewText.trim()) {
+      toast.error("Name und Bewertungstext sind erforderlich");
+      return;
+    }
+    const newReview = {
+      name: reviewName.trim(),
+      text: reviewText.trim(),
+      rating: parseFloat(reviewRating),
+      date: new Date().toISOString().split('T')[0]
+    };
+    setFormData(prev => ({ ...prev, reviews: [...prev.reviews, newReview] }));
+    setReviewName("");
+    setReviewText("");
+    setReviewRating(5);
+    toast.success("Bewertung hinzugefügt");
+  };
+
+  const removeReview = (index) => {
+    setFormData(prev => ({ ...prev, reviews: prev.reviews.filter((_, i) => i !== index) }));
   };
 
   const handleSubmit = async (e) => {
@@ -2216,6 +2265,67 @@ const ProductForm = ({ product, categories, onSave }) => {
                   </div>
                 ))}
               </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Kundenbewertungen */}
+      <div>
+        <Label className="label-brutal">Kundenbewertungen</Label>
+        <div className="border border-[#E4E4E7] p-3 mb-2 space-y-2">
+          <Input
+            value={reviewName}
+            onChange={(e) => setReviewName(e.target.value)}
+            className="input-brutal"
+            placeholder="Name des Kunden"
+          />
+          <textarea
+            value={reviewText}
+            onChange={(e) => setReviewText(e.target.value)}
+            className="w-full border-2 border-black p-2 text-sm min-h-[60px]"
+            placeholder="Bewertungstext"
+          />
+          <div className="flex items-center gap-2">
+            <Label className="text-sm">Sterne:</Label>
+            <div className="flex items-center gap-1">
+              {[1,2,3,4,5].map(s => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setReviewRating(s)}
+                  className={`text-xl ${s <= reviewRating ? 'text-yellow-500' : 'text-gray-300'} cursor-pointer hover:text-yellow-400`}
+                >
+                  &#9733;
+                </button>
+              ))}
+              <span className="text-sm text-[#71717A] ml-1">({reviewRating})</span>
+            </div>
+            <button type="button" onClick={addReview} className="btn-secondary px-3 py-1 text-sm ml-auto">
+              Hinzufügen
+            </button>
+          </div>
+        </div>
+
+        {/* Liste der Bewertungen */}
+        <div className="space-y-2">
+          {formData.reviews.map((review, idx) => (
+            <div key={idx} className="border border-[#E4E4E7] p-3 relative">
+              <button
+                type="button"
+                onClick={() => removeReview(idx)}
+                className="absolute top-2 right-2 text-red-500"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-bold text-sm">{review.name}</span>
+                <span className="text-yellow-500 text-sm">
+                  {'★'.repeat(Math.round(review.rating))}{'☆'.repeat(5 - Math.round(review.rating))}
+                </span>
+                <span className="text-xs text-[#71717A]">{review.date}</span>
+              </div>
+              <p className="text-sm text-[#71717A]">{review.text}</p>
             </div>
           ))}
         </div>
