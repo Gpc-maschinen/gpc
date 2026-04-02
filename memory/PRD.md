@@ -15,35 +15,29 @@
 - Admin Panel mit JWT Auth, Bild-Upload, gruppierte Spezifikationen, Bulk-Paste
 - Sterne-Bewertung (0-5, 0.1 Schritte) pro Produkt
 - Angebotspreis (durchgestrichen + Rabatt-Badge)
-- Bulk-Upload für weitere Produktbilder
+- Bulk-Upload für weitere Produktbilder + PDF/Dokument-Uploads
 - Firmenlogo integriert
 - Telegram-Benachrichtigungen bei Bestellungen
 - Rechtliche Seiten mit Firmendaten
 - VPS Deployment mit HTTPS
-- "Made with Emergent" Badge entfernt
-- Admin-verwaltete Kundenbewertungen (Name, Text, Sterne, Datum)
+- Admin-verwaltete Kundenbewertungen mit rückdatierbarem Datum
 - Produkt-Detail Tabs (Beschreibung, Technische Daten, Downloads)
-- PDF/Manual Downloads Upload
-- **Versandkosten-System (NEU 2026-04-02)**:
-  - Admin Settings: Versandzonen mit Preisen, Schwellwert für kostenlosen Versand, Versandhinweis
-  - Warenkorb zeigt Versandkosten-Info
-  - Kasse: Versandzone wählen, Zwischensumme + Versand + Gesamt
-  - Bestellbestätigung mit Versandkosten-Aufschlüsselung
-  - Backend berechnet Versandkosten bei Bestellung
-  - Telegram-Nachricht enthält Versandkosten
-- **Kategorie-Kacheln auf Produktseite (NEU 2026-04-02)**
+- Versandkosten-System (Zonen, kostenloser Versand ab Schwellwert)
+- Kategorie-Kacheln auf Produktseite
+- B2C-Preise (inkl. MwSt.)
+- Versand & Lieferinformation als Modal/Popup mit vollständigem Versandtext inkl. Insel-Liefergebiete
+- Lagerverwaltung: Bestandsanzeige (grün/orange/rot), Warenkorb-Sperre bei 0, automatische Reduktion bei Bestellung
 
 ## DB Schema
-- `products`: {id, name, description, category, price, sale_price, rating, images, specifications, reviews, downloads}
+- `products`: {id, name, description, category, price, sale_price, rating, images, specifications, reviews (with backdatable date), downloads, stock}
 - `orders`: {id, order_number, customer, items, subtotal, shipping_cost, shipping_zone, total, payment_method, status, notes, created_at}
 - `settings`: {type: "shop", shipping_costs: [{zone, cost}], free_shipping_threshold, shipping_note}
 
 ## Backlog
 ### P1
-- App.js Refactoring (3300+ Zeilen aufteilen)
+- App.js Refactoring (3400+ Zeilen aufteilen)
 - E-Mail-Benachrichtigungen
 - Produktsuche
 ### P2
 - Multi-Language (DE/EN)
 - PDF Angebote/Rechnungen
-- Lagerverwaltung
