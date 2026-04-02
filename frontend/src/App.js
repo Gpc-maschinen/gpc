@@ -3,7 +3,7 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route, Link, useParams, useNavigate, Navigate } from "react-router-dom";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
-import { ShoppingCart, Menu, X, Phone, Mail, MapPin, ChevronRight, Plus, Minus, Trash2, Send, Package, ArrowLeft, LogOut, Settings, BarChart3, FolderOpen, Box, FileText, MessageSquare, Edit, Eye, Save, Image } from "lucide-react";
+import { ShoppingCart, Menu, X, Phone, Mail, MapPin, ChevronRight, Plus, Minus, Trash2, Send, Package, ArrowLeft, LogOut, Settings, BarChart3, FolderOpen, Box, FileText, MessageSquare, Edit, Eye, Save, Image, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -631,6 +631,7 @@ const ProductDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [activeTab, setActiveTab] = useState("beschreibung");
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
@@ -707,7 +708,6 @@ const ProductDetailPage = () => {
             <div className="p-8">
               <p className="label-brutal mb-2">{product.category}</p>
               <h1 className="text-3xl md:text-4xl font-bold mb-4" data-testid="product-name">{product.name}</h1>
-              <p className="text-[#71717A] mb-4">{product.description}</p>
               
               {product.rating > 0 && (
                 <div className="flex items-center gap-1 mb-4">
@@ -715,6 +715,9 @@ const ProductDetailPage = () => {
                     <span key={s} className={`text-xl ${s <= Math.round(product.rating) ? 'text-yellow-500' : 'text-gray-300'}`}>&#9733;</span>
                   ))}
                   <span className="text-sm text-[#71717A] ml-2">{product.rating} von 5</span>
+                  {(product.reviews || []).length > 0 && (
+                    <span className="text-sm text-[#71717A]">({product.reviews.length} Bewertungen)</span>
+                  )}
                 </div>
               )}
               
@@ -730,32 +733,25 @@ const ProductDetailPage = () => {
                 ) : (
                   <span className="text-3xl font-bold text-[#FF3B30]">{product.price.toLocaleString('de-DE')} €</span>
                 )}
+                <p className="text-xs text-[#71717A] mt-1">Alle Preise netto zzgl. MwSt.</p>
               </div>
 
               {/* Quantity */}
               <div className="mb-6">
                 <Label className="label-brutal">Menge</Label>
                 <div className="flex items-center gap-2">
-                  <button
-                    className="quantity-btn"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    data-testid="decrease-quantity"
-                  >
+                  <button className="quantity-btn" onClick={() => setQuantity(Math.max(1, quantity - 1))} data-testid="decrease-quantity">
                     <Minus className="w-4 h-4" />
                   </button>
                   <span className="w-12 text-center font-bold text-lg">{quantity}</span>
-                  <button
-                    className="quantity-btn"
-                    onClick={() => setQuantity(quantity + 1)}
-                    data-testid="increase-quantity"
-                  >
+                  <button className="quantity-btn" onClick={() => setQuantity(quantity + 1)} data-testid="increase-quantity">
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   className="btn-primary flex-1 flex items-center justify-center gap-2"
                   onClick={() => addToCart(product.id, quantity)}
@@ -773,68 +769,146 @@ const ProductDetailPage = () => {
                   Angebot anfragen
                 </Link>
               </div>
+            </div>
+          </div>
+        </div>
 
-              {/* Specifications */}
-              {Object.keys(product.specifications || {}).length > 0 && (
-                <div>
-                  <h3 className="font-bold text-lg mb-4 border-b border-[#E4E4E7] pb-2">Technische Daten</h3>
-                  {Object.entries(product.specifications).map(([group, specs]) => {
-                    // Handle grouped specs (object value) vs flat specs (string value)
-                    if (typeof specs === 'object' && specs !== null) {
-                      return (
-                        <div key={group} className="mb-4">
-                          <h4 className="font-bold text-sm uppercase tracking-wider text-[#71717A] mb-2">{group}</h4>
-                          <table className="specs-table">
-                            <tbody>
-                              {Object.entries(specs).map(([key, value]) => (
-                                <tr key={key}>
-                                  <td>{key}</td>
-                                  <td>{value}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      );
-                    }
-                    // Flat spec (backwards compatible)
-                    return (
-                      <table key={group} className="specs-table">
-                        <tbody>
-                          <tr>
-                            <td>{group}</td>
-                            <td>{specs}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    );
-                  })}
+        {/* Tabs Section */}
+        <div className="bg-white border border-[#E4E4E7] mt-6">
+          {/* Tab Headers */}
+          <div className="flex border-b border-[#E4E4E7]" data-testid="product-tabs">
+            {[
+              { id: "beschreibung", label: "Beschreibung" },
+              { id: "technische-daten", label: "Technische Daten" },
+              { id: "downloads", label: "Downloads" },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                data-testid={`tab-${tab.id}`}
+                className={`px-6 py-4 text-sm font-bold uppercase tracking-wider transition-colors ${
+                  activeTab === tab.id
+                    ? 'border-b-2 border-[#FF3B30] text-[#09090B]'
+                    : 'text-[#71717A] hover:text-[#09090B]'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab Content */}
+          <div className="p-8">
+            {/* Beschreibung Tab */}
+            {activeTab === "beschreibung" && (
+              <div data-testid="tab-content-beschreibung">
+                <div className="prose max-w-none">
+                  {product.description.split('\n').map((line, idx) => (
+                    <p key={idx} className="mb-3 text-[#3F3F46] leading-relaxed">{line || '\u00A0'}</p>
+                  ))}
                 </div>
-              )}
 
-              {/* Kundenbewertungen */}
-              {(product.reviews || []).length > 0 && (
-                <div>
-                  <h3 className="font-bold text-lg mb-4 border-b border-[#E4E4E7] pb-2">
-                    Kundenbewertungen ({product.reviews.length})
-                  </h3>
-                  <div className="space-y-4">
-                    {product.reviews.map((review, idx) => (
-                      <div key={idx} className="border-b border-[#E4E4E7] pb-4 last:border-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-bold">{review.name}</span>
-                          <span className="text-yellow-500">
-                            {'★'.repeat(Math.round(review.rating))}{'☆'.repeat(5 - Math.round(review.rating))}
-                          </span>
+                {/* Kundenbewertungen */}
+                {(product.reviews || []).length > 0 && (
+                  <div className="mt-8 pt-8 border-t border-[#E4E4E7]">
+                    <h3 className="font-bold text-lg mb-6">Kundenbewertungen ({product.reviews.length})</h3>
+                    <div className="space-y-6">
+                      {product.reviews.map((review, idx) => (
+                        <div key={idx} className="border border-[#E4E4E7] p-4 rounded">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-[#18181B] text-white rounded-full flex items-center justify-center font-bold">
+                                {review.name.charAt(0).toUpperCase()}
+                              </div>
+                              <div>
+                                <span className="font-bold">{review.name}</span>
+                                <p className="text-xs text-[#71717A]">{review.date}</p>
+                              </div>
+                            </div>
+                            <span className="text-yellow-500">
+                              {'★'.repeat(Math.round(review.rating))}{'☆'.repeat(5 - Math.round(review.rating))}
+                            </span>
+                          </div>
+                          <p className="text-sm text-[#3F3F46] leading-relaxed">{review.text}</p>
                         </div>
-                        <p className="text-xs text-[#71717A] mb-2">{review.date}</p>
-                        <p className="text-sm">{review.text}</p>
-                      </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Technische Daten Tab */}
+            {activeTab === "technische-daten" && (
+              <div data-testid="tab-content-technische-daten">
+                {Object.keys(product.specifications || {}).length > 0 ? (
+                  <div className="space-y-6">
+                    {Object.entries(product.specifications).map(([group, specs]) => {
+                      if (typeof specs === 'object' && specs !== null) {
+                        return (
+                          <div key={group}>
+                            <h4 className="font-bold text-sm uppercase tracking-wider text-[#71717A] mb-3">{group}</h4>
+                            <table className="specs-table">
+                              <tbody>
+                                {Object.entries(specs).map(([key, value]) => (
+                                  <tr key={key}>
+                                    <td>{key}</td>
+                                    <td>{value}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        );
+                      }
+                      return (
+                        <table key={group} className="specs-table">
+                          <tbody>
+                            <tr>
+                              <td>{group}</td>
+                              <td>{specs}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-[#71717A]">Keine technischen Daten vorhanden.</p>
+                )}
+              </div>
+            )}
+
+            {/* Downloads Tab */}
+            {activeTab === "downloads" && (
+              <div data-testid="tab-content-downloads">
+                {(product.downloads || []).length > 0 ? (
+                  <div className="space-y-3">
+                    {product.downloads.map((dl, idx) => (
+                      <a
+                        key={idx}
+                        href={dl.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-4 p-4 border border-[#E4E4E7] hover:border-[#FF3B30] transition-colors group"
+                        data-testid={`download-item-${idx}`}
+                      >
+                        <div className="w-12 h-12 bg-[#FF3B30] text-white flex items-center justify-center flex-shrink-0">
+                          <FileText className="w-6 h-6" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-bold group-hover:text-[#FF3B30] transition-colors">{dl.name}</p>
+                          <p className="text-sm text-[#71717A]">{dl.type || 'Dokument'}</p>
+                        </div>
+                        <Download className="w-5 h-5 text-[#71717A] group-hover:text-[#FF3B30]" />
+                      </a>
                     ))}
                   </div>
-                </div>
-              )}
-            </div>
+                ) : (
+                  <p className="text-[#71717A]">Keine Downloads vorhanden.</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -1806,6 +1880,7 @@ const ProductForm = ({ product, categories, onSave }) => {
     sale_price: product?.sale_price || "",
     rating: product?.rating || 0,
     reviews: product?.reviews || [],
+    downloads: product?.downloads || [],
     category: product?.category || "",
     image_url: product?.image_url || "",
     images: product?.images || [],
@@ -2018,6 +2093,55 @@ const ProductForm = ({ product, categories, onSave }) => {
 
   const removeReview = (index) => {
     setFormData(prev => ({ ...prev, reviews: prev.reviews.filter((_, i) => i !== index) }));
+  };
+
+  const handleDownloadUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error("Datei zu groß (max. 20MB)");
+      return;
+    }
+    setUploading(true);
+    const uploadFormData = new FormData();
+    uploadFormData.append("file", file);
+    try {
+      const res = await axios.post(`${API}/admin/upload`, uploadFormData, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      const fileUrl = `${BACKEND_URL}${res.data.url}`;
+      const fileName = file.name.replace(/\.[^/.]+$/, "");
+      const fileType = file.name.endsWith('.pdf') ? 'PDF' : file.name.split('.').pop().toUpperCase();
+      setFormData(prev => ({
+        ...prev,
+        downloads: [...prev.downloads, { name: fileName, url: fileUrl, type: fileType }]
+      }));
+      toast.success("Download hinzugefügt");
+    } catch (err) {
+      toast.error("Upload fehlgeschlagen");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  const removeDownload = (index) => {
+    setFormData(prev => ({ ...prev, downloads: prev.downloads.filter((_, i) => i !== index) }));
+  };
+
+  const updateDownloadName = (index, name) => {
+    setFormData(prev => ({
+      ...prev,
+      downloads: prev.downloads.map((dl, i) => i === index ? { ...dl, name } : dl)
+    }));
+  };
+
+  const updateDownloadType = (index, type) => {
+    setFormData(prev => ({
+      ...prev,
+      downloads: prev.downloads.map((dl, i) => i === index ? { ...dl, type } : dl)
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -2265,6 +2389,55 @@ const ProductForm = ({ product, categories, onSave }) => {
                   </div>
                 ))}
               </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Downloads / Dokumente */}
+      <div>
+        <Label className="label-brutal">Downloads (Handbuch, CE-Zertifizierung, etc.)</Label>
+        <div className="mb-2">
+          <input
+            type="file"
+            onChange={handleDownloadUpload}
+            className="hidden"
+            id="download-upload"
+            disabled={uploading}
+          />
+          <label
+            htmlFor="download-upload"
+            className={`btn-secondary inline-flex items-center gap-2 cursor-pointer ${uploading ? 'opacity-50' : ''}`}
+          >
+            <FileText className="w-4 h-4" />
+            {uploading ? "Wird hochgeladen..." : "Dokument hochladen"}
+          </label>
+        </div>
+        <div className="space-y-2">
+          {formData.downloads.map((dl, idx) => (
+            <div key={idx} className="flex items-center gap-2 border border-[#E4E4E7] p-2">
+              <FileText className="w-5 h-5 text-[#FF3B30] flex-shrink-0" />
+              <Input
+                value={dl.name}
+                onChange={(e) => updateDownloadName(idx, e.target.value)}
+                className="input-brutal text-sm flex-1"
+                placeholder="Dokumentname"
+              />
+              <select
+                value={dl.type || 'PDF'}
+                onChange={(e) => updateDownloadType(idx, e.target.value)}
+                className="border-2 border-black px-2 py-1 text-sm"
+              >
+                <option value="Handbuch">Handbuch</option>
+                <option value="CE-Zertifizierung">CE-Zertifizierung</option>
+                <option value="Datenblatt">Datenblatt</option>
+                <option value="Bedienungsanleitung">Bedienungsanleitung</option>
+                <option value="PDF">PDF</option>
+                <option value="Sonstiges">Sonstiges</option>
+              </select>
+              <button type="button" onClick={() => removeDownload(idx)} className="text-red-500">
+                <X className="w-4 h-4" />
+              </button>
             </div>
           ))}
         </div>
