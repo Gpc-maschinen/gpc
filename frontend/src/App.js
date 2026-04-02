@@ -163,8 +163,7 @@ const Navbar = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center gap-2" data-testid="logo-link">
-              <Package className="w-8 h-8 text-[#FF3B30]" />
-              <span className="font-bold text-xl tracking-tight">G.P.C</span>
+              <img src="/gpc-logo.jpg" alt="G.P.C. Maschinen" className="h-12 w-auto" />
             </Link>
 
             {/* Desktop Menu */}
@@ -2459,8 +2458,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Package className="w-8 h-8 text-[#FF3B30]" />
-              <span className="font-bold text-xl text-white">G.P.C</span>
+              <img src="/gpc-logo.jpg" alt="G.P.C. Maschinen" className="h-12 w-auto" />
             </div>
             <p className="text-[#E4E4E7] text-sm">
               G.P.C. Maschinen-Vertriebs-GmbH - Ihr Partner für hochwertige Industriemaschinen.
