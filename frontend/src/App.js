@@ -466,9 +466,26 @@ const ProductCard = ({ product, onAddToCart }) => {
         <Link to={`/produkt/${product.id}`}>
           <h3 className="font-bold text-lg mb-2 hover:text-[#FF3B30] transition-colors">{product.name}</h3>
         </Link>
-        <p className="text-[#71717A] text-sm mb-4 line-clamp-2">{product.description}</p>
+        <p className="text-[#71717A] text-sm mb-2 line-clamp-2">{product.description}</p>
+        {product.rating > 0 && (
+          <div className="flex items-center gap-1 mb-2">
+            {[1,2,3,4,5].map(s => (
+              <span key={s} className={`text-sm ${s <= Math.round(product.rating) ? 'text-yellow-500' : 'text-gray-300'}`}>&#9733;</span>
+            ))}
+            <span className="text-xs text-[#71717A] ml-1">({product.rating})</span>
+          </div>
+        )}
         <div className="flex items-center justify-between">
-          <span className="text-xl font-bold">{product.price.toLocaleString('de-DE')} €</span>
+          <div>
+            {product.sale_price ? (
+              <>
+                <span className="text-sm text-[#71717A] line-through mr-2">{product.price.toLocaleString('de-DE')} €</span>
+                <span className="text-xl font-bold text-[#FF3B30]">{product.sale_price.toLocaleString('de-DE')} €</span>
+              </>
+            ) : (
+              <span className="text-xl font-bold">{product.price.toLocaleString('de-DE')} €</span>
+            )}
+          </div>
           <button
             className="btn-primary py-2 px-4 text-sm"
             onClick={() => onAddToCart(product.id)}
@@ -690,10 +707,29 @@ const ProductDetailPage = () => {
             <div className="p-8">
               <p className="label-brutal mb-2">{product.category}</p>
               <h1 className="text-3xl md:text-4xl font-bold mb-4" data-testid="product-name">{product.name}</h1>
-              <p className="text-[#71717A] mb-6">{product.description}</p>
+              <p className="text-[#71717A] mb-4">{product.description}</p>
               
-              <div className="text-3xl font-bold text-[#FF3B30] mb-6" data-testid="product-price">
-                {product.price.toLocaleString('de-DE')} €
+              {product.rating > 0 && (
+                <div className="flex items-center gap-1 mb-4">
+                  {[1,2,3,4,5].map(s => (
+                    <span key={s} className={`text-xl ${s <= Math.round(product.rating) ? 'text-yellow-500' : 'text-gray-300'}`}>&#9733;</span>
+                  ))}
+                  <span className="text-sm text-[#71717A] ml-2">{product.rating} von 5</span>
+                </div>
+              )}
+              
+              <div className="mb-6" data-testid="product-price">
+                {product.sale_price ? (
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl text-[#71717A] line-through">{product.price.toLocaleString('de-DE')} €</span>
+                    <span className="text-3xl font-bold text-[#FF3B30]">{product.sale_price.toLocaleString('de-DE')} €</span>
+                    <span className="bg-[#FF3B30] text-white text-sm font-bold px-2 py-1">
+                      -{Math.round((1 - product.sale_price / product.price) * 100)}%
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-3xl font-bold text-[#FF3B30]">{product.price.toLocaleString('de-DE')} €</span>
+                )}
               </div>
 
               {/* Quantity */}
@@ -1244,7 +1280,14 @@ const QuoteRequestPage = () => {
               <img src={product.image_url} alt={product.name} className="w-full h-40 object-cover mb-4" />
               <p className="text-xs text-[#71717A] uppercase tracking-wider">{product.category}</p>
               <h3 className="font-bold text-lg mb-2">{product.name}</h3>
-              <p className="text-xl font-bold text-[#FF3B30]">{product.price.toLocaleString('de-DE')} €</p>
+              {product.sale_price ? (
+                <>
+                  <p className="text-sm text-[#71717A] line-through">{product.price.toLocaleString('de-DE')} €</p>
+                  <p className="text-xl font-bold text-[#FF3B30]">{product.sale_price.toLocaleString('de-DE')} €</p>
+                </>
+              ) : (
+                <p className="text-xl font-bold text-[#FF3B30]">{product.price.toLocaleString('de-DE')} €</p>
+              )}
               <p className="text-xs text-[#71717A] mt-1">Listenpreis (netto)</p>
             </div>
           </div>
@@ -1672,6 +1715,7 @@ const AdminProducts = () => {
                 <th className="text-left p-4 text-sm font-semibold">Name</th>
                 <th className="text-left p-4 text-sm font-semibold">Kategorie</th>
                 <th className="text-left p-4 text-sm font-semibold">Preis</th>
+                <th className="text-left p-4 text-sm font-semibold">Bewertung</th>
                 <th className="text-left p-4 text-sm font-semibold">Lager</th>
                 <th className="text-left p-4 text-sm font-semibold">Aktionen</th>
               </tr>
@@ -1684,7 +1728,22 @@ const AdminProducts = () => {
                   </td>
                   <td className="p-4 font-medium">{product.name}</td>
                   <td className="p-4 text-[#71717A]">{product.category}</td>
-                  <td className="p-4 font-bold">{product.price.toLocaleString('de-DE')} €</td>
+                  <td className="p-4 font-bold">
+                    {product.sale_price ? (
+                      <div>
+                        <span className="text-sm text-[#71717A] line-through mr-1">{product.price.toLocaleString('de-DE')} €</span>
+                        <br />
+                        <span className="text-[#FF3B30]">{product.sale_price.toLocaleString('de-DE')} €</span>
+                      </div>
+                    ) : (
+                      <span>{product.price.toLocaleString('de-DE')} €</span>
+                    )}
+                  </td>
+                  <td className="p-4">
+                    {product.rating > 0 ? (
+                      <span className="text-yellow-500">{'★'.repeat(Math.round(product.rating))} <span className="text-xs text-[#71717A]">{product.rating}</span></span>
+                    ) : '-'}
+                  </td>
                   <td className="p-4">{product.stock}</td>
                   <td className="p-4">
                     <div className="flex gap-2">
@@ -1721,6 +1780,8 @@ const ProductForm = ({ product, categories, onSave }) => {
     name: product?.name || "",
     description: product?.description || "",
     price: product?.price || "",
+    sale_price: product?.sale_price || "",
+    rating: product?.rating || 0,
     category: product?.category || "",
     image_url: product?.image_url || "",
     images: product?.images || [],
@@ -1764,14 +1825,12 @@ const ProductForm = ({ product, categories, onSave }) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Validate file type
     const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
     if (!validTypes.includes(file.type)) {
       toast.error("Nur Bildformate erlaubt (JPG, PNG, GIF, WebP)");
       return;
     }
 
-    // Validate file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
       toast.error("Datei zu groß (max. 10MB)");
       return;
@@ -1790,9 +1849,9 @@ const ProductForm = ({ product, categories, onSave }) => {
       const imageUrl = `${BACKEND_URL}${res.data.url}`;
       
       if (isMain) {
-        setFormData({ ...formData, image_url: imageUrl });
+        setFormData(prev => ({ ...prev, image_url: imageUrl }));
       } else {
-        setFormData({ ...formData, images: [...formData.images, imageUrl] });
+        setFormData(prev => ({ ...prev, images: [...prev.images, imageUrl] }));
       }
       toast.success("Bild hochgeladen");
     } catch (e) {
@@ -1802,6 +1861,44 @@ const ProductForm = ({ product, categories, onSave }) => {
       setUploading(false);
       e.target.value = "";
     }
+  };
+
+  const handleBulkUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    const validFiles = files.filter(f => validTypes.includes(f.type) && f.size <= 10 * 1024 * 1024);
+    
+    if (validFiles.length !== files.length) {
+      toast.error(`${files.length - validFiles.length} Datei(en) übersprungen (falsches Format oder zu groß)`);
+    }
+
+    if (!validFiles.length) return;
+
+    setUploading(true);
+    let uploaded = 0;
+    const newImages = [...formData.images];
+
+    for (const file of validFiles) {
+      try {
+        const uploadFormData = new FormData();
+        uploadFormData.append("file", file);
+        const res = await axios.post(`${API}/admin/upload`, uploadFormData, {
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+        newImages.push(`${BACKEND_URL}${res.data.url}`);
+        uploaded++;
+      } catch (err) {
+        console.error("Bulk upload error:", err);
+      }
+    }
+
+    setFormData(prev => ({ ...prev, images: newImages }));
+    setUploading(false);
+    toast.success(`${uploaded} von ${validFiles.length} Bildern hochgeladen`);
+    e.target.value = "";
   };
 
   const removeImage = (index) => {
@@ -1882,6 +1979,8 @@ const ProductForm = ({ product, categories, onSave }) => {
       const data = {
         ...formData,
         price: parseFloat(formData.price),
+        sale_price: formData.sale_price ? parseFloat(formData.sale_price) : null,
+        rating: parseFloat(formData.rating) || 0,
         stock: parseInt(formData.stock)
       };
 
@@ -1914,6 +2013,22 @@ const ProductForm = ({ product, categories, onSave }) => {
         <div>
           <Label className="label-brutal">Preis (€) *</Label>
           <Input type="number" name="price" value={formData.price} onChange={handleChange} required step="0.01" className="input-brutal" />
+        </div>
+        <div>
+          <Label className="label-brutal">Angebotspreis (€)</Label>
+          <Input type="number" name="sale_price" value={formData.sale_price} onChange={handleChange} step="0.01" className="input-brutal" placeholder="Leer = kein Angebot" />
+        </div>
+        <div>
+          <Label className="label-brutal">Bewertung (0-5)</Label>
+          <div className="flex items-center gap-2">
+            <Input type="number" name="rating" value={formData.rating} onChange={handleChange} step="0.1" min="0" max="5" className="input-brutal" />
+            <div className="flex items-center text-yellow-500 text-lg">
+              {[1,2,3,4,5].map(s => (
+                <span key={s} className={s <= Math.round(formData.rating) ? 'text-yellow-500' : 'text-gray-300'}>&#9733;</span>
+              ))}
+              <span className="text-sm text-[#71717A] ml-1">({formData.rating})</span>
+            </div>
+          </div>
         </div>
         <div>
           <Label className="label-brutal">Lagerbestand</Label>
@@ -1973,7 +2088,7 @@ const ProductForm = ({ product, categories, onSave }) => {
       {/* Additional Images */}
       <div>
         <Label className="label-brutal">Weitere Bilder</Label>
-        <div className="mb-2">
+        <div className="mb-2 flex gap-2">
           <input
             type="file"
             accept="image/*"
@@ -1987,7 +2102,23 @@ const ProductForm = ({ product, categories, onSave }) => {
             className={`btn-secondary inline-flex items-center gap-2 cursor-pointer ${uploading ? 'opacity-50' : ''}`}
           >
             <Plus className="w-4 h-4" />
-            {uploading ? "Wird hochgeladen..." : "Bild hinzufügen"}
+            Einzeln
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleBulkUpload}
+            className="hidden"
+            id="bulk-image-upload"
+            disabled={uploading}
+          />
+          <label
+            htmlFor="bulk-image-upload"
+            className={`btn-primary inline-flex items-center gap-2 cursor-pointer ${uploading ? 'opacity-50' : ''}`}
+          >
+            <Image className="w-4 h-4" />
+            {uploading ? "Wird hochgeladen..." : "Mehrere hochladen"}
           </label>
         </div>
         <div className="flex gap-2 flex-wrap">
