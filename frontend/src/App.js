@@ -670,6 +670,7 @@ const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeTab, setActiveTab] = useState("beschreibung");
+  const [showShippingInfo, setShowShippingInfo] = useState(false);
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
@@ -772,6 +773,40 @@ const ProductDetailPage = () => {
                   <span className="text-3xl font-bold text-[#FF3B30]">{product.price.toLocaleString('de-DE')} €</span>
                 )}
                 <p className="text-xs text-[#71717A] mt-1">Alle Preise netto zzgl. MwSt.</p>
+              </div>
+
+              {/* Versand & Lieferinformation */}
+              <div className="mb-6 border border-[#E4E4E7] p-4" data-testid="shipping-info-box">
+                <button
+                  onClick={() => setShowShippingInfo(!showShippingInfo)}
+                  className="flex items-center justify-between w-full text-left"
+                  data-testid="shipping-info-toggle"
+                >
+                  <span className="font-bold text-sm">Versand & Lieferinformation</span>
+                  <ChevronRight className={`w-4 h-4 transition-transform ${showShippingInfo ? 'rotate-90' : ''}`} />
+                </button>
+                {showShippingInfo && (
+                  <div className="mt-3 text-sm text-[#3F3F46] space-y-3 leading-relaxed" data-testid="shipping-info-content">
+                    <p>Bei gpc-maschinen.de bestellen Sie ohne Mindestbestellwert. Lieferungen sind aktuell nur innerhalb Deutschlands möglich. Innerhalb Deutschlands betragen die Versandkosten <strong>5,95 Euro inkl. MwSt.</strong> pro Bestellung. Ab einem Warenwert von <strong>50 Euro</strong> liefern wir versandkostenfrei.</p>
+                    <p>Bei Speditionslieferungen auf Inseln ermitteln wir die Kosten auf Anfrage oder liefern frei Festland. Sofern Sie eine Lieferadresse auf einer Insel haben, bitten wir Sie sich bei uns zu melden und ein Angebot unter Angabe der Artikelnummer in der gewünschten Menge für die Lieferung auf eine Insel anzufordern.</p>
+                    <details className="cursor-pointer">
+                      <summary className="font-semibold text-[#09090B] hover:text-[#FF3B30] transition-colors">Welche Liefergebiete sind betroffen?</summary>
+                      <div className="mt-2 pl-4 border-l-2 border-[#E4E4E7] space-y-2 text-xs">
+                        <p><strong>Ostfriesische Inseln</strong> (Baltrum, Borkum, Juist, Langeoog, Norderney, Spiekeroog, Wangerooge) – PLZ: 26465, 26474, 26486, 26548, 26571, 26579, 26757</p>
+                        <p><strong>Nordfriesische Inseln</strong> (Amrum, Föhr, Nordstrand, Pellworm, Sylt, die meisten Halligen) – PLZ: 25845, 25846-25847, 25849, 25859, 25863, 25869, 25929-25933, 25938-25942, 25946-25949, 25952-25955, 25961-25970, 25980, 25985-25986, 25988-25990, 25992-25994, 25996-25999</p>
+                        <p><strong>Helgoland</strong> – PLZ: 27498</p>
+                        <p><strong>Neuwerk</strong> – PLZ: 27499</p>
+                        <p><strong>Hiddensee</strong> – PLZ: 18565</p>
+                        <p><strong>Einzelne Adressen auf Inseln in Binnenseen</strong> (z.&nbsp;B. Chiemsee) – PLZ: 83256</p>
+                      </div>
+                    </details>
+                    <p>In einigen Fällen besteht die Möglichkeit, die Lieferung an eine Filiale des Versanddienstleisters auf dem Festland zu senden. Von dort aus können Sie den Weitertransport selbst organisieren. Gerne beraten wir Sie zu möglichen Alternativen, um Ihre Transportkosten zu optimieren.</p>
+                    <p>Die Lieferung von Waren erfolgt auf dem Versandweg an die vom Kunden angegebene Lieferanschrift, sofern nichts anderes vereinbart ist. Bei der Abwicklung der Transaktion ist die in der Bestellabwicklung des Verkäufers angegebene Lieferanschrift maßgeblich.</p>
+                    <p>Bei Waren, die per Spedition geliefert werden, erfolgt die Lieferung „frei Bordsteinkante", also bis zu der der Lieferadresse nächst gelegenen öffentlichen Bordsteinkante, sofern sich aus den Versandinformationen im Online-Shop der G.P.C. Maschinen-Vertriebs-GmbH nichts anderes ergibt und sofern nichts anderes vereinbart ist.</p>
+                    <p>Sendet das Transportunternehmen die versandte Ware an den Verkäufer zurück, da eine Zustellung beim Kunden nicht möglich war, trägt der Kunde die Kosten für den erfolglosen Versand. Dies gilt nicht, wenn der Kunde sein Widerrufsrecht wirksam ausübt, wenn er den Umstand, der zur Unmöglichkeit der Zustellung geführt hat, nicht zu vertreten hat oder wenn er vorübergehend an der Annahme der angebotenen Leistung verhindert war, es sei denn, dass der Verkäufer ihm die Leistung eine angemessene Zeit vorher angekündigt hatte.</p>
+                    <p className="font-semibold text-[#FF3B30]">Achtung: Selbstabholung ist aus logistischen Gründen nicht möglich.</p>
+                  </div>
+                )}
               </div>
 
               {/* Quantity */}
