@@ -21,9 +21,26 @@
 - Rechtliche Seiten mit Firmendaten
 - VPS Deployment mit HTTPS
 - "Made with Emergent" Badge entfernt
+- Admin-verwaltete Kundenbewertungen (Name, Text, Sterne, Datum)
+- Produkt-Detail Tabs (Beschreibung, Technische Daten, Downloads)
+- PDF/Manual Downloads Upload
+- **Versandkosten-System (NEU 2026-04-02)**:
+  - Admin Settings: Versandzonen mit Preisen, Schwellwert für kostenlosen Versand, Versandhinweis
+  - Warenkorb zeigt Versandkosten-Info
+  - Kasse: Versandzone wählen, Zwischensumme + Versand + Gesamt
+  - Bestellbestätigung mit Versandkosten-Aufschlüsselung
+  - Backend berechnet Versandkosten bei Bestellung
+  - Telegram-Nachricht enthält Versandkosten
+- **Kategorie-Kacheln auf Produktseite (NEU 2026-04-02)**
+
+## DB Schema
+- `products`: {id, name, description, category, price, sale_price, rating, images, specifications, reviews, downloads}
+- `orders`: {id, order_number, customer, items, subtotal, shipping_cost, shipping_zone, total, payment_method, status, notes, created_at}
+- `settings`: {type: "shop", shipping_costs: [{zone, cost}], free_shipping_threshold, shipping_note}
 
 ## Backlog
 ### P1
+- App.js Refactoring (3300+ Zeilen aufteilen)
 - E-Mail-Benachrichtigungen
 - Produktsuche
 ### P2
