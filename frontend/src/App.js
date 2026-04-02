@@ -772,7 +772,7 @@ const ProductDetailPage = () => {
                 ) : (
                   <span className="text-3xl font-bold text-[#FF3B30]">{product.price.toLocaleString('de-DE')} €</span>
                 )}
-                <p className="text-xs text-[#71717A] mt-1">Alle Preise netto zzgl. MwSt.</p>
+                <p className="text-xs text-[#71717A] mt-1">Alle Preise inkl. MwSt., zzgl. Versandkosten</p>
               </div>
 
               {/* Versand & Lieferinformation */}
@@ -1524,7 +1524,7 @@ const QuoteRequestPage = () => {
               ) : (
                 <p className="text-xl font-bold text-[#FF3B30]">{product.price.toLocaleString('de-DE')} €</p>
               )}
-              <p className="text-xs text-[#71717A] mt-1">Listenpreis (netto)</p>
+              <p className="text-xs text-[#71717A] mt-1">inkl. MwSt.</p>
             </div>
           </div>
         </div>
