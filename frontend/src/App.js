@@ -775,36 +775,58 @@ const ProductDetailPage = () => {
                 <p className="text-xs text-[#71717A] mt-1">Alle Preise inkl. MwSt., zzgl. Versandkosten</p>
               </div>
 
-              {/* Versand & Lieferinformation */}
-              <div className="mb-6 border border-[#E4E4E7] p-4" data-testid="shipping-info-box">
-                <button
-                  onClick={() => setShowShippingInfo(!showShippingInfo)}
-                  className="flex items-center justify-between w-full text-left"
-                  data-testid="shipping-info-toggle"
-                >
-                  <span className="font-bold text-sm">Versand & Lieferinformation</span>
-                  <ChevronRight className={`w-4 h-4 transition-transform ${showShippingInfo ? 'rotate-90' : ''}`} />
-                </button>
-                {showShippingInfo && (
-                  <div className="mt-3 text-sm text-[#3F3F46] space-y-3 leading-relaxed" data-testid="shipping-info-content">
-                    <p>Bei gpc-maschinen.de bestellen Sie ohne Mindestbestellwert. Lieferungen sind aktuell nur innerhalb Deutschlands möglich. Innerhalb Deutschlands betragen die Versandkosten <strong>5,95 Euro inkl. MwSt.</strong> pro Bestellung. Ab einem Warenwert von <strong>50 Euro</strong> liefern wir versandkostenfrei.</p>
-                    <p>Bei Speditionslieferungen auf Inseln ermitteln wir die Kosten auf Anfrage oder liefern frei Festland. Sofern Sie eine Lieferadresse auf einer Insel haben, bitten wir Sie sich bei uns zu melden und ein Angebot unter Angabe der Artikelnummer in der gewünschten Menge für die Lieferung auf eine Insel anzufordern.</p>
-                    <details className="cursor-pointer">
-                      <summary className="font-semibold text-[#09090B] hover:text-[#FF3B30] transition-colors">Welche Liefergebiete sind betroffen?</summary>
-                      <div className="mt-2 pl-4 border-l-2 border-[#E4E4E7] space-y-2 text-xs">
-                        <p><strong>Ostfriesische Inseln</strong> (Baltrum, Borkum, Juist, Langeoog, Norderney, Spiekeroog, Wangerooge) – PLZ: 26465, 26474, 26486, 26548, 26571, 26579, 26757</p>
-                        <p><strong>Nordfriesische Inseln</strong> (Amrum, Föhr, Nordstrand, Pellworm, Sylt, die meisten Halligen) – PLZ: 25845, 25846-25847, 25849, 25859, 25863, 25869, 25929-25933, 25938-25942, 25946-25949, 25952-25955, 25961-25970, 25980, 25985-25986, 25988-25990, 25992-25994, 25996-25999</p>
-                        <p><strong>Helgoland</strong> – PLZ: 27498</p>
-                        <p><strong>Neuwerk</strong> – PLZ: 27499</p>
-                        <p><strong>Hiddensee</strong> – PLZ: 18565</p>
-                        <p><strong>Einzelne Adressen auf Inseln in Binnenseen</strong> (z.&nbsp;B. Chiemsee) – PLZ: 83256</p>
+              {/* Versand & Lieferinformation als Popup-Link */}
+              <div className="mb-6" data-testid="shipping-info-box">
+                <Dialog open={showShippingInfo} onOpenChange={setShowShippingInfo}>
+                  <DialogTrigger asChild>
+                    <button className="text-sm text-[#71717A] hover:text-[#FF3B30] underline transition-colors" data-testid="shipping-info-toggle">
+                      Versand & Lieferinformation
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Versand & Lieferinformation</DialogTitle>
+                    </DialogHeader>
+                    <div className="text-sm text-[#3F3F46] space-y-3 leading-relaxed" data-testid="shipping-info-content">
+                      <p>Bei gpc-maschinen.de bestellen Sie ohne Mindestbestellwert. Lieferungen sind aktuell nur innerhalb Deutschlands möglich. Innerhalb Deutschlands betragen die Versandkosten <strong>5,95 Euro inkl. MwSt.</strong> pro Bestellung. Ab einem Warenwert von <strong>50 Euro</strong> liefern wir versandkostenfrei.</p>
+                      <p>Bei Speditionslieferungen auf Inseln ermitteln wir die Kosten auf Anfrage oder liefern frei Festland. Sofern Sie eine Lieferadresse auf einer Insel haben, bitten wir Sie sich bei uns zu melden und ein Angebot unter Angabe der Artikelnummer in der gewünschten Menge für die Lieferung auf eine Insel anzufordern.</p>
+                      <div>
+                        <p className="font-semibold text-[#09090B] mb-2">Welche Liefergebiete sind betroffen?</p>
+                        <div className="pl-4 border-l-2 border-[#E4E4E7] space-y-2 text-xs">
+                          <p><strong>Ostfriesische Inseln</strong> (Baltrum, Borkum, Juist, Langeoog, Norderney, Spiekeroog, Wangerooge) – PLZ: 26465, 26474, 26486, 26548, 26571, 26579, 26757</p>
+                          <p><strong>Nordfriesische Inseln</strong> (Amrum, Föhr, Nordstrand, Pellworm, Sylt, die meisten Halligen) – PLZ: 25845, 25846-25847, 25849, 25859, 25863, 25869, 25929-25933, 25938-25942, 25946-25949, 25952-25955, 25961-25970, 25980, 25985-25986, 25988-25990, 25992-25994, 25996-25999</p>
+                          <p><strong>Helgoland</strong> – PLZ: 27498</p>
+                          <p><strong>Neuwerk</strong> – PLZ: 27499</p>
+                          <p><strong>Hiddensee</strong> – PLZ: 18565</p>
+                          <p><strong>Einzelne Adressen auf Inseln in Binnenseen</strong> (z.&nbsp;B. Chiemsee) – PLZ: 83256</p>
+                        </div>
                       </div>
-                    </details>
-                    <p>In einigen Fällen besteht die Möglichkeit, die Lieferung an eine Filiale des Versanddienstleisters auf dem Festland zu senden. Von dort aus können Sie den Weitertransport selbst organisieren. Gerne beraten wir Sie zu möglichen Alternativen, um Ihre Transportkosten zu optimieren.</p>
-                    <p>Die Lieferung von Waren erfolgt auf dem Versandweg an die vom Kunden angegebene Lieferanschrift, sofern nichts anderes vereinbart ist. Bei der Abwicklung der Transaktion ist die in der Bestellabwicklung des Verkäufers angegebene Lieferanschrift maßgeblich.</p>
-                    <p>Bei Waren, die per Spedition geliefert werden, erfolgt die Lieferung „frei Bordsteinkante", also bis zu der der Lieferadresse nächst gelegenen öffentlichen Bordsteinkante, sofern sich aus den Versandinformationen im Online-Shop der G.P.C. Maschinen-Vertriebs-GmbH nichts anderes ergibt und sofern nichts anderes vereinbart ist.</p>
-                    <p>Sendet das Transportunternehmen die versandte Ware an den Verkäufer zurück, da eine Zustellung beim Kunden nicht möglich war, trägt der Kunde die Kosten für den erfolglosen Versand. Dies gilt nicht, wenn der Kunde sein Widerrufsrecht wirksam ausübt, wenn er den Umstand, der zur Unmöglichkeit der Zustellung geführt hat, nicht zu vertreten hat oder wenn er vorübergehend an der Annahme der angebotenen Leistung verhindert war, es sei denn, dass der Verkäufer ihm die Leistung eine angemessene Zeit vorher angekündigt hatte.</p>
-                    <p className="font-semibold text-[#FF3B30]">Achtung: Selbstabholung ist aus logistischen Gründen nicht möglich.</p>
+                      <p>In einigen Fällen besteht die Möglichkeit, die Lieferung an eine Filiale des Versanddienstleisters auf dem Festland zu senden. Von dort aus können Sie den Weitertransport selbst organisieren. Gerne beraten wir Sie zu möglichen Alternativen, um Ihre Transportkosten zu optimieren.</p>
+                      <p>Die Lieferung von Waren erfolgt auf dem Versandweg an die vom Kunden angegebene Lieferanschrift, sofern nichts anderes vereinbart ist. Bei der Abwicklung der Transaktion ist die in der Bestellabwicklung des Verkäufers angegebene Lieferanschrift maßgeblich.</p>
+                      <p>Bei Waren, die per Spedition geliefert werden, erfolgt die Lieferung „frei Bordsteinkante", also bis zu der der Lieferadresse nächst gelegenen öffentlichen Bordsteinkante, sofern sich aus den Versandinformationen im Online-Shop der G.P.C. Maschinen-Vertriebs-GmbH nichts anderes ergibt und sofern nichts anderes vereinbart ist.</p>
+                      <p>Sendet das Transportunternehmen die versandte Ware an den Verkäufer zurück, da eine Zustellung beim Kunden nicht möglich war, trägt der Kunde die Kosten für den erfolglosen Versand. Dies gilt nicht, wenn der Kunde sein Widerrufsrecht wirksam ausübt, wenn er den Umstand, der zur Unmöglichkeit der Zustellung geführt hat, nicht zu vertreten hat oder wenn er vorübergehend an der Annahme der angebotenen Leistung verhindert war, es sei denn, dass der Verkäufer ihm die Leistung eine angemessene Zeit vorher angekündigt hatte.</p>
+                      <p className="font-semibold text-[#FF3B30]">Achtung: Selbstabholung ist aus logistischen Gründen nicht möglich.</p>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              {/* Lagerstatus */}
+              <div className="mb-6" data-testid="stock-status">
+                {product.stock > 5 ? (
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#16A34A]" />
+                    <span className="text-sm font-semibold text-[#16A34A]">Auf Lager</span>
+                  </div>
+                ) : product.stock > 0 ? (
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#D97706]" />
+                    <span className="text-sm font-semibold text-[#D97706]">Nur noch {product.stock} verfügbar</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#DC2626]" />
+                    <span className="text-sm font-semibold text-[#DC2626]">Nicht verfügbar</span>
                   </div>
                 )}
               </div>
@@ -813,11 +835,11 @@ const ProductDetailPage = () => {
               <div className="mb-6">
                 <Label className="label-brutal">Menge</Label>
                 <div className="flex items-center gap-2">
-                  <button className="quantity-btn" onClick={() => setQuantity(Math.max(1, quantity - 1))} data-testid="decrease-quantity">
+                  <button className="quantity-btn" onClick={() => setQuantity(Math.max(1, quantity - 1))} data-testid="decrease-quantity" disabled={product.stock === 0}>
                     <Minus className="w-4 h-4" />
                   </button>
                   <span className="w-12 text-center font-bold text-lg">{quantity}</span>
-                  <button className="quantity-btn" onClick={() => setQuantity(quantity + 1)} data-testid="increase-quantity">
+                  <button className="quantity-btn" onClick={() => setQuantity(Math.min(product.stock || 999, quantity + 1))} data-testid="increase-quantity" disabled={product.stock === 0}>
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
@@ -826,12 +848,13 @@ const ProductDetailPage = () => {
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
-                  className="btn-primary flex-1 flex items-center justify-center gap-2"
-                  onClick={() => addToCart(product.id, quantity)}
+                  className={`flex-1 flex items-center justify-center gap-2 ${product.stock > 0 ? 'btn-primary' : 'bg-gray-300 text-gray-500 cursor-not-allowed px-6 py-3 font-bold'}`}
+                  onClick={() => product.stock > 0 && addToCart(product.id, quantity)}
+                  disabled={product.stock === 0}
                   data-testid="add-to-cart-button"
                 >
                   <ShoppingCart className="w-5 h-5" />
-                  In den Warenkorb
+                  {product.stock > 0 ? 'In den Warenkorb' : 'Nicht verfügbar'}
                 </button>
                 <Link
                   to={`/angebot/${product.id}`}
@@ -2041,6 +2064,7 @@ const ProductForm = ({ product, categories, onSave }) => {
   const [reviewName, setReviewName] = useState("");
   const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
+  const [reviewDate, setReviewDate] = useState(new Date().toISOString().split('T')[0]);
 
   // Normalize old flat specs to grouped format
   const normalizeSpecs = (specs) => {
@@ -2226,12 +2250,13 @@ const ProductForm = ({ product, categories, onSave }) => {
       name: reviewName.trim(),
       text: reviewText.trim(),
       rating: parseFloat(reviewRating),
-      date: new Date().toISOString().split('T')[0]
+      date: reviewDate
     };
     setFormData(prev => ({ ...prev, reviews: [...prev.reviews, newReview] }));
     setReviewName("");
     setReviewText("");
     setReviewRating(5);
+    setReviewDate(new Date().toISOString().split('T')[0]);
     toast.success("Bewertung hinzugefügt");
   };
 
@@ -2618,6 +2643,16 @@ const ProductForm = ({ product, categories, onSave }) => {
               ))}
               <span className="text-sm text-[#71717A] ml-1">({reviewRating})</span>
             </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Label className="text-sm">Datum:</Label>
+            <Input
+              type="date"
+              value={reviewDate}
+              onChange={(e) => setReviewDate(e.target.value)}
+              className="input-brutal w-44"
+              data-testid="review-date-input"
+            />
             <button type="button" onClick={addReview} className="btn-secondary px-3 py-1 text-sm ml-auto">
               Hinzufügen
             </button>

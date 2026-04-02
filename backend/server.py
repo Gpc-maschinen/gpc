@@ -856,6 +856,13 @@ async def create_order(order_data: OrderCreate):
     await db.orders.insert_one(order_doc)
     await db.carts.delete_one({"session_id": order_data.session_id})
     
+    # Lagerbestand reduzieren
+    for item in cart["items"]:
+        await db.products.update_one(
+            {"id": item["product_id"], "stock": {"$gte": item["quantity"]}},
+            {"$inc": {"stock": -item["quantity"]}}
+        )
+    
     # Telegram Benachrichtigung senden
     send_telegram_order(order_doc)
     
