@@ -3153,55 +3153,135 @@ const AGBPage = () => {
           <h1 className="text-4xl md:text-5xl font-bold">Allgemeine Geschäftsbedingungen</h1>
         </div>
 
-        <div className="bg-white border border-[#E4E4E7] p-8">
+        <div className="bg-white border border-[#E4E4E7] p-8 text-[#3F3F46] leading-relaxed">
+          <h2 className="text-xl font-bold mb-4">Allgemeine Geschäftsbedingungen mit Kundeninformationen</h2>
+          
+          <div className="mb-6 p-4 bg-[#F4F4F5] border border-[#E4E4E7]">
+            <p className="font-bold mb-2">Inhaltsverzeichnis</p>
+            <ol className="list-decimal list-inside space-y-1 text-sm">
+              <li>Geltungsbereich</li>
+              <li>Vertragsschluss</li>
+              <li>Widerrufsrecht</li>
+              <li>Preise und Zahlungsbedingungen</li>
+              <li>Liefer- und Versandbedingungen</li>
+              <li>Eigentumsvorbehalt</li>
+              <li>Mängelhaftung (Gewährleistung)</li>
+              <li>Haftung</li>
+              <li>Anwendbares Recht</li>
+              <li>Gerichtsstand</li>
+              <li>Alternative Streitbeilegung</li>
+            </ol>
+          </div>
+
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">§ 1 Geltungsbereich</h2>
-            <p className="text-[#71717A]">
-              (1) Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle Verträge zwischen der 
-              G.P.C. Maschinen-Vertriebs-GmbH, Hauptstr. 180, D-51503 Rösrath (nachfolgend "Verkäufer") und 
-              dem Kunden (nachfolgend "Käufer") über den Kauf von Maschinen und Industrieanlagen.
-            </p>
-            <p className="text-[#71717A] mt-2">
-              (2) Abweichende Bedingungen des Käufers werden nicht anerkannt, es sei denn, der Verkäufer 
-              stimmt ihrer Geltung ausdrücklich schriftlich zu.
-            </p>
+            <h3 className="text-lg font-bold mb-3 border-b border-[#E4E4E7] pb-2">1) Geltungsbereich</h3>
+            <p className="mb-2">1.1 Diese Allgemeinen Geschäftsbedingungen (nachfolgend „AGB") der G.P.C. Maschinen-Vertriebs-GmbH (nachfolgend „Verkäufer"), gelten für alle Verträge zur Lieferung von Waren, die ein Verbraucher oder Unternehmer (nachfolgend „Kunde") mit dem Verkäufer hinsichtlich der vom Verkäufer in seinem Online-Shop dargestellten Waren abschließt. Hiermit wird der Einbeziehung von eigenen Bedingungen des Kunden widersprochen, es sei denn, es ist etwas anderes vereinbart.</p>
+            <p className="mb-2">1.2 Verbraucher im Sinne dieser AGB ist jede natürliche Person, die ein Rechtsgeschäft zu Zwecken abschließt, die überwiegend weder ihrer gewerblichen noch ihrer selbständigen beruflichen Tätigkeit zugerechnet werden können.</p>
+            <p>1.3 Unternehmer im Sinne dieser AGB ist eine natürliche oder juristische Person oder eine rechtsfähige Personengesellschaft, die bei Abschluss eines Rechtsgeschäfts in Ausübung ihrer gewerblichen oder selbständigen beruflichen Tätigkeit handelt.</p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">§ 2 Vertragsschluss</h2>
-            <p className="text-[#71717A]">
-              (1) Die Darstellung der Produkte im Online-Shop stellt kein rechtlich bindendes Angebot, 
-              sondern eine Aufforderung zur Bestellung dar.
-            </p>
-            <p className="text-[#71717A] mt-2">
-              (2) Mit der Bestellung erklärt der Käufer verbindlich, die bestellte Ware erwerben zu wollen. 
-              Der Vertrag kommt zustande, wenn der Verkäufer die Bestellung durch eine Auftragsbestätigung 
-              per E-Mail annimmt.
-            </p>
+            <h3 className="text-lg font-bold mb-3 border-b border-[#E4E4E7] pb-2">2) Vertragsschluss</h3>
+            <p className="mb-2">2.1 Die im Online-Shop des Verkäufers enthaltenen Produktbeschreibungen stellen keine verbindlichen Angebote seitens des Verkäufers dar, sondern dienen zur Abgabe eines verbindlichen Angebots durch den Kunden.</p>
+            <p className="mb-2">2.2 Der Kunde kann das Angebot über das in den Online-Shop des Verkäufers integrierte Online-Bestellformular abgeben. Dabei gibt der Kunde, nachdem er die ausgewählten Waren in den virtuellen Warenkorb gelegt und den elektronischen Bestellprozess durchlaufen hat, durch Klicken des den Bestellvorgang abschließenden Buttons ein rechtlich verbindliches Vertragsangebot in Bezug auf die im Warenkorb enthaltenen Waren ab. Ferner kann der Kunde das Angebot auch per E-Mail oder Whatsapp gegenüber dem Verkäufer abgeben.</p>
+            <p className="mb-2">2.3 Der Verkäufer kann das Angebot des Kunden innerhalb von fünf Tagen annehmen,</p>
+            <ul className="list-disc list-inside ml-4 mb-2 space-y-1">
+              <li>indem er dem Kunden eine Rechnung in Textform (Fax oder E-Mail) übermittelt, wobei insoweit der Zugang der Rechnung beim Kunden maßgeblich ist, oder</li>
+              <li>indem er dem Kunden die bestellte Ware liefert, wobei insoweit der Zugang der Ware beim Kunden maßgeblich ist, oder</li>
+              <li>indem er den Kunden nach Abgabe von dessen Bestellung zur Zahlung auffordert.</li>
+            </ul>
+            <p className="mb-2">Liegen mehrere der vorgenannten Alternativen vor, kommt der Vertrag in dem Zeitpunkt zustande, in dem eine der vorgenannten Alternativen zuerst eintritt. Die Frist zur Annahme des Angebots beginnt am Tag nach der Absendung des Angebots durch den Kunden zu laufen und endet mit dem Ablauf des fünften Tages, welcher auf die Absendung des Angebots folgt. Nimmt der Verkäufer das Angebot des Kunden innerhalb vorgenannter Frist nicht an, so gilt dies als Ablehnung des Angebots mit der Folge, dass der Kunde nicht mehr an seine Willenserklärung gebunden ist.</p>
+            <p className="mb-2">2.5 Bei der Abgabe eines Angebots über das Online-Bestellformular des Verkäufers wird der Vertragstext nach dem Vertragsschluss vom Verkäufer gespeichert und dem Kunden nach Absendung von dessen Bestellung in Textform (z. B. E-Mail, Fax oder Brief) übermittelt. Eine darüber hinausgehende Zugänglichmachung des Vertragstextes durch den Verkäufer erfolgt nicht. Sofern der Kunde vor Absendung seiner Bestellung ein Nutzerkonto im Online-Shop des Verkäufers eingerichtet hat, werden die Bestelldaten auf der Website des Verkäufers archiviert und können vom Kunden über dessen passwortgeschütztes Nutzerkonto unter Angabe der entsprechenden Login-Daten kostenlos abgerufen werden.</p>
+            <p className="mb-2">2.6 Vor verbindlicher Abgabe der Bestellung über das Online-Bestellformular des Verkäufers kann der Kunde mögliche Eingabefehler durch aufmerksames Lesen der auf dem Bildschirm dargestellten Informationen erkennen. Ein wirksames technisches Mittel zur besseren Erkennung von Eingabefehlern kann dabei die Vergrößerungsfunktion des Browsers sein, mit deren Hilfe die Darstellung auf dem Bildschirm vergrößert wird. Seine Eingaben kann der Kunde im Rahmen des elektronischen Bestellprozesses so lange über die üblichen Tastatur- und Mausfunktionen korrigieren, bis er den Button anklickt, welcher den Bestellvorgang abschließt.</p>
+            <p className="mb-2">2.7 Für den Vertragsschluss steht die deutsche Sprache zur Verfügung.</p>
+            <p>2.8 Die Bestellabwicklung und Kontaktaufnahme finden in der Regel per E-Mail und automatisierter Bestellabwicklung statt. Der Kunde hat sicherzustellen, dass die von ihm zur Bestellabwicklung angegebene E-Mail-Adresse zutreffend ist, so dass unter dieser Adresse die vom Verkäufer versandten E-Mails empfangen werden können. Insbesondere hat der Kunde bei dem Einsatz von SPAM-Filtern sicherzustellen, dass alle vom Verkäufer oder von diesem mit der Bestellabwicklung beauftragten Dritten versandten E-Mails zugestellt werden können.</p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">§ 3 Preise und Zahlung</h2>
-            <p className="text-[#71717A]">
-              (1) Alle angegebenen Preise sind Nettopreise zuzüglich der gesetzlichen Mehrwertsteuer.
-            </p>
-            <p className="text-[#71717A] mt-2">
-              (2) Die Zahlung erfolgt per Rechnung mit einem Zahlungsziel von 14 Tagen nach Rechnungserhalt 
-              per Überweisung auf das in der Rechnung angegebene Konto.
-            </p>
+            <h3 className="text-lg font-bold mb-3 border-b border-[#E4E4E7] pb-2">3) Widerrufsrecht</h3>
+            <p className="mb-2">3.1 Verbrauchern steht grundsätzlich ein Widerrufsrecht zu.</p>
+            <p>3.2 Nähere Informationen zum Widerrufsrecht ergeben sich aus der Widerrufsbelehrung des Verkäufers.</p>
+          </section>
+
+          <section className="mb-8">
+            <h3 className="text-lg font-bold mb-3 border-b border-[#E4E4E7] pb-2">4) Preise und Zahlungsbedingungen</h3>
+            <p className="mb-2">4.1 Sofern sich aus der Produktbeschreibung des Verkäufers nichts anderes ergibt, handelt es sich bei den angegebenen Preisen um Gesamtpreise, die die gesetzliche Umsatzsteuer enthalten. Gegebenenfalls zusätzlich anfallende Liefer- und Versandkosten werden in der jeweiligen Produktbeschreibung gesondert angegeben.</p>
+            <p className="mb-2">4.2 Die Zahlungsmöglichkeit/en wird/werden dem Kunden im Online-Shop des Verkäufers mitgeteilt.</p>
+            <p>4.3 Ist Vorauskasse per Banküberweisung vereinbart, ist die Zahlung sofort nach Vertragsabschluss fällig, sofern die Parteien keinen späteren Fälligkeitstermin vereinbart haben.</p>
+          </section>
+
+          <section className="mb-8">
+            <h3 className="text-lg font-bold mb-3 border-b border-[#E4E4E7] pb-2">5) Liefer- und Versandbedingungen</h3>
+            <p className="mb-2">5.1 Bietet der Verkäufer den Versand der Ware an, so erfolgt die Lieferung innerhalb des vom Verkäufer angegebenen Liefergebietes an die vom Kunden angegebene Lieferanschrift, sofern nichts anderes vereinbart ist. Bei der Abwicklung der Transaktion ist die in der Bestellabwicklung des Verkäufers angegebene Lieferanschrift maßgeblich.</p>
+            <p className="mb-2">5.2 Scheitert die Zustellung der Ware aus Gründen, die der Kunde zu vertreten hat, trägt der Kunde die dem Verkäufer hierdurch entstehenden angemessenen Kosten. Dies gilt im Hinblick auf die Kosten für die Hinsendung nicht, wenn der Kunde sein Widerrufsrecht wirksam ausübt. Für die Rücksendekosten gilt bei wirksamer Ausübung des Widerrufsrechts durch den Kunden die in der Widerrufsbelehrung des Verkäufers hierzu getroffene Regelung.</p>
+            <p className="mb-2">5.3 Handelt der Kunde als Unternehmer, geht die Gefahr des zufälligen Untergangs und der zufälligen Verschlechterung der verkauften Ware auf den Kunden über, sobald der Verkäufer die Sache dem Spediteur, dem Frachtführer oder der sonst zur Ausführung der Versendung bestimmten Person oder Anstalt ausgeliefert hat. Handelt der Kunde als Verbraucher, geht die Gefahr des zufälligen Untergangs und der zufälligen Verschlechterung der verkauften Ware grundsätzlich erst mit Übergabe der Ware an den Kunden oder eine empfangsberechtigte Person über. Abweichend hiervon geht die Gefahr des zufälligen Untergangs und der zufälligen Verschlechterung der verkauften Ware auch bei Verbrauchern bereits auf den Kunden über, sobald der Verkäufer die Sache dem Spediteur, dem Frachtführer oder der sonst zur Ausführung der Versendung bestimmten Person oder Anstalt ausgeliefert hat, wenn der Kunde den Spediteur, den Frachtführer oder die sonst zur Ausführung der Versendung bestimmte Person oder Anstalt mit der Ausführung beauftragt und der Verkäufer dem Kunden diese Person oder Anstalt zuvor nicht benannt hat.</p>
+            <p className="mb-2">5.4 Der Verkäufer behält sich das Recht vor, im Falle nicht richtiger oder nicht ordnungsgemäßer Selbstbelieferung vom Vertrag zurückzutreten. Dies gilt nur für den Fall, dass die Nichtlieferung nicht vom Verkäufer zu vertreten ist und dieser mit der gebotenen Sorgfalt ein konkretes Deckungsgeschäft mit dem Zulieferer abgeschlossen hat. Der Verkäufer wird alle zumutbaren Anstrengungen unternehmen, um die Ware zu beschaffen. Im Falle der Nichtverfügbarkeit oder der nur teilweisen Verfügbarkeit der Ware wird der Kunde unverzüglich informiert und die Gegenleistung unverzüglich erstattet.</p>
+            <p className="font-semibold">5.5 Selbstabholung ist aus logistischen Gründen nicht möglich.</p>
+          </section>
+
+          <section className="mb-8">
+            <h3 className="text-lg font-bold mb-3 border-b border-[#E4E4E7] pb-2">6) Eigentumsvorbehalt</h3>
+            <p className="mb-2">6.1 Gegenüber Verbrauchern behält sich der Verkäufer bis zur vollständigen Bezahlung des geschuldeten Kaufpreises das Eigentum an der gelieferten Ware vor.</p>
+            <p className="mb-2">6.2 Gegenüber Unternehmern behält sich der Verkäufer bis zur vollständigen Begleichung aller Forderungen aus einer laufenden Geschäftsbeziehung das Eigentum an der gelieferten Ware vor.</p>
+            <p className="mb-2">6.3 Handelt der Kunde als Unternehmer, gilt weiterhin das Folgende:</p>
+            <div className="ml-4 space-y-2">
+              <p>Im Falle der Verarbeitung der gelieferten Ware gilt der Verkäufer als Hersteller und erwirbt Eigentum an der neu entstehenden Ware. Erfolgt die Verarbeitung zusammen mit anderen Materialien, erwirbt der Verkäufer Eigentum im Verhältnis der Rechnungswerte seiner Ware zu dem der anderen Materialien. Ist im Falle der Verbindung oder Vermischung der Ware des Verkäufers mit einer Sache des Kunden diese als Hauptsache anzusehen, geht das Miteigentum an der Sache in dem Verhältnis des Rechnungswertes der Ware des Verkäufers zum Rechnungs- oder mangels eines solchen zum Verkehrswert der Hauptsache - auf den Verkäufer über. Der Kunde gilt in diesen Fällen als Verwahrer.</p>
+              <p>Gegenstände unter Eigentums- oder Rechtsvorbehalt darf der Kunde weder verpfänden noch sicherungsübereignen. Der Kunde ist nur zur Weiterveräußerung der Vorbehaltsware im ordnungsgemäßen Geschäftsbetrieb berechtigt. Sämtliche hieraus entstehenden Forderungen gegen Dritte tritt der Kunde in Höhe des jeweiligen Rechnungswertes (einschließlich Umsatzsteuer) im Voraus an den Verkäufer ab. Diese Abtretung gilt unabhängig davon, ob die Vorbehaltsware ohne oder nach Verarbeitung weiterverkauft worden ist. Der Kunde bleibt zur Einziehung der Forderungen auch nach der Abtretung ermächtigt. Die Befugnis des Verkäufers, die Forderungen selbst einzuziehen, bleibt davon unberührt. Der Verkäufer wird jedoch die Forderungen nicht einziehen, solange der Kunde seinen Zahlungsverpflichtungen dem Verkäufer gegenüber nachkommt, nicht in Zahlungsverzug gerät und kein Antrag auf Eröffnung eines Insolvenzverfahrens gestellt ist.</p>
+              <p>Der Kunde hat Zugriff auf die im Eigentum oder Miteigentum des Verkäufers stehende Ware oder auf die abgetretenen Forderungen sofort mitzuteilen. Er hat an den Verkäufer abgetretene, von ihm eingezogene Beträge sofort an den Verkäufer abzuführen, soweit dessen Forderung fällig ist.</p>
+              <p>Soweit der Wert der Sicherungsrechte des Verkäufers die Höhe der gesicherten Ansprüche um mehr als 10% übersteigt, wird der Verkäufer auf Wunsch des Kunden einen entsprechenden Anteil der Sicherungsrechte freigeben.</p>
+            </div>
+          </section>
+
+          <section className="mb-8">
+            <h3 className="text-lg font-bold mb-3 border-b border-[#E4E4E7] pb-2">7) Mängelhaftung (Gewährleistung)</h3>
+            <p className="mb-2">Soweit sich aus den nachfolgenden Regelungen nichts anderes ergibt, gelten die Vorschriften der gesetzlichen Mängelhaftung. Hiervon abweichend gilt bei Verträgen zur Lieferung von Waren:</p>
+            <p className="mb-2">7.1 Handelt der Kunde als Unternehmer,</p>
+            <ul className="list-disc list-inside ml-4 mb-2 space-y-1">
+              <li>hat der Verkäufer die Wahl der Art der Nacherfüllung;</li>
+              <li>beträgt bei neuen Waren die Verjährungsfrist für Mängelrechte ein Jahr ab Ablieferung der Ware;</li>
+              <li>sind bei gebrauchten Waren die Mängelrechte ausgeschlossen;</li>
+              <li>beginnt die Verjährung nicht erneut, wenn im Rahmen der Mängelhaftung eine Ersatzlieferung erfolgt.</li>
+            </ul>
+            <p className="mb-2">7.2 Die vorstehend geregelten Haftungsbeschränkungen und Fristverkürzungen gelten nicht</p>
+            <ul className="list-disc list-inside ml-4 mb-2 space-y-1">
+              <li>für Schadensersatz- und Aufwendungsersatzansprüche des Kunden,</li>
+              <li>für den Fall, dass der Verkäufer den Mangel arglistig verschwiegen hat,</li>
+              <li>für Waren, die entsprechend ihrer üblichen Verwendungsweise für ein Bauwerk verwendet worden sind und dessen Mangelhaftigkeit verursacht haben,</li>
+              <li>für eine ggf. bestehende Verpflichtung des Verkäufers zur Bereitstellung von Aktualisierungen für digitale Produkte, bei Verträgen zur Lieferung von Waren mit digitalen Elementen.</li>
+            </ul>
+            <p className="mb-2">7.3 Darüber hinaus gilt für Unternehmer, dass die gesetzlichen Verjährungsfristen für einen ggf. bestehenden gesetzlichen Rückgriffsanspruch unberührt bleiben.</p>
+            <p className="mb-2">7.4 Handelt der Kunde als Kaufmann i.S.d. § 1 HGB, trifft ihn die kaufmännische Untersuchungs- und Rügepflicht gemäß § 377 HGB. Unterlässt der Kunde die dort geregelten Anzeigepflichten, gilt die Ware als genehmigt.</p>
+            <p>7.5 Handelt der Kunde als Verbraucher, so wird er gebeten, angelieferte Waren mit offensichtlichen Transportschäden bei dem Zusteller zu reklamieren und den Verkäufer hiervon in Kenntnis zu setzen. Kommt der Kunde dem nicht nach, hat dies keinerlei Auswirkungen auf seine gesetzlichen oder vertraglichen Mängelansprüche.</p>
+          </section>
+
+          <section className="mb-8">
+            <h3 className="text-lg font-bold mb-3 border-b border-[#E4E4E7] pb-2">8) Haftung</h3>
+            <p className="mb-2">Der Verkäufer haftet dem Kunden aus allen vertraglichen, vertragsähnlichen und gesetzlichen, auch deliktischen Ansprüchen auf Schadens- und Aufwendungsersatz wie folgt:</p>
+            <p className="mb-2">8.1 Der Verkäufer haftet aus jedem Rechtsgrund uneingeschränkt</p>
+            <ul className="list-disc list-inside ml-4 mb-2 space-y-1">
+              <li>bei Vorsatz oder grober Fahrlässigkeit,</li>
+              <li>bei vorsätzlicher oder fahrlässiger Verletzung des Lebens, des Körpers oder der Gesundheit,</li>
+              <li>aufgrund eines Garantieversprechens, soweit diesbezüglich nichts anderes geregelt ist,</li>
+              <li>aufgrund zwingender Haftung wie etwa nach dem Produkthaftungsgesetz.</li>
+            </ul>
+            <p className="mb-2">8.2 Verletzt der Verkäufer fahrlässig eine wesentliche Vertragspflicht, ist die Haftung auf den vertragstypischen, vorhersehbaren Schaden begrenzt, sofern nicht gemäß vorstehender Ziffer unbeschränkt gehaftet wird. Wesentliche Vertragspflichten sind Pflichten, die der Vertrag dem Verkäufer nach seinem Inhalt zur Erreichung des Vertragszwecks auferlegt, deren Erfüllung die ordnungsgemäße Durchführung des Vertrags überhaupt erst ermöglicht und auf deren Einhaltung der Kunde regelmäßig vertrauen darf.</p>
+            <p className="mb-2">8.3 Im Übrigen ist eine Haftung des Verkäufers ausgeschlossen.</p>
+            <p>8.4 Vorstehende Haftungsregelungen gelten auch im Hinblick auf die Haftung des Verkäufers für seine Erfüllungsgehilfen und gesetzlichen Vertreter.</p>
+          </section>
+
+          <section className="mb-8">
+            <h3 className="text-lg font-bold mb-3 border-b border-[#E4E4E7] pb-2">9) Anwendbares Recht</h3>
+            <p>Für sämtliche Rechtsbeziehungen der Parteien gilt das Recht der Bundesrepublik Deutschland unter Ausschluss der Gesetze über den internationalen Kauf beweglicher Waren. Bei Verbrauchern gilt diese Rechtswahl nur insoweit, als nicht der gewährte Schutz durch zwingende Bestimmungen des Rechts des Staates, in dem der Verbraucher seinen gewöhnlichen Aufenthalt hat, entzogen wird.</p>
+          </section>
+
+          <section className="mb-8">
+            <h3 className="text-lg font-bold mb-3 border-b border-[#E4E4E7] pb-2">10) Gerichtsstand</h3>
+            <p>Handelt der Kunde als Kaufmann, juristische Person des öffentlichen Rechts oder öffentlich-rechtliches Sondervermögen mit Sitz im Hoheitsgebiet der Bundesrepublik Deutschland, ist ausschließlicher Gerichtsstand für alle Streitigkeiten aus diesem Vertrag der Geschäftssitz des Verkäufers. Hat der Kunde seinen Sitz außerhalb des Hoheitsgebiets der Bundesrepublik Deutschland, so ist der Geschäftssitz des Verkäufers ausschließlicher Gerichtsstand für alle Streitigkeiten aus diesem Vertrag, wenn der Vertrag oder Ansprüche aus dem Vertrag der beruflichen oder gewerblichen Tätigkeit des Kunden zugerechnet werden können. Der Verkäufer ist in den vorstehenden Fällen jedoch in jedem Fall berechtigt, das Gericht am Sitz des Kunden anzurufen.</p>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">§ 7 Schlussbestimmungen</h2>
-            <p className="text-[#71717A]">
-              (1) Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts.
-            </p>
-            <p className="text-[#71717A] mt-2">
-              (2) Gerichtsstand ist Köln.
-            </p>
-            <p className="text-[#71717A] mt-4 text-sm">
-              Stand: Januar 2026
-            </p>
+            <h3 className="text-lg font-bold mb-3 border-b border-[#E4E4E7] pb-2">11) Alternative Streitbeilegung</h3>
+            <p>Der Verkäufer ist zur Teilnahme an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle weder verpflichtet noch bereit.</p>
           </section>
         </div>
       </div>
