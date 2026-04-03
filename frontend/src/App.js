@@ -783,7 +783,7 @@ const ProductDetailPage = () => {
                       Versand & Lieferinformation
                     </button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+                  <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-white">
                     <DialogHeader>
                       <DialogTitle>Versand & Lieferinformation</DialogTitle>
                     </DialogHeader>
