@@ -2056,6 +2056,7 @@ const ProductForm = ({ product, categories, onSave }) => {
     images: product?.images || [],
     stock: product?.stock || 10,
     is_bestseller: product?.is_bestseller || false,
+    article_number: product?.article_number || "",
     specifications: product?.specifications || {}
   });
   const [specKey, setSpecKey] = useState("");
@@ -2351,6 +2352,10 @@ const ProductForm = ({ product, categories, onSave }) => {
         <div className="col-span-2">
           <Label className="label-brutal">Name *</Label>
           <Input name="name" value={formData.name} onChange={handleChange} required className="input-brutal" />
+        </div>
+        <div className="col-span-2">
+          <Label className="label-brutal">Artikelnummer</Label>
+          <Input name="article_number" value={formData.article_number} onChange={handleChange} className="input-brutal" placeholder="z.B. GPC-0001 (wird automatisch gesetzt wenn leer)" data-testid="article-number-input" />
         </div>
         <div className="col-span-2">
           <Label className="label-brutal">Beschreibung *</Label>
