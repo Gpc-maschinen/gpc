@@ -194,6 +194,7 @@ class Product(BaseModel):
     images: List[str] = []
     specifications: dict = {}
     stock: int = 10
+    is_bestseller: bool = False
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class ProductCreate(BaseModel):
@@ -209,6 +210,7 @@ class ProductCreate(BaseModel):
     images: List[str] = []
     specifications: dict = {}
     stock: int = 10
+    is_bestseller: bool = False
 
 class ProductUpdate(BaseModel):
     name: Optional[str] = None
@@ -223,6 +225,7 @@ class ProductUpdate(BaseModel):
     images: Optional[List[str]] = None
     specifications: Optional[dict] = None
     stock: Optional[int] = None
+    is_bestseller: Optional[bool] = None
 
 class Category(BaseModel):
     model_config = ConfigDict(extra="ignore")

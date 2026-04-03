@@ -390,7 +390,7 @@ const Home = () => {
     const fetchProducts = async () => {
       try {
         const res = await axios.get(`${API}/products`);
-        setProducts(res.data.filter(p => p.category === "Unsere Bestseller"));
+        setProducts(res.data.filter(p => p.is_bestseller));
       } catch (e) {
         console.error("Error fetching products:", e);
       } finally {
@@ -2052,6 +2052,7 @@ const ProductForm = ({ product, categories, onSave }) => {
     image_url: product?.image_url || "",
     images: product?.images || [],
     stock: product?.stock || 10,
+    is_bestseller: product?.is_bestseller || false,
     specifications: product?.specifications || {}
   });
   const [specKey, setSpecKey] = useState("");
@@ -2375,6 +2376,17 @@ const ProductForm = ({ product, categories, onSave }) => {
         <div>
           <Label className="label-brutal">Lagerbestand</Label>
           <Input type="number" name="stock" value={formData.stock} onChange={handleChange} className="input-brutal" />
+        </div>
+        <div className="flex items-center gap-3 pt-6">
+          <input
+            type="checkbox"
+            id="is_bestseller"
+            checked={formData.is_bestseller}
+            onChange={(e) => setFormData({ ...formData, is_bestseller: e.target.checked })}
+            className="w-5 h-5 accent-[#FF3B30] cursor-pointer"
+            data-testid="bestseller-checkbox"
+          />
+          <Label htmlFor="is_bestseller" className="cursor-pointer font-bold text-sm">Bestseller (auf Startseite anzeigen)</Label>
         </div>
         <div className="col-span-2">
           <Label className="label-brutal">Kategorie *</Label>
