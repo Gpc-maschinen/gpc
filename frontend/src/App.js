@@ -367,7 +367,7 @@ const HeroSection = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link to="/produkte" className="btn-primary flex items-center justify-center gap-2" data-testid="hero-cta">
-              Maschinen ansehen
+              Onlineshop
               <ChevronRight className="w-5 h-5" />
             </Link>
             <Link to="/kontakt" className="btn-secondary flex items-center justify-center gap-2" data-testid="hero-contact">
