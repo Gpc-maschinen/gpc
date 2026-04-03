@@ -409,8 +409,8 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-end mb-8">
             <div>
-              <p className="label-brutal mb-2">Unser Sortiment</p>
-              <h2 className="text-3xl md:text-4xl font-bold">Ausgewählte Maschinen</h2>
+              <p className="label-brutal mb-2">Unsere Bestseller</p>
+              <h2 className="text-3xl md:text-4xl font-bold">Unsere Bestseller</h2>
             </div>
             <Link to="/produkte" className="hidden md:flex items-center gap-2 text-[#FF3B30] font-semibold hover:underline" data-testid="view-all-products">
               Alle anzeigen
