@@ -479,7 +479,7 @@ const ProductCard = ({ product, onAddToCart }) => {
         <img src={product.image_url} alt={product.name} className="w-full h-52 object-cover" />
       </Link>
       <div className="p-4">
-        <p className="text-xs text-[#71717A] uppercase tracking-wider mb-1">{product.category}</p>
+        <p className="text-xs text-[#71717A] uppercase tracking-wider mb-1">{product.category}{product.article_number ? ` · ${product.article_number}` : ''}</p>
         <Link to={`/produkt/${product.id}`}>
           <h3 className="font-bold text-lg mb-2 hover:text-[#FF3B30] transition-colors">{product.name}</h3>
         </Link>
@@ -746,6 +746,7 @@ const ProductDetailPage = () => {
             {/* Product Info */}
             <div className="p-8">
               <p className="label-brutal mb-2">{product.category}</p>
+              {product.article_number && <p className="text-sm text-[#71717A] mb-1" data-testid="article-number">Art.-Nr.: {product.article_number}</p>}
               <h1 className="text-3xl md:text-4xl font-bold mb-4" data-testid="product-name">{product.name}</h1>
               
               {product.rating > 0 && (
@@ -1976,6 +1977,7 @@ const AdminProducts = () => {
             <thead className="bg-[#F4F4F5]">
               <tr>
                 <th className="text-left p-4 text-sm font-semibold">Bild</th>
+                <th className="text-left p-4 text-sm font-semibold">Art.-Nr.</th>
                 <th className="text-left p-4 text-sm font-semibold">Name</th>
                 <th className="text-left p-4 text-sm font-semibold">Kategorie</th>
                 <th className="text-left p-4 text-sm font-semibold">Preis</th>
@@ -1990,6 +1992,7 @@ const AdminProducts = () => {
                   <td className="p-4">
                     <img src={product.image_url} alt={product.name} className="w-16 h-16 object-cover" />
                   </td>
+                  <td className="p-4 text-sm font-mono text-[#71717A]">{product.article_number || '—'}</td>
                   <td className="p-4 font-medium">{product.name}</td>
                   <td className="p-4 text-[#71717A]">{product.category}</td>
                   <td className="p-4 font-bold">
