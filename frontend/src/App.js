@@ -390,7 +390,7 @@ const Home = () => {
     const fetchProducts = async () => {
       try {
         const res = await axios.get(`${API}/products`);
-        setProducts(res.data.slice(0, 6));
+        setProducts(res.data.filter(p => p.category === "Unsere Bestseller"));
       } catch (e) {
         console.error("Error fetching products:", e);
       } finally {
