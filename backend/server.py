@@ -584,17 +584,17 @@ async def admin_get_products(user: dict = Depends(get_current_user)):
 @admin_router.post("/products")
 async def admin_create_product(product: ProductCreate, user: dict = Depends(get_current_user)):
     # Artikelnummer: manuell oder auto-generiert
-    article_number = product.article_number
-    if not article_number:
+    prod_data = product.model_dump()
+    if not prod_data.get("article_number"):
         counter = await db.counters.find_one_and_update(
             {"_id": "article_number"},
             {"$inc": {"seq": 1}},
             upsert=True,
             return_document=ReturnDocument.AFTER
         )
-        article_number = f"GPC-{counter['seq']:04d}"
+        prod_data["article_number"] = f"GPC-{counter['seq']:04d}"
     
-    prod = Product(**product.model_dump(), article_number=article_number)
+    prod = Product(**prod_data)
     prod_doc = prod.model_dump()
     prod_doc['created_at'] = prod_doc['created_at'].isoformat()
     result = await db.products.insert_one(prod_doc)
