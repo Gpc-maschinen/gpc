@@ -3623,6 +3623,7 @@ const ImpressumPage = () => {
             <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Geschäftsführer</h2>
             <p>Marius Weitz</p>
             <p>Frank Küster</p>
+            <p>Christian Kohl</p>
           </section>
 
           <section className="mb-8">
