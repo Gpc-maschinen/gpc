@@ -2857,66 +2857,138 @@ const AdminCategories = () => {
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expandedOrder, setExpandedOrder] = useState(null);
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const res = await axios.get(`${API}/admin/orders`, { withCredentials: true });
-        setOrders(res.data);
-      } catch (e) {
-        console.error("Error:", e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrders();
-  }, []);
+  const fetchOrders = async () => {
+    try {
+      const res = await axios.get(`${API}/admin/orders`, { withCredentials: true });
+      setOrders(res.data);
+    } catch (e) {
+      console.error("Error:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchOrders(); }, []);
+
+  const updateStatus = async (orderNumber, newStatus) => {
+    try {
+      await axios.put(`${API}/admin/orders/${orderNumber}/status`, { status: newStatus }, { withCredentials: true });
+      toast.success(`Status geändert: ${newStatus}`);
+      fetchOrders();
+    } catch (e) {
+      toast.error("Fehler beim Aktualisieren");
+    }
+  };
 
   return (
     <div className="bg-white border border-[#E4E4E7]">
-      <div className="p-4 border-b border-[#E4E4E7]">
-        <h2 className="font-bold text-lg">Bestellungen</h2>
+      <div className="p-4 border-b border-[#E4E4E7] flex items-center justify-between">
+        <h2 className="font-bold text-lg">Bestellungen ({orders.length})</h2>
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="spinner" />
-        </div>
+        <div className="flex justify-center py-12"><div className="spinner" /></div>
       ) : orders.length === 0 ? (
         <div className="p-8 text-center text-[#71717A]">Keine Bestellungen vorhanden</div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-[#F4F4F5]">
-              <tr>
-                <th className="text-left p-4 text-sm font-semibold">Bestellnr.</th>
-                <th className="text-left p-4 text-sm font-semibold">Kunde</th>
-                <th className="text-left p-4 text-sm font-semibold">Gesamt</th>
-                <th className="text-left p-4 text-sm font-semibold">Status</th>
-                <th className="text-left p-4 text-sm font-semibold">Datum</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order) => (
-                <tr key={order.id} className="border-b border-[#E4E4E7]">
-                  <td className="p-4 font-mono text-sm">{order.order_number}</td>
-                  <td className="p-4">
-                    <p className="font-medium">{order.customer.name}</p>
-                    <p className="text-sm text-[#71717A]">{order.customer.email}</p>
-                  </td>
-                  <td className="p-4 font-bold">{order.total.toLocaleString('de-DE')} €</td>
-                  <td className="p-4">
-                    <span className={`badge ${order.status === 'Ausstehend' ? 'badge-pending' : 'badge-success'}`}>
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="p-4 text-sm text-[#71717A]">
-                    {new Date(order.created_at).toLocaleDateString('de-DE')}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="divide-y divide-[#E4E4E7]">
+          {orders.map((order) => (
+            <div key={order.id} data-testid={`order-row-${order.order_number}`}>
+              <div
+                className="p-4 flex items-center justify-between cursor-pointer hover:bg-[#F4F4F5] transition-colors"
+                onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
+              >
+                <div className="flex items-center gap-4">
+                  <ChevronRight className={`w-4 h-4 transition-transform ${expandedOrder === order.id ? 'rotate-90' : ''}`} />
+                  <div>
+                    <p className="font-mono text-sm font-bold">{order.order_number}</p>
+                    <p className="text-sm text-[#71717A]">{order.customer?.name}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-6">
+                  <span className="font-bold">{order.total?.toLocaleString('de-DE')} €</span>
+                  <span className={`badge ${order.status === 'Ausstehend' ? 'badge-pending' : order.status === 'Storniert' ? 'bg-red-100 text-red-700 px-2 py-1 text-xs font-semibold' : 'badge-success'}`}>
+                    {order.status}
+                  </span>
+                  <span className="text-sm text-[#71717A]">{new Date(order.created_at).toLocaleDateString('de-DE')}</span>
+                </div>
+              </div>
+
+              {expandedOrder === order.id && (
+                <div className="px-4 pb-6 bg-[#FAFAFA] border-t border-[#E4E4E7]" data-testid={`order-details-${order.order_number}`}>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                    {/* Kundendaten */}
+                    <div>
+                      <h4 className="font-bold text-sm mb-2 text-[#71717A] uppercase tracking-wider">Kundendaten</h4>
+                      <div className="space-y-1 text-sm">
+                        <p className="font-semibold">{order.customer?.name}</p>
+                        {order.customer?.company && <p>{order.customer.company}</p>}
+                        <p>{order.customer?.street}</p>
+                        <p>{order.customer?.postal_code} {order.customer?.city}</p>
+                        <p>{order.customer?.country}</p>
+                        <p className="mt-2">{order.customer?.email}</p>
+                        {order.customer?.phone && <p>{order.customer.phone}</p>}
+                      </div>
+                    </div>
+
+                    {/* Artikel */}
+                    <div>
+                      <h4 className="font-bold text-sm mb-2 text-[#71717A] uppercase tracking-wider">Artikel</h4>
+                      <div className="space-y-2">
+                        {(order.items || []).map((item, idx) => (
+                          <div key={idx} className="flex justify-between text-sm">
+                            <span>{item.quantity}x {item.name}</span>
+                            <span className="font-semibold">{(item.price * item.quantity).toLocaleString('de-DE')} €</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Zusammenfassung */}
+                    <div>
+                      <h4 className="font-bold text-sm mb-2 text-[#71717A] uppercase tracking-wider">Zusammenfassung</h4>
+                      <div className="space-y-1 text-sm">
+                        <div className="flex justify-between">
+                          <span>Zwischensumme:</span>
+                          <span>{(order.subtotal || order.total).toLocaleString('de-DE')} €</span>
+                        </div>
+                        {order.shipping_cost > 0 && (
+                          <div className="flex justify-between">
+                            <span>Versand{order.shipping_zone ? ` (${order.shipping_zone})` : ''}:</span>
+                            <span>{order.shipping_cost.toLocaleString('de-DE')} €</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between font-bold border-t border-[#E4E4E7] pt-1 mt-1">
+                          <span>Gesamt:</span>
+                          <span>{order.total?.toLocaleString('de-DE')} €</span>
+                        </div>
+                        <p className="mt-2">Zahlung: {order.payment_method}</p>
+                        {order.notes && <p className="mt-2 italic text-[#71717A]">Notiz: {order.notes}</p>}
+                      </div>
+
+                      <div className="mt-4">
+                        <Label className="text-xs font-bold text-[#71717A] uppercase">Status ändern</Label>
+                        <select
+                          value={order.status}
+                          onChange={(e) => updateStatus(order.order_number, e.target.value)}
+                          className="input-brutal mt-1 text-sm w-full"
+                          data-testid={`order-status-select-${order.order_number}`}
+                        >
+                          <option value="Ausstehend">Ausstehend</option>
+                          <option value="Bezahlt">Bezahlt</option>
+                          <option value="Versendet">Versendet</option>
+                          <option value="Abgeschlossen">Abgeschlossen</option>
+                          <option value="Storniert">Storniert</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>
@@ -2927,68 +2999,116 @@ const AdminOrders = () => {
 const AdminQuotes = () => {
   const [quotes, setQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expandedQuote, setExpandedQuote] = useState(null);
 
-  useEffect(() => {
-    const fetchQuotes = async () => {
-      try {
-        const res = await axios.get(`${API}/admin/quotes`, { withCredentials: true });
-        setQuotes(res.data);
-      } catch (e) {
-        console.error("Error:", e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchQuotes();
-  }, []);
+  const fetchQuotes = async () => {
+    try {
+      const res = await axios.get(`${API}/admin/quotes`, { withCredentials: true });
+      setQuotes(res.data);
+    } catch (e) {
+      console.error("Error:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchQuotes(); }, []);
+
+  const updateStatus = async (quoteId, newStatus) => {
+    try {
+      await axios.put(`${API}/admin/quotes/${quoteId}/status`, { status: newStatus }, { withCredentials: true });
+      toast.success(`Status geändert: ${newStatus}`);
+      fetchQuotes();
+    } catch (e) {
+      toast.error("Fehler beim Aktualisieren");
+    }
+  };
 
   return (
     <div className="bg-white border border-[#E4E4E7]">
-      <div className="p-4 border-b border-[#E4E4E7]">
-        <h2 className="font-bold text-lg">Angebotsanfragen</h2>
+      <div className="p-4 border-b border-[#E4E4E7] flex items-center justify-between">
+        <h2 className="font-bold text-lg">Angebotsanfragen ({quotes.length})</h2>
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="spinner" />
-        </div>
+        <div className="flex justify-center py-12"><div className="spinner" /></div>
       ) : quotes.length === 0 ? (
         <div className="p-8 text-center text-[#71717A]">Keine Anfragen vorhanden</div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-[#F4F4F5]">
-              <tr>
-                <th className="text-left p-4 text-sm font-semibold">Anfragenr.</th>
-                <th className="text-left p-4 text-sm font-semibold">Produkt</th>
-                <th className="text-left p-4 text-sm font-semibold">Kunde</th>
-                <th className="text-left p-4 text-sm font-semibold">Menge</th>
-                <th className="text-left p-4 text-sm font-semibold">Status</th>
-                <th className="text-left p-4 text-sm font-semibold">Datum</th>
-              </tr>
-            </thead>
-            <tbody>
-              {quotes.map((quote) => (
-                <tr key={quote.id} className="border-b border-[#E4E4E7]">
-                  <td className="p-4 font-mono text-sm">{quote.quote_number}</td>
-                  <td className="p-4 font-medium">{quote.product_name}</td>
-                  <td className="p-4">
-                    <p className="font-medium">{quote.customer.name}</p>
-                    <p className="text-sm text-[#71717A]">{quote.customer.email}</p>
-                  </td>
-                  <td className="p-4">{quote.quantity}</td>
-                  <td className="p-4">
-                    <span className={`badge ${quote.status === 'Neu' ? 'badge-success' : 'badge-pending'}`}>
-                      {quote.status}
-                    </span>
-                  </td>
-                  <td className="p-4 text-sm text-[#71717A]">
-                    {new Date(quote.created_at).toLocaleDateString('de-DE')}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="divide-y divide-[#E4E4E7]">
+          {quotes.map((quote) => (
+            <div key={quote.id} data-testid={`quote-row-${quote.quote_number}`}>
+              <div
+                className="p-4 flex items-center justify-between cursor-pointer hover:bg-[#F4F4F5] transition-colors"
+                onClick={() => setExpandedQuote(expandedQuote === quote.id ? null : quote.id)}
+              >
+                <div className="flex items-center gap-4">
+                  <ChevronRight className={`w-4 h-4 transition-transform ${expandedQuote === quote.id ? 'rotate-90' : ''}`} />
+                  <div>
+                    <p className="font-mono text-sm font-bold">{quote.quote_number}</p>
+                    <p className="text-sm text-[#71717A]">{quote.customer?.name}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-6">
+                  <span className="font-semibold">{quote.product_name}</span>
+                  <span className={`badge ${quote.status === 'Neu' ? 'badge-success' : quote.status === 'Abgelehnt' ? 'bg-red-100 text-red-700 px-2 py-1 text-xs font-semibold' : 'badge-pending'}`}>
+                    {quote.status}
+                  </span>
+                  <span className="text-sm text-[#71717A]">{new Date(quote.created_at).toLocaleDateString('de-DE')}</span>
+                </div>
+              </div>
+
+              {expandedQuote === quote.id && (
+                <div className="px-4 pb-6 bg-[#FAFAFA] border-t border-[#E4E4E7]" data-testid={`quote-details-${quote.quote_number}`}>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                    {/* Kundendaten */}
+                    <div>
+                      <h4 className="font-bold text-sm mb-2 text-[#71717A] uppercase tracking-wider">Kundendaten</h4>
+                      <div className="space-y-1 text-sm">
+                        <p className="font-semibold">{quote.customer?.name}</p>
+                        {quote.customer?.company && <p>{quote.customer.company}</p>}
+                        <p>{quote.customer?.email}</p>
+                        {quote.customer?.phone && <p>{quote.customer.phone}</p>}
+                      </div>
+                    </div>
+
+                    {/* Produktdetails */}
+                    <div>
+                      <h4 className="font-bold text-sm mb-2 text-[#71717A] uppercase tracking-wider">Produktdetails</h4>
+                      <div className="space-y-1 text-sm">
+                        <p><span className="text-[#71717A]">Produkt:</span> <span className="font-semibold">{quote.product_name}</span></p>
+                        <p><span className="text-[#71717A]">Menge:</span> <span className="font-semibold">{quote.quantity}</span></p>
+                        {quote.message && (
+                          <div className="mt-3">
+                            <p className="text-[#71717A]">Nachricht:</p>
+                            <p className="mt-1 p-2 bg-white border border-[#E4E4E7] italic">{quote.message}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Status */}
+                    <div>
+                      <h4 className="font-bold text-sm mb-2 text-[#71717A] uppercase tracking-wider">Status verwalten</h4>
+                      <select
+                        value={quote.status}
+                        onChange={(e) => updateStatus(quote.id, e.target.value)}
+                        className="input-brutal text-sm w-full"
+                        data-testid={`quote-status-select-${quote.quote_number}`}
+                      >
+                        <option value="Neu">Neu</option>
+                        <option value="In Bearbeitung">In Bearbeitung</option>
+                        <option value="Angebot gesendet">Angebot gesendet</option>
+                        <option value="Abgeschlossen">Abgeschlossen</option>
+                        <option value="Abgelehnt">Abgelehnt</option>
+                      </select>
+                      <p className="text-xs text-[#71717A] mt-2">Erstellt: {new Date(quote.created_at).toLocaleString('de-DE')}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>
