@@ -7,8 +7,8 @@
 :root {
     --background: #F4F4F5;
     --surface: #FFFFFF;
-    --primary: #FF3B30;
-    --primary-hover: #D63028;
+    --primary: #2D7A3A;
+    --primary-hover: #236B2E;
     --text-main: #09090B;
     --text-muted: #71717A;
     --border: #E4E4E7;
@@ -37,11 +37,11 @@ code {
 
 /* Swiss Brutalist Design System */
 .btn-primary {
-    @apply bg-[#FF3B30] text-white font-semibold px-6 py-3 rounded-none border-2 border-transparent transition-all duration-200;
+    @apply bg-[#2D7A3A] text-white font-semibold px-6 py-3 rounded-none border-2 border-transparent transition-all duration-200;
 }
 
 .btn-primary:hover {
-    @apply bg-[#D63028] border-black;
+    @apply bg-[#236B2E] border-black;
 }
 
 .btn-secondary {
@@ -98,7 +98,7 @@ code {
         --card-foreground: 0 0% 4%;
         --popover: 0 0% 100%;
         --popover-foreground: 0 0% 4%;
-        --primary: 4 90% 58%;
+        --primary: 140 45% 33%;
         --primary-foreground: 0 0% 100%;
         --secondary: 0 0% 15%;
         --secondary-foreground: 0 0% 98%;
@@ -110,7 +110,7 @@ code {
         --destructive-foreground: 0 0% 98%;
         --border: 0 0% 89%;
         --input: 0 0% 89%;
-        --ring: 4 90% 58%;
+        --ring: 140 45% 33%;
         --chart-1: 12 76% 61%;
         --chart-2: 173 58% 39%;
         --chart-3: 197 37% 24%;

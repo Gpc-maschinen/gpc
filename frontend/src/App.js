@@ -163,7 +163,7 @@ const Navbar = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center gap-2" data-testid="logo-link">
-              <img src="/gpc-logo.jpg" alt="G.P.C. Maschinen" className="h-12 w-auto" />
+              <img src="/gpc-logo.jpg" alt="Josten Haus & Garten" className="h-12 w-auto" />
             </Link>
 
             {/* Desktop Menu */}
@@ -181,7 +181,7 @@ const Navbar = () => {
               >
                 <ShoppingCart className="w-6 h-6" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[#FF3B30] text-white text-xs w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-[#2D7A3A] text-white text-xs w-5 h-5 flex items-center justify-center">
                     {cartCount}
                   </span>
                 )}
@@ -289,7 +289,7 @@ const CartSidebar = ({ onClose }) => {
             <img src={item.image_url} alt={item.name} className="w-20 h-20 object-cover flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <h4 className="font-semibold text-sm truncate">{item.name}</h4>
-              <p className="text-[#FF3B30] font-bold">{item.price.toLocaleString('de-DE')} €</p>
+              <p className="text-[#2D7A3A] font-bold">{item.price.toLocaleString('de-DE')} €</p>
               <div className="flex items-center gap-2 mt-2">
                 <button
                   className="quantity-btn"
@@ -309,7 +309,7 @@ const CartSidebar = ({ onClose }) => {
               </div>
             </div>
             <button
-              className="p-2 text-[#71717A] hover:text-[#FF3B30] flex-shrink-0"
+              className="p-2 text-[#71717A] hover:text-[#2D7A3A] flex-shrink-0"
               onClick={() => removeFromCart(item.product_id)}
               data-testid={`remove-${item.product_id}`}
             >
@@ -352,18 +352,18 @@ const HeroSection = () => {
   return (
     <section
       className="hero-section"
-      style={{ backgroundImage: `url(https://images.unsplash.com/photo-1761519609252-3b868e540398?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzh8MHwxfHNlYXJjaHwxfHxpbmR1c3RyaWFsJTIwZmFjdG9yeSUyMG1hY2hpbmVyeXxlbnwwfHx8fDE3NzQ5ODY1NTF8MA&ixlib=rb-4.1.0&q=85)` }}
+      style={{ backgroundImage: `url(https://images.unsplash.com/photo-1762326441132-4caeac42be3a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjV8MHwxfHNlYXJjaHwyfHxnYXJkZW4lMjBjZW50ZXIlMjBvdXRkb29yJTIwZnVybml0dXJlJTIwbGF3biUyMG1vd2VyfGVufDB8fHx8MTc3NTc0OTMyMHww&ixlib=rb-4.1.0&q=85)` }}
       data-testid="hero-section"
     >
       <div className="hero-overlay" />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="max-w-2xl">
-          <p className="label-brutal text-white mb-4">Industriemaschinen & Mehr</p>
+          <p className="label-brutal text-white mb-4">Haus & Garten Handel</p>
           <h1 className="text-5xl md:text-6xl font-black text-white mb-6 tracking-tight">
-            Qualität. Präzision. Leistung.
+            Ihr Zuhause. Ihr Garten. Unser Sortiment.
           </h1>
           <p className="text-lg text-gray-200 mb-8">
-            Entdecken Sie unser umfangreiches Sortiment an hochwertigen Industriemaschinen für jeden Einsatzbereich.
+            Entdecken Sie unser vielfältiges Angebot an Produkten für Haus, Garten und Outdoor-Bereich.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link to="/produkte" className="btn-primary flex items-center justify-center gap-2" data-testid="hero-cta">
@@ -412,7 +412,7 @@ const Home = () => {
               <p className="label-brutal mb-2">Unsere Bestseller</p>
               <h2 className="text-3xl md:text-4xl font-bold">Unsere Bestseller</h2>
             </div>
-            <Link to="/produkte" className="hidden md:flex items-center gap-2 text-[#FF3B30] font-semibold hover:underline" data-testid="view-all-products">
+            <Link to="/produkte" className="hidden md:flex items-center gap-2 text-[#2D7A3A] font-semibold hover:underline" data-testid="view-all-products">
               Alle anzeigen
               <ChevronRight className="w-4 h-4" />
             </Link>
@@ -445,21 +445,21 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div className="p-6">
               <div className="w-16 h-16 mx-auto mb-4 bg-[#F4F4F5] flex items-center justify-center">
-                <Package className="w-8 h-8 text-[#FF3B30]" />
+                <Package className="w-8 h-8 text-[#2D7A3A]" />
               </div>
               <h3 className="text-xl font-bold mb-2">Schnelle Lieferung</h3>
               <p className="text-[#71717A]">Deutschlandweite Lieferung und professionelle Installation</p>
             </div>
             <div className="p-6">
               <div className="w-16 h-16 mx-auto mb-4 bg-[#F4F4F5] flex items-center justify-center">
-                <Phone className="w-8 h-8 text-[#FF3B30]" />
+                <Phone className="w-8 h-8 text-[#2D7A3A]" />
               </div>
               <h3 className="text-xl font-bold mb-2">Expertenberatung</h3>
               <p className="text-[#71717A]">Unsere Fachberater helfen Ihnen bei der Auswahl</p>
             </div>
             <div className="p-6">
               <div className="w-16 h-16 mx-auto mb-4 bg-[#F4F4F5] flex items-center justify-center">
-                <Mail className="w-8 h-8 text-[#FF3B30]" />
+                <Mail className="w-8 h-8 text-[#2D7A3A]" />
               </div>
               <h3 className="text-xl font-bold mb-2">24h Angebote</h3>
               <p className="text-[#71717A]">Erhalten Sie innerhalb von 24h ein individuelles Angebot</p>
@@ -481,7 +481,7 @@ const ProductCard = ({ product, onAddToCart }) => {
       <div className="p-4">
         <p className="text-xs text-[#71717A] uppercase tracking-wider mb-1">{product.category}{product.article_number ? ` · ${product.article_number}` : ''}</p>
         <Link to={`/produkt/${product.id}`}>
-          <h3 className="font-bold text-lg mb-2 hover:text-[#FF3B30] transition-colors">{product.name}</h3>
+          <h3 className="font-bold text-lg mb-2 hover:text-[#2D7A3A] transition-colors">{product.name}</h3>
         </Link>
         <p className="text-[#71717A] text-sm mb-2 line-clamp-2">{product.description}</p>
         {product.rating > 0 && (
@@ -497,7 +497,7 @@ const ProductCard = ({ product, onAddToCart }) => {
             {product.sale_price ? (
               <>
                 <span className="text-sm text-[#71717A] line-through mr-2">{product.price.toLocaleString('de-DE')} €</span>
-                <span className="text-xl font-bold text-[#FF3B30]">{product.sale_price.toLocaleString('de-DE')} €</span>
+                <span className="text-xl font-bold text-[#2D7A3A]">{product.sale_price.toLocaleString('de-DE')} €</span>
               </>
             ) : (
               <span className="text-xl font-bold">{product.price.toLocaleString('de-DE')} €</span>
@@ -555,7 +555,7 @@ const ProductsPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <p className="label-brutal mb-2">Produktkatalog</p>
-          <h1 className="text-4xl md:text-5xl font-bold">Unsere Maschinen</h1>
+          <h1 className="text-4xl md:text-5xl font-bold">Unser Sortiment</h1>
         </div>
 
         {/* Kategorie-Kacheln */}
@@ -581,8 +581,8 @@ const ProductsPage = () => {
                     onClick={() => setSelectedCategory(cat)}
                     className={`px-5 py-3 text-sm font-bold uppercase tracking-wider transition-all border-2 ${
                       selectedCategory === cat
-                        ? 'bg-[#FF3B30] text-white border-[#FF3B30]'
-                        : 'bg-white text-[#3F3F46] border-[#E4E4E7] hover:border-[#FF3B30]'
+                        ? 'bg-[#2D7A3A] text-white border-[#2D7A3A]'
+                        : 'bg-white text-[#3F3F46] border-[#E4E4E7] hover:border-[#2D7A3A]'
                     }`}
                     data-testid={`category-tile-${cat}`}
                   >
@@ -734,7 +734,7 @@ const ProductDetailPage = () => {
                     <button
                       key={idx}
                       onClick={() => setSelectedImage(idx)}
-                      className={`w-20 h-20 flex-shrink-0 border-2 ${selectedImage === idx ? 'border-[#FF3B30]' : 'border-[#E4E4E7]'}`}
+                      className={`w-20 h-20 flex-shrink-0 border-2 ${selectedImage === idx ? 'border-[#2D7A3A]' : 'border-[#E4E4E7]'}`}
                     >
                       <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
                     </button>
@@ -765,13 +765,13 @@ const ProductDetailPage = () => {
                 {product.sale_price ? (
                   <div className="flex items-center gap-3">
                     <span className="text-xl text-[#71717A] line-through">{product.price.toLocaleString('de-DE')} €</span>
-                    <span className="text-3xl font-bold text-[#FF3B30]">{product.sale_price.toLocaleString('de-DE')} €</span>
-                    <span className="bg-[#FF3B30] text-white text-sm font-bold px-2 py-1">
+                    <span className="text-3xl font-bold text-[#2D7A3A]">{product.sale_price.toLocaleString('de-DE')} €</span>
+                    <span className="bg-[#2D7A3A] text-white text-sm font-bold px-2 py-1">
                       -{Math.round((1 - product.sale_price / product.price) * 100)}%
                     </span>
                   </div>
                 ) : (
-                  <span className="text-3xl font-bold text-[#FF3B30]">{product.price.toLocaleString('de-DE')} €</span>
+                  <span className="text-3xl font-bold text-[#2D7A3A]">{product.price.toLocaleString('de-DE')} €</span>
                 )}
                 <p className="text-xs text-[#71717A] mt-1">Alle Preise inkl. MwSt., zzgl. Versandkosten</p>
               </div>
@@ -780,7 +780,7 @@ const ProductDetailPage = () => {
               <div className="mb-6" data-testid="shipping-info-box">
                 <Dialog open={showShippingInfo} onOpenChange={setShowShippingInfo}>
                   <DialogTrigger asChild>
-                    <button className="text-sm text-[#71717A] hover:text-[#FF3B30] underline transition-colors" data-testid="shipping-info-toggle">
+                    <button className="text-sm text-[#71717A] hover:text-[#2D7A3A] underline transition-colors" data-testid="shipping-info-toggle">
                       Versand & Lieferinformation
                     </button>
                   </DialogTrigger>
@@ -789,7 +789,7 @@ const ProductDetailPage = () => {
                       <DialogTitle>Versand & Lieferinformation</DialogTitle>
                     </DialogHeader>
                     <div className="text-sm text-[#3F3F46] space-y-3 leading-relaxed" data-testid="shipping-info-content">
-                      <p>Bei gpc-maschinen.de bestellen Sie ohne Mindestbestellwert. Lieferungen sind aktuell nur innerhalb Deutschlands möglich. Innerhalb Deutschlands betragen die Versandkosten <strong>5,95 Euro inkl. MwSt.</strong> pro Bestellung. Ab einem Warenwert von <strong>50 Euro</strong> liefern wir versandkostenfrei.</p>
+                      <p>Bei josten-hug.de bestellen Sie ohne Mindestbestellwert. Lieferungen sind aktuell nur innerhalb Deutschlands möglich. Innerhalb Deutschlands betragen die Versandkosten <strong>5,95 Euro inkl. MwSt.</strong> pro Bestellung. Ab einem Warenwert von <strong>50 Euro</strong> liefern wir versandkostenfrei.</p>
                       <p>Bei Speditionslieferungen auf Inseln ermitteln wir die Kosten auf Anfrage oder liefern frei Festland. Sofern Sie eine Lieferadresse auf einer Insel haben, bitten wir Sie sich bei uns zu melden und ein Angebot unter Angabe der Artikelnummer in der gewünschten Menge für die Lieferung auf eine Insel anzufordern.</p>
                       <div>
                         <p className="font-semibold text-[#09090B] mb-2">Welche Liefergebiete sind betroffen?</p>
@@ -804,9 +804,9 @@ const ProductDetailPage = () => {
                       </div>
                       <p>In einigen Fällen besteht die Möglichkeit, die Lieferung an eine Filiale des Versanddienstleisters auf dem Festland zu senden. Von dort aus können Sie den Weitertransport selbst organisieren. Gerne beraten wir Sie zu möglichen Alternativen, um Ihre Transportkosten zu optimieren.</p>
                       <p>Die Lieferung von Waren erfolgt auf dem Versandweg an die vom Kunden angegebene Lieferanschrift, sofern nichts anderes vereinbart ist. Bei der Abwicklung der Transaktion ist die in der Bestellabwicklung des Verkäufers angegebene Lieferanschrift maßgeblich.</p>
-                      <p>Bei Waren, die per Spedition geliefert werden, erfolgt die Lieferung „frei Bordsteinkante", also bis zu der der Lieferadresse nächst gelegenen öffentlichen Bordsteinkante, sofern sich aus den Versandinformationen im Online-Shop der G.P.C. Maschinen-Vertriebs-GmbH nichts anderes ergibt und sofern nichts anderes vereinbart ist.</p>
+                      <p>Bei Waren, die per Spedition geliefert werden, erfolgt die Lieferung „frei Bordsteinkante", also bis zu der der Lieferadresse nächst gelegenen öffentlichen Bordsteinkante, sofern sich aus den Versandinformationen im Online-Shop der Josten Haus & Garten Handelsgesellschaft mbH nichts anderes ergibt und sofern nichts anderes vereinbart ist.</p>
                       <p>Sendet das Transportunternehmen die versandte Ware an den Verkäufer zurück, da eine Zustellung beim Kunden nicht möglich war, trägt der Kunde die Kosten für den erfolglosen Versand. Dies gilt nicht, wenn der Kunde sein Widerrufsrecht wirksam ausübt, wenn er den Umstand, der zur Unmöglichkeit der Zustellung geführt hat, nicht zu vertreten hat oder wenn er vorübergehend an der Annahme der angebotenen Leistung verhindert war, es sei denn, dass der Verkäufer ihm die Leistung eine angemessene Zeit vorher angekündigt hatte.</p>
-                      <p className="font-semibold text-[#FF3B30]">Achtung: Selbstabholung ist aus logistischen Gründen nicht möglich.</p>
+                      <p className="font-semibold text-[#2D7A3A]">Achtung: Selbstabholung ist aus logistischen Gründen nicht möglich.</p>
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -885,7 +885,7 @@ const ProductDetailPage = () => {
                 data-testid={`tab-${tab.id}`}
                 className={`px-6 py-4 text-sm font-bold uppercase tracking-wider transition-colors ${
                   activeTab === tab.id
-                    ? 'border-b-2 border-[#FF3B30] text-[#09090B]'
+                    ? 'border-b-2 border-[#2D7A3A] text-[#09090B]'
                     : 'text-[#71717A] hover:text-[#09090B]'
                 }`}
               >
@@ -987,17 +987,17 @@ const ProductDetailPage = () => {
                         href={dl.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-4 p-4 border border-[#E4E4E7] hover:border-[#FF3B30] transition-colors group"
+                        className="flex items-center gap-4 p-4 border border-[#E4E4E7] hover:border-[#2D7A3A] transition-colors group"
                         data-testid={`download-item-${idx}`}
                       >
-                        <div className="w-12 h-12 bg-[#FF3B30] text-white flex items-center justify-center flex-shrink-0">
+                        <div className="w-12 h-12 bg-[#2D7A3A] text-white flex items-center justify-center flex-shrink-0">
                           <FileText className="w-6 h-6" />
                         </div>
                         <div className="flex-1">
-                          <p className="font-bold group-hover:text-[#FF3B30] transition-colors">{dl.name}</p>
+                          <p className="font-bold group-hover:text-[#2D7A3A] transition-colors">{dl.name}</p>
                           <p className="text-sm text-[#71717A]">{dl.type || 'Dokument'}</p>
                         </div>
-                        <Download className="w-5 h-5 text-[#71717A] group-hover:text-[#FF3B30]" />
+                        <Download className="w-5 h-5 text-[#71717A] group-hover:text-[#2D7A3A]" />
                       </a>
                     ))}
                   </div>
@@ -1161,9 +1161,9 @@ const CheckoutPage = () => {
                     ) : (
                       <div className="space-y-2">
                         {shippingInfo.shipping_costs.map((sc) => (
-                          <label key={sc.zone} className={`flex items-center justify-between p-4 border-2 cursor-pointer transition-all ${selectedZone === sc.zone ? 'border-[#FF3B30] bg-[#FFF5F5]' : 'border-[#E4E4E7] hover:border-[#A1A1AA]'}`} data-testid={`shipping-zone-${sc.zone}`}>
+                          <label key={sc.zone} className={`flex items-center justify-between p-4 border-2 cursor-pointer transition-all ${selectedZone === sc.zone ? 'border-[#2D7A3A] bg-[#FFF5F5]' : 'border-[#E4E4E7] hover:border-[#A1A1AA]'}`} data-testid={`shipping-zone-${sc.zone}`}>
                             <div className="flex items-center gap-3">
-                              <input type="radio" name="shipping_zone" value={sc.zone} checked={selectedZone === sc.zone} onChange={(e) => setSelectedZone(e.target.value)} className="accent-[#FF3B30]" />
+                              <input type="radio" name="shipping_zone" value={sc.zone} checked={selectedZone === sc.zone} onChange={(e) => setSelectedZone(e.target.value)} className="accent-[#2D7A3A]" />
                               <span className="font-semibold">{sc.zone}</span>
                             </div>
                             <span className="font-bold">{sc.cost.toLocaleString('de-DE')} €</span>
@@ -1180,7 +1180,7 @@ const CheckoutPage = () => {
 
               <h2 className="text-xl font-bold mb-6 border-b border-[#E4E4E7] pb-4">Zahlungsart</h2>
               
-              <div className="bg-[#F4F4F5] p-4 mb-6 border-l-4 border-[#FF3B30]">
+              <div className="bg-[#F4F4F5] p-4 mb-6 border-l-4 border-[#2D7A3A]">
                 <p className="font-semibold">Rechnung / Überweisung</p>
                 <p className="text-sm text-[#71717A] mt-1">
                   Sie erhalten eine Rechnung per E-Mail nach Bestelleingang. Die Zahlung erfolgt per Überweisung.
@@ -1285,7 +1285,7 @@ const OrderConfirmationPage = () => {
           </div>
           <h1 className="text-3xl font-bold mb-2">Vielen Dank für Ihre Bestellung!</h1>
           <p className="text-[#71717A] mb-4">Ihre Bestellnummer lautet:</p>
-          <p className="text-2xl font-bold text-[#FF3B30]" data-testid="order-number">{order.order_number}</p>
+          <p className="text-2xl font-bold text-[#2D7A3A]" data-testid="order-number">{order.order_number}</p>
         </div>
 
         <div className="bg-white border border-[#E4E4E7] p-6 mb-8">
@@ -1455,7 +1455,7 @@ const QuoteRequestPage = () => {
             </div>
             <h1 className="text-3xl font-bold mb-2">Anfrage gesendet!</h1>
             <p className="text-[#71717A] mb-4">Ihre Anfragenummer lautet:</p>
-            <p className="text-2xl font-bold text-[#FF3B30] mb-6" data-testid="quote-number">{quoteNumber}</p>
+            <p className="text-2xl font-bold text-[#2D7A3A] mb-6" data-testid="quote-number">{quoteNumber}</p>
             <p className="text-[#71717A] mb-8">
               Wir werden uns innerhalb von 24 Stunden mit einem individuellen Angebot bei Ihnen melden.
             </p>
@@ -1543,10 +1543,10 @@ const QuoteRequestPage = () => {
               {product.sale_price ? (
                 <>
                   <p className="text-sm text-[#71717A] line-through">{product.price.toLocaleString('de-DE')} €</p>
-                  <p className="text-xl font-bold text-[#FF3B30]">{product.sale_price.toLocaleString('de-DE')} €</p>
+                  <p className="text-xl font-bold text-[#2D7A3A]">{product.sale_price.toLocaleString('de-DE')} €</p>
                 </>
               ) : (
-                <p className="text-xl font-bold text-[#FF3B30]">{product.price.toLocaleString('de-DE')} €</p>
+                <p className="text-xl font-bold text-[#2D7A3A]">{product.price.toLocaleString('de-DE')} €</p>
               )}
               <p className="text-xs text-[#71717A] mt-1">inkl. MwSt.</p>
             </div>
@@ -1655,23 +1655,23 @@ const ContactPage = () => {
               <div className="space-y-6">
                 <div className="flex gap-4">
                   <div className="w-10 h-10 bg-[#F4F4F5] flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-5 h-5 text-[#FF3B30]" />
+                    <Mail className="w-5 h-5 text-[#2D7A3A]" />
                   </div>
                   <div>
                     <p className="label-brutal">E-Mail</p>
-                    <p className="font-semibold">info@gpc-maschinen.de</p>
+                    <p className="font-semibold">info@josten-hug.de</p>
                   </div>
                 </div>
 
                 <div className="flex gap-4">
                   <div className="w-10 h-10 bg-[#F4F4F5] flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-5 h-5 text-[#FF3B30]" />
+                    <MapPin className="w-5 h-5 text-[#2D7A3A]" />
                   </div>
                   <div>
                     <p className="label-brutal">Adresse</p>
-                    <p className="font-semibold">G.P.C. Maschinen-Vertriebs-GmbH</p>
-                    <p className="text-[#71717A]">Hauptstr. 180</p>
-                    <p className="text-[#71717A]">D-51503 Rösrath</p>
+                    <p className="font-semibold">Josten Haus & Garten Handelsgesellschaft mbH</p>
+                    <p className="text-[#71717A]">Hammer Landstr. 1 A</p>
+                    <p className="text-[#71717A]">41460 Neuss</p>
                     <p className="text-[#71717A]">Deutschland</p>
                   </div>
                 </div>
@@ -1726,7 +1726,7 @@ const AdminLoginPage = () => {
       <div className="w-full max-w-md">
         <div className="bg-white border border-[#E4E4E7] p-8">
           <div className="flex items-center gap-2 justify-center mb-8">
-            <Settings className="w-8 h-8 text-[#FF3B30]" />
+            <Settings className="w-8 h-8 text-[#2D7A3A]" />
             <span className="font-bold text-2xl">Admin Panel</span>
           </div>
 
@@ -1810,12 +1810,12 @@ const AdminDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-2">
-              <Settings className="w-6 h-6 text-[#FF3B30]" />
+              <Settings className="w-6 h-6 text-[#2D7A3A]" />
               <span className="font-bold text-xl">Admin Panel</span>
             </div>
             <div className="flex items-center gap-4">
               <span className="text-sm text-[#71717A]">{user?.email}</span>
-              <button onClick={handleLogout} className="flex items-center gap-2 text-[#71717A] hover:text-[#FF3B30]">
+              <button onClick={handleLogout} className="flex items-center gap-2 text-[#71717A] hover:text-[#2D7A3A]">
                 <LogOut className="w-5 h-5" />
               </button>
             </div>
@@ -1833,21 +1833,21 @@ const AdminDashboard = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-white border border-[#E4E4E7] p-6">
               <div className="flex items-center gap-3 mb-2">
-                <Box className="w-5 h-5 text-[#FF3B30]" />
+                <Box className="w-5 h-5 text-[#2D7A3A]" />
                 <span className="text-sm text-[#71717A]">Produkte</span>
               </div>
               <p className="text-3xl font-bold">{stats.products}</p>
             </div>
             <div className="bg-white border border-[#E4E4E7] p-6">
               <div className="flex items-center gap-3 mb-2">
-                <FolderOpen className="w-5 h-5 text-[#FF3B30]" />
+                <FolderOpen className="w-5 h-5 text-[#2D7A3A]" />
                 <span className="text-sm text-[#71717A]">Kategorien</span>
               </div>
               <p className="text-3xl font-bold">{stats.categories}</p>
             </div>
             <div className="bg-white border border-[#E4E4E7] p-6">
               <div className="flex items-center gap-3 mb-2">
-                <FileText className="w-5 h-5 text-[#FF3B30]" />
+                <FileText className="w-5 h-5 text-[#2D7A3A]" />
                 <span className="text-sm text-[#71717A]">Bestellungen</span>
               </div>
               <p className="text-3xl font-bold">{stats.orders}</p>
@@ -1857,7 +1857,7 @@ const AdminDashboard = () => {
             </div>
             <div className="bg-white border border-[#E4E4E7] p-6">
               <div className="flex items-center gap-3 mb-2">
-                <MessageSquare className="w-5 h-5 text-[#FF3B30]" />
+                <MessageSquare className="w-5 h-5 text-[#2D7A3A]" />
                 <span className="text-sm text-[#71717A]">Anfragen</span>
               </div>
               <p className="text-3xl font-bold">{stats.quotes}</p>
@@ -1871,11 +1871,11 @@ const AdminDashboard = () => {
         {/* Tabs */}
         <Tabs defaultValue="products" className="w-full">
           <TabsList className="mb-6 bg-white border border-[#E4E4E7] p-1 rounded-none">
-            <TabsTrigger value="products" className="rounded-none data-[state=active]:bg-[#FF3B30] data-[state=active]:text-white">Produkte</TabsTrigger>
-            <TabsTrigger value="categories" className="rounded-none data-[state=active]:bg-[#FF3B30] data-[state=active]:text-white">Kategorien</TabsTrigger>
-            <TabsTrigger value="orders" className="rounded-none data-[state=active]:bg-[#FF3B30] data-[state=active]:text-white">Bestellungen</TabsTrigger>
-            <TabsTrigger value="quotes" className="rounded-none data-[state=active]:bg-[#FF3B30] data-[state=active]:text-white">Anfragen</TabsTrigger>
-            <TabsTrigger value="settings" className="rounded-none data-[state=active]:bg-[#FF3B30] data-[state=active]:text-white">Einstellungen</TabsTrigger>
+            <TabsTrigger value="products" className="rounded-none data-[state=active]:bg-[#2D7A3A] data-[state=active]:text-white">Produkte</TabsTrigger>
+            <TabsTrigger value="categories" className="rounded-none data-[state=active]:bg-[#2D7A3A] data-[state=active]:text-white">Kategorien</TabsTrigger>
+            <TabsTrigger value="orders" className="rounded-none data-[state=active]:bg-[#2D7A3A] data-[state=active]:text-white">Bestellungen</TabsTrigger>
+            <TabsTrigger value="quotes" className="rounded-none data-[state=active]:bg-[#2D7A3A] data-[state=active]:text-white">Anfragen</TabsTrigger>
+            <TabsTrigger value="settings" className="rounded-none data-[state=active]:bg-[#2D7A3A] data-[state=active]:text-white">Einstellungen</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products">
@@ -2000,7 +2000,7 @@ const AdminProducts = () => {
                       <div>
                         <span className="text-sm text-[#71717A] line-through mr-1">{product.price.toLocaleString('de-DE')} €</span>
                         <br />
-                        <span className="text-[#FF3B30]">{product.sale_price.toLocaleString('de-DE')} €</span>
+                        <span className="text-[#2D7A3A]">{product.sale_price.toLocaleString('de-DE')} €</span>
                       </div>
                     ) : (
                       <span>{product.price.toLocaleString('de-DE')} €</span>
@@ -2391,7 +2391,7 @@ const ProductForm = ({ product, categories, onSave }) => {
             id="is_bestseller"
             checked={formData.is_bestseller}
             onChange={(e) => setFormData({ ...formData, is_bestseller: e.target.checked })}
-            className="w-5 h-5 accent-[#FF3B30] cursor-pointer"
+            className="w-5 h-5 accent-[#2D7A3A] cursor-pointer"
             data-testid="bestseller-checkbox"
           />
           <Label htmlFor="is_bestseller" className="cursor-pointer font-bold text-sm">Bestseller (auf Startseite anzeigen)</Label>
@@ -2605,7 +2605,7 @@ const ProductForm = ({ product, categories, onSave }) => {
         <div className="space-y-2">
           {formData.downloads.map((dl, idx) => (
             <div key={idx} className="flex items-center gap-2 border border-[#E4E4E7] p-2">
-              <FileText className="w-5 h-5 text-[#FF3B30] flex-shrink-0" />
+              <FileText className="w-5 h-5 text-[#2D7A3A] flex-shrink-0" />
               <Input
                 value={dl.name}
                 onChange={(e) => updateDownloadName(idx, e.target.value)}
@@ -3303,7 +3303,7 @@ const AGBPage = () => {
 
           <section className="mb-8">
             <h3 className="text-lg font-bold mb-3 border-b border-[#E4E4E7] pb-2">1) Geltungsbereich</h3>
-            <p className="mb-2">1.1 Diese Allgemeinen Geschäftsbedingungen (nachfolgend „AGB") der G.P.C. Maschinen-Vertriebs-GmbH (nachfolgend „Verkäufer"), gelten für alle Verträge zur Lieferung von Waren, die ein Verbraucher oder Unternehmer (nachfolgend „Kunde") mit dem Verkäufer hinsichtlich der vom Verkäufer in seinem Online-Shop dargestellten Waren abschließt. Hiermit wird der Einbeziehung von eigenen Bedingungen des Kunden widersprochen, es sei denn, es ist etwas anderes vereinbart.</p>
+            <p className="mb-2">1.1 Diese Allgemeinen Geschäftsbedingungen (nachfolgend „AGB") der Josten Haus & Garten Handelsgesellschaft mbH (nachfolgend „Verkäufer"), gelten für alle Verträge zur Lieferung von Waren, die ein Verbraucher oder Unternehmer (nachfolgend „Kunde") mit dem Verkäufer hinsichtlich der vom Verkäufer in seinem Online-Shop dargestellten Waren abschließt. Hiermit wird der Einbeziehung von eigenen Bedingungen des Kunden widersprochen, es sei denn, es ist etwas anderes vereinbart.</p>
             <p className="mb-2">1.2 Verbraucher im Sinne dieser AGB ist jede natürliche Person, die ein Rechtsgeschäft zu Zwecken abschließt, die überwiegend weder ihrer gewerblichen noch ihrer selbständigen beruflichen Tätigkeit zugerechnet werden können.</p>
             <p>1.3 Unternehmer im Sinne dieser AGB ist eine natürliche oder juristische Person oder eine rechtsfähige Personengesellschaft, die bei Abschluss eines Rechtsgeschäfts in Ausübung ihrer gewerblichen oder selbständigen beruflichen Tätigkeit handelt.</p>
           </section>
@@ -3442,10 +3442,10 @@ const WiderrufsrechtPage = () => {
               Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.
             </p>
             <div className="bg-[#F4F4F5] p-4 my-4">
-              <p className="font-semibold">G.P.C. Maschinen-Vertriebs-GmbH</p>
-              <p>Hauptstr. 180</p>
-              <p>D-51503 Rösrath</p>
-              <p>E-Mail: widerruf@gpc-maschinen.de</p>
+              <p className="font-semibold">Josten Haus & Garten Handelsgesellschaft mbH</p>
+              <p>Hammer Landstr. 1 A</p>
+              <p>41460 Neuss</p>
+              <p>E-Mail: widerruf@josten-hug.de</p>
             </div>
           </section>
         </div>
@@ -3499,10 +3499,10 @@ const DatenschutzPage = () => {
             <h3 className="font-bold mb-2">Hinweis zur verantwortlichen Stelle</h3>
             <p className="mb-1">Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:</p>
             <div className="mb-4 pl-4 border-l-2 border-[#E4E4E7]">
-              <p className="font-semibold">G.P.C. Maschinen-Vertriebs-GmbH</p>
-              <p>Hauptstr. 180</p>
-              <p>D-51503 Rösrath</p>
-              <p className="mt-1">E-Mail: info@gpc-maschinen.de</p>
+              <p className="font-semibold">Josten Haus & Garten Handelsgesellschaft mbH</p>
+              <p>Hammer Landstr. 1 A</p>
+              <p>41460 Neuss</p>
+              <p className="mt-1">E-Mail: info@josten-hug.de</p>
             </div>
             <p className="mb-4">Verantwortliche Stelle ist die natürliche oder juristische Person, die allein oder gemeinsam mit anderen über die Zwecke und Mittel der Verarbeitung von personenbezogenen Daten (z.&nbsp;B. Namen, E-Mail-Adressen o.&nbsp;Ä.) entscheidet.</p>
             <h3 className="font-bold mb-2">Speicherdauer</h3>
@@ -3577,9 +3577,9 @@ const ImpressumPage = () => {
         <div className="bg-white border border-[#E4E4E7] p-8">
           <section className="mb-8">
             <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Angaben gemäß § 5 TMG</h2>
-            <p className="font-semibold">G.P.C. Maschinen-Vertriebs-GmbH</p>
-            <p>Hauptstr. 180</p>
-            <p>D-51503 Rösrath</p>
+            <p className="font-semibold">Josten Haus & Garten Handelsgesellschaft mbH</p>
+            <p>Hammer Landstr. 1 A</p>
+            <p>41460 Neuss</p>
             <p>Deutschland</p>
           </section>
 
@@ -3589,7 +3589,7 @@ const ImpressumPage = () => {
               <tbody>
                 <tr>
                   <td>E-Mail:</td>
-                  <td>info@gpc-maschinen.de</td>
+                  <td>info@josten-hug.de</td>
                 </tr>
               </tbody>
             </table>
@@ -3601,19 +3601,15 @@ const ImpressumPage = () => {
               <tbody>
                 <tr>
                   <td>Registergericht:</td>
-                  <td>Amtsgericht Köln</td>
+                  <td>Amtsgericht Neuss</td>
                 </tr>
                 <tr>
                   <td>Registernummer:</td>
-                  <td>HRB 46673</td>
-                </tr>
-                <tr>
-                  <td>LEI:</td>
-                  <td>5299001SB2BT5RZXLR15</td>
+                  <td>HRB 9186</td>
                 </tr>
                 <tr>
                   <td>EUID:</td>
-                  <td>DER3306.HRB46673</td>
+                  <td>DER1102.HRB9186</td>
                 </tr>
               </tbody>
             </table>
@@ -3626,16 +3622,10 @@ const ImpressumPage = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Umsatzsteuer-ID</h2>
-            <p>Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:</p>
-            <p className="font-semibold mt-2">DE154879120</p>
-          </section>
-
-          <section className="mb-8">
             <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
-            <p>Marius Weitz</p>
-            <p>Hauptstr. 180</p>
-            <p>D-51503 Rösrath</p>
+            <p>Robin Alexander Harz</p>
+            <p>Hammer Landstr. 1 A</p>
+            <p>41460 Neuss</p>
           </section>
         </div>
       </div>
@@ -3651,10 +3641,10 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src="/gpc-logo.jpg" alt="G.P.C. Maschinen" className="h-12 w-auto" />
+              <img src="/gpc-logo.jpg" alt="Josten Haus & Garten" className="h-12 w-auto" />
             </div>
             <p className="text-[#E4E4E7] text-sm">
-              G.P.C. Maschinen-Vertriebs-GmbH - Ihr Partner für hochwertige Industriemaschinen.
+              Josten Haus & Garten Handelsgesellschaft mbH - Ihr Partner für Haus, Garten und Outdoor.
             </p>
           </div>
 
@@ -3670,10 +3660,10 @@ const Footer = () => {
           <div>
             <h3 className="font-bold text-white mb-4">Kategorien</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/produkte">Baumaschinen</Link></li>
-              <li><Link to="/produkte">CNC-Maschinen</Link></li>
-              <li><Link to="/produkte">Robotik</Link></li>
-              <li><Link to="/produkte">Lasertechnik</Link></li>
+              <li><Link to="/produkte">Gartenmöbel</Link></li>
+              <li><Link to="/produkte">Gartengeräte</Link></li>
+              <li><Link to="/produkte">Haushalt</Link></li>
+              <li><Link to="/produkte">Outdoor</Link></li>
             </ul>
           </div>
 
@@ -3689,7 +3679,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-[#3f3f46] mt-8 pt-8 text-center text-sm text-[#71717A]">
-          <p>© 2026 G.P.C. Maschinen-Vertriebs-GmbH. Alle Rechte vorbehalten.</p>
+          <p>© 2026 Josten Haus & Garten Handelsgesellschaft mbH. Alle Rechte vorbehalten.</p>
         </div>
       </div>
     </footer>
