@@ -163,7 +163,7 @@ const Navbar = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center gap-2" data-testid="logo-link">
-              <img src="/gpc-logo.jpg" alt="Josten Haus & Garten" className="h-12 w-auto" />
+              <img src="/josten-logo.svg" alt="Josten Haus & Garten" className="h-12 w-auto" />
             </Link>
 
             {/* Desktop Menu */}
@@ -3641,7 +3641,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src="/gpc-logo.jpg" alt="Josten Haus & Garten" className="h-12 w-auto" />
+              <img src="/josten-logo.svg" alt="Josten Haus & Garten" className="h-12 w-auto" />
             </div>
             <p className="text-[#E4E4E7] text-sm">
               Josten Haus & Garten Handelsgesellschaft mbH - Ihr Partner für Haus, Garten und Outdoor.

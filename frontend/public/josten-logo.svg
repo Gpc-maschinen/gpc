@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 60" fill="none">
+  <!-- House icon -->
+  <g transform="translate(5, 5)">
+    <!-- Roof -->
+    <path d="M25 8 L5 25 L45 25 Z" fill="#2D7A3A" />
+    <!-- House body -->
+    <rect x="10" y="25" width="30" height="22" fill="#2D7A3A" rx="1"/>
+    <!-- Door -->
+    <rect x="20" y="32" width="10" height="15" fill="white" rx="1"/>
+    <!-- Window -->
+    <rect x="14" y="30" width="5" height="5" fill="white" rx="0.5"/>
+    <rect x="31" y="30" width="5" height="5" fill="white" rx="0.5"/>
+    <!-- Leaf/plant from chimney -->
+    <path d="M35 12 C35 4, 44 2, 44 8 C44 14, 35 12, 35 12Z" fill="#4CAF50"/>
+    <path d="M35 12 C35 6, 28 3, 28 8 C28 13, 35 12, 35 12Z" fill="#66BB6A"/>
+    <line x1="35" y1="12" x2="35" y2="20" stroke="#2D7A3A" stroke-width="1.5"/>
+  </g>
+  <!-- Text -->
+  <text x="60" y="28" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="22" fill="#1a1a1a">Josten</text>
+  <text x="60" y="48" font-family="Arial, Helvetica, sans-serif" font-weight="400" font-size="13" fill="#2D7A3A" letter-spacing="2">HAUS &amp; GARTEN</text>
+</svg>
