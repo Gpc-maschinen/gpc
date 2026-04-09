@@ -352,7 +352,7 @@ const HeroSection = () => {
   return (
     <section
       className="hero-section"
-      style={{ backgroundImage: `url(https://images.unsplash.com/photo-1762326441132-4caeac42be3a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjV8MHwxfHNlYXJjaHwyfHxnYXJkZW4lMjBjZW50ZXIlMjBvdXRkb29yJTIwZnVybml0dXJlJTIwbGF3biUyMG1vd2VyfGVufDB8fHx8MTc3NTc0OTMyMHww&ixlib=rb-4.1.0&q=85)` }}
+      style={{ backgroundImage: `url(https://images.unsplash.com/photo-1704457031745-fe39ed2d296c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwxfHxiZWF1dGlmdWwlMjBtb2Rlcm4lMjBob3VzZSUyMGdyZWVuJTIwbGF3biUyMGdhcmRlbiUyMHN1bW1lcnxlbnwwfHx8fDE3NzU3NDk2MDV8MA&ixlib=rb-4.1.0&q=85)` }}
       data-testid="hero-section"
     >
       <div className="hero-overlay" />
