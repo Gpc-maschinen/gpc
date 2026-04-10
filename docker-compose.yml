@@ -17,6 +17,8 @@ services:
     restart: always
     ports:
       - "8001:8001"
+    volumes:
+      - uploads_data:/app/uploads
     environment:
       - MONGO_URL=mongodb://mongodb:27017
       - DB_NAME=gpc_store
@@ -24,7 +26,6 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - EMERGENT_LLM_KEY=${EMERGENT_LLM_KEY}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
     depends_on:
@@ -45,6 +46,7 @@ services:
 
 volumes:
   mongodb_data:
+  uploads_data:
 
 networks:
   gpc-network:

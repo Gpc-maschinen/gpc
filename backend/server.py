@@ -27,11 +27,9 @@ db = client[os.environ['DB_NAME']]
 # JWT Config
 JWT_ALGORITHM = "HS256"
 
-# Storage Config
-STORAGE_URL = "https://integrations.emergentagent.com/objstore/api/v1/storage"
-EMERGENT_KEY = os.environ.get("EMERGENT_LLM_KEY")
-APP_NAME = "gpc-maschinen"
-storage_key = None
+# Storage Config - Lokale Speicherung
+UPLOAD_DIR = ROOT_DIR / "uploads"
+UPLOAD_DIR.mkdir(exist_ok=True)
 
 # Telegram Config
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
@@ -89,44 +87,6 @@ MIME_TYPES = {
     "zip": "application/zip", "txt": "text/plain"
 }
 
-def init_storage():
-    """Initialize storage - call once at startup"""
-    global storage_key
-    if storage_key:
-        return storage_key
-    try:
-        resp = requests.post(f"{STORAGE_URL}/init", json={"emergent_key": EMERGENT_KEY}, timeout=30)
-        resp.raise_for_status()
-        storage_key = resp.json()["storage_key"]
-        return storage_key
-    except Exception as e:
-        logging.error(f"Storage init failed: {e}")
-        return None
-
-def put_object(path: str, data: bytes, content_type: str) -> dict:
-    """Upload file to storage"""
-    key = init_storage()
-    if not key:
-        raise HTTPException(status_code=500, detail="Storage nicht verfügbar")
-    resp = requests.put(
-        f"{STORAGE_URL}/objects/{path}",
-        headers={"X-Storage-Key": key, "Content-Type": content_type},
-        data=data, timeout=120
-    )
-    resp.raise_for_status()
-    return resp.json()
-
-def get_object(path: str) -> tuple:
-    """Download file from storage"""
-    key = init_storage()
-    if not key:
-        raise HTTPException(status_code=500, detail="Storage nicht verfügbar")
-    resp = requests.get(
-        f"{STORAGE_URL}/objects/{path}",
-        headers={"X-Storage-Key": key}, timeout=60
-    )
-    resp.raise_for_status()
-    return resp.content, resp.headers.get("Content-Type", "application/octet-stream")
 
 def get_jwt_secret() -> str:
     return os.environ["JWT_SECRET"]
@@ -482,43 +442,39 @@ async def get_me(user: dict = Depends(get_current_user)):
 @admin_router.post("/upload")
 async def admin_upload_file(file: UploadFile = File(...), user: dict = Depends(get_current_user)):
     """Upload an image or document file and return the URL"""
-    # Validate file type
     ext = file.filename.split(".")[-1].lower() if "." in file.filename else ""
     allowed = ["jpg", "jpeg", "png", "gif", "webp", "pdf", "doc", "docx", "xls", "xlsx", "zip", "txt"]
     if ext not in allowed:
         raise HTTPException(status_code=400, detail=f"Dateityp .{ext} nicht erlaubt")
     
-    # Read file
     data = await file.read()
     
-    # Max 20MB
     if len(data) > 20 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="Datei zu groß (max. 20MB)")
     
-    # Generate unique path
     file_id = str(uuid.uuid4())
-    path = f"{APP_NAME}/products/{file_id}.{ext}"
+    filename = f"{file_id}.{ext}"
     content_type = MIME_TYPES.get(ext, "application/octet-stream")
     
     try:
-        result = put_object(path, data, content_type)
+        file_path = UPLOAD_DIR / filename
+        with open(file_path, "wb") as f:
+            f.write(data)
         
-        # Store reference in DB
         file_doc = {
             "id": file_id,
-            "storage_path": result["path"],
+            "storage_path": filename,
             "original_filename": file.filename,
             "content_type": content_type,
-            "size": result.get("size", len(data)),
+            "size": len(data),
             "is_deleted": False,
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         await db.files.insert_one(file_doc)
         
-        # Return the download URL
         return {
-            "url": f"/api/files/{result['path']}",
-            "path": result["path"],
+            "url": f"/api/files/{filename}",
+            "path": filename,
             "filename": file.filename
         }
     except Exception as e:
@@ -528,14 +484,18 @@ async def admin_upload_file(file: UploadFile = File(...), user: dict = Depends(g
 # File Download (for displaying images)
 @api_router.get("/files/{path:path}")
 async def get_file(path: str):
-    """Serve uploaded files"""
+    """Serve uploaded files from local storage"""
     try:
         record = await db.files.find_one({"storage_path": path, "is_deleted": False})
         if not record:
             raise HTTPException(status_code=404, detail="Datei nicht gefunden")
         
-        data, content_type = get_object(path)
-        return Response(content=data, media_type=record.get("content_type", content_type))
+        file_path = UPLOAD_DIR / path
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="Datei nicht gefunden")
+        
+        data = file_path.read_bytes()
+        return Response(content=data, media_type=record.get("content_type", "application/octet-stream"))
     except HTTPException:
         raise
     except Exception as e:
