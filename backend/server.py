@@ -660,12 +660,18 @@ async def admin_get_impressum(user: dict = Depends(get_current_user)):
             "email": "", "phone": "", "register_court": "", "register_number": "", "euid": "",
             "ust_id": "", "managers": "", "responsible_person": "", "responsible_address": ""
         }
+    data.pop("type", None)
     return data
 
 @admin_router.put("/impressum")
 async def admin_update_impressum(data: dict = Body(...), user: dict = Depends(get_current_user)):
-    data["type"] = "impressum"
-    await db.settings.update_one({"type": "impressum"}, {"$set": data}, upsert=True)
+    # Nur erlaubte Felder speichern
+    allowed_fields = ["company_name", "street", "postal_code", "city", "country",
+                      "email", "phone", "register_court", "register_number", "euid",
+                      "ust_id", "managers", "responsible_person", "responsible_address"]
+    clean_data = {k: data.get(k, "") for k in allowed_fields}
+    clean_data["type"] = "impressum"
+    await db.settings.replace_one({"type": "impressum"}, clean_data, upsert=True)
     return {"message": "Impressum gespeichert"}
 
 # Public impressum endpoint
