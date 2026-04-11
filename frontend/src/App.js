@@ -286,7 +286,7 @@ const CartSidebar = ({ onClose }) => {
       <div className="flex-1 overflow-auto py-4">
         {cart.items.map((item) => (
           <div key={item.product_id} className="flex items-center gap-4 py-4 border-b border-[#E4E4E7]" data-testid={`cart-item-${item.product_id}`}>
-            <img src={item.image_url} alt={item.name} className="w-20 h-20 object-cover flex-shrink-0" />
+            <img src={item.image_url} alt={item.name} className="w-20 h-20 object-contain bg-[#F4F4F5] flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <h4 className="font-semibold text-sm truncate">{item.name}</h4>
               <p className="text-[#2D7A3A] font-bold">{item.price.toLocaleString('de-DE')} €</p>
@@ -476,7 +476,7 @@ const ProductCard = ({ product, onAddToCart }) => {
   return (
     <div className="product-card" data-testid={`product-card-${product.id}`}>
       <Link to={`/produkt/${product.id}`}>
-        <img src={product.image_url} alt={product.name} className="w-full h-52 object-cover" />
+        <img src={product.image_url} alt={product.name} className="w-full h-52 object-contain bg-[#F4F4F5] p-2" />
       </Link>
       <div className="p-4">
         <p className="text-xs text-[#71717A] uppercase tracking-wider mb-1">{product.category}{product.article_number ? ` · ${product.article_number}` : ''}</p>
@@ -726,7 +726,7 @@ const ProductDetailPage = () => {
               <img
                 src={allImages[selectedImage] || product.image_url}
                 alt={product.name}
-                className="w-full h-96 lg:h-[500px] object-cover"
+                className="w-full h-96 lg:h-[500px] object-contain bg-[#F4F4F5] p-4"
               />
               {allImages.length > 1 && (
                 <div className="flex gap-2 p-4 overflow-x-auto">
@@ -736,7 +736,7 @@ const ProductDetailPage = () => {
                       onClick={() => setSelectedImage(idx)}
                       className={`w-20 h-20 flex-shrink-0 border-2 ${selectedImage === idx ? 'border-[#2D7A3A]' : 'border-[#E4E4E7]'}`}
                     >
-                      <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
+                      <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-contain bg-[#F4F4F5] p-1" />
                     </button>
                   ))}
                 </div>
@@ -1206,7 +1206,7 @@ const CheckoutPage = () => {
               <div className="space-y-4 mb-6">
                 {cart.items.map((item) => (
                   <div key={item.product_id} className="flex gap-4" data-testid={`summary-item-${item.product_id}`}>
-                    <img src={item.image_url} alt={item.name} className="w-16 h-16 object-cover" />
+                    <img src={item.image_url} alt={item.name} className="w-16 h-16 object-contain bg-[#F4F4F5]" />
                     <div className="flex-1">
                       <p className="font-semibold text-sm">{item.name}</p>
                       <p className="text-[#71717A] text-sm">Menge: {item.quantity}</p>
@@ -1537,7 +1537,7 @@ const QuoteRequestPage = () => {
           <div>
             <div className="bg-white border border-[#E4E4E7] p-6 sticky top-24">
               <h2 className="text-lg font-bold mb-4 border-b border-[#E4E4E7] pb-4">Produkt</h2>
-              <img src={product.image_url} alt={product.name} className="w-full h-40 object-cover mb-4" />
+              <img src={product.image_url} alt={product.name} className="w-full h-40 object-contain bg-[#F4F4F5] p-2 mb-4" />
               <p className="text-xs text-[#71717A] uppercase tracking-wider">{product.category}</p>
               <h3 className="font-bold text-lg mb-2">{product.name}</h3>
               {product.sale_price ? (
@@ -1990,7 +1990,7 @@ const AdminProducts = () => {
               {products.map((product) => (
                 <tr key={product.id} className="border-b border-[#E4E4E7]">
                   <td className="p-4">
-                    <img src={product.image_url} alt={product.name} className="w-16 h-16 object-cover" />
+                    <img src={product.image_url} alt={product.name} className="w-16 h-16 object-contain bg-[#F4F4F5]" />
                   </td>
                   <td className="p-4 text-sm font-mono text-[#71717A]">{product.article_number || '—'}</td>
                   <td className="p-4 font-medium">{product.name}</td>
@@ -2435,7 +2435,7 @@ const ProductForm = ({ product, categories, onSave }) => {
         </div>
         {formData.image_url && (
           <div className="mt-2 relative inline-block">
-            <img src={formData.image_url} alt="Hauptbild" className="w-32 h-32 object-cover border" />
+            <img src={formData.image_url} alt="Hauptbild" className="w-32 h-32 object-contain bg-[#F4F4F5] border" />
             <button
               type="button"
               onClick={() => setFormData({ ...formData, image_url: "" })}
@@ -2486,7 +2486,7 @@ const ProductForm = ({ product, categories, onSave }) => {
         <div className="flex gap-2 flex-wrap">
           {formData.images.map((img, idx) => (
             <div key={idx} className="relative">
-              <img src={img} alt={`Bild ${idx + 1}`} className="w-20 h-20 object-cover border" />
+              <img src={img} alt={`Bild ${idx + 1}`} className="w-20 h-20 object-contain bg-[#F4F4F5] border" />
               <button
                 type="button"
                 onClick={() => removeImage(idx)}
