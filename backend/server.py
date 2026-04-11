@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, Depends, File, UploadFile
+from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, Depends, File, UploadFile, Body
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import ReturnDocument
@@ -649,6 +649,33 @@ async def admin_update_settings(settings: dict, user: dict = Depends(get_current
         upsert=True
     )
     return {"message": "Einstellungen gespeichert"}
+
+# Impressum Settings
+@admin_router.get("/impressum")
+async def admin_get_impressum(user: dict = Depends(get_current_user)):
+    data = await db.settings.find_one({"type": "impressum"}, {"_id": 0})
+    if not data:
+        return {
+            "company_name": "", "street": "", "postal_code": "", "city": "", "country": "Deutschland",
+            "email": "", "phone": "", "register_court": "", "register_number": "", "euid": "",
+            "ust_id": "", "managers": "", "responsible_person": "", "responsible_address": ""
+        }
+    return data
+
+@admin_router.put("/impressum")
+async def admin_update_impressum(data: dict = Body(...), user: dict = Depends(get_current_user)):
+    data["type"] = "impressum"
+    await db.settings.update_one({"type": "impressum"}, {"$set": data}, upsert=True)
+    return {"message": "Impressum gespeichert"}
+
+# Public impressum endpoint
+@api_router.get("/impressum")
+async def get_impressum():
+    data = await db.settings.find_one({"type": "impressum"}, {"_id": 0})
+    if not data:
+        return {}
+    data.pop("type", None)
+    return data
 
 # Public settings endpoint (for frontend to show shipping info)
 @api_router.get("/settings/shipping")

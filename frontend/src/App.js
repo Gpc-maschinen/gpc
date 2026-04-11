@@ -3122,13 +3122,20 @@ const AdminSettings = () => {
     free_shipping_threshold: 0,
     shipping_note: ""
   });
+  const [impressum, setImpressum] = useState({
+    company_name: "", street: "", postal_code: "", city: "", country: "Deutschland",
+    email: "", phone: "", register_court: "", register_number: "", euid: "",
+    ust_id: "", managers: "", responsible_person: "", responsible_address: ""
+  });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingImpressum, setSavingImpressum] = useState(false);
   const [newZone, setNewZone] = useState("");
   const [newCost, setNewCost] = useState("");
 
   useEffect(() => {
     fetchSettings();
+    fetchImpressum();
   }, []);
 
   const fetchSettings = async () => {
@@ -3143,6 +3150,15 @@ const AdminSettings = () => {
       console.error(e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchImpressum = async () => {
+    try {
+      const res = await axios.get(`${API}/admin/impressum`, { withCredentials: true });
+      setImpressum(prev => ({ ...prev, ...res.data }));
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -3265,8 +3281,83 @@ const AdminSettings = () => {
       </div>
 
       <button onClick={saveSettings} disabled={saving} className="btn-primary w-full" data-testid="save-settings">
-        {saving ? "Wird gespeichert..." : "Einstellungen speichern"}
+        {saving ? "Wird gespeichert..." : "Versandeinstellungen speichern"}
       </button>
+
+      {/* Impressum bearbeiten */}
+      <div className="bg-white border border-[#E4E4E7] p-6 mt-8">
+        <h3 className="font-bold text-lg mb-4">Impressum</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="col-span-2">
+            <Label className="label-brutal">Firmenname *</Label>
+            <Input value={impressum.company_name} onChange={(e) => setImpressum({...impressum, company_name: e.target.value})} className="input-brutal" placeholder="z.B. Josten Haus & Garten Handelsgesellschaft mbH" data-testid="impressum-company" />
+          </div>
+          <div>
+            <Label className="label-brutal">Straße</Label>
+            <Input value={impressum.street} onChange={(e) => setImpressum({...impressum, street: e.target.value})} className="input-brutal" placeholder="z.B. Hammer Landstr. 1 A" />
+          </div>
+          <div className="flex gap-2">
+            <div className="w-1/3">
+              <Label className="label-brutal">PLZ</Label>
+              <Input value={impressum.postal_code} onChange={(e) => setImpressum({...impressum, postal_code: e.target.value})} className="input-brutal" placeholder="41460" />
+            </div>
+            <div className="flex-1">
+              <Label className="label-brutal">Stadt</Label>
+              <Input value={impressum.city} onChange={(e) => setImpressum({...impressum, city: e.target.value})} className="input-brutal" placeholder="Neuss" />
+            </div>
+          </div>
+          <div>
+            <Label className="label-brutal">Land</Label>
+            <Input value={impressum.country} onChange={(e) => setImpressum({...impressum, country: e.target.value})} className="input-brutal" />
+          </div>
+          <div>
+            <Label className="label-brutal">E-Mail</Label>
+            <Input value={impressum.email} onChange={(e) => setImpressum({...impressum, email: e.target.value})} className="input-brutal" placeholder="info@firma.de" />
+          </div>
+          <div>
+            <Label className="label-brutal">Telefon</Label>
+            <Input value={impressum.phone} onChange={(e) => setImpressum({...impressum, phone: e.target.value})} className="input-brutal" placeholder="optional" />
+          </div>
+          <div>
+            <Label className="label-brutal">Registergericht</Label>
+            <Input value={impressum.register_court} onChange={(e) => setImpressum({...impressum, register_court: e.target.value})} className="input-brutal" placeholder="z.B. Amtsgericht Neuss" />
+          </div>
+          <div>
+            <Label className="label-brutal">Registernummer</Label>
+            <Input value={impressum.register_number} onChange={(e) => setImpressum({...impressum, register_number: e.target.value})} className="input-brutal" placeholder="z.B. HRB 9186" />
+          </div>
+          <div>
+            <Label className="label-brutal">EUID</Label>
+            <Input value={impressum.euid} onChange={(e) => setImpressum({...impressum, euid: e.target.value})} className="input-brutal" placeholder="z.B. DER1102.HRB9186" />
+          </div>
+          <div>
+            <Label className="label-brutal">USt-IdNr.</Label>
+            <Input value={impressum.ust_id} onChange={(e) => setImpressum({...impressum, ust_id: e.target.value})} className="input-brutal" placeholder="z.B. DE123456789" />
+          </div>
+          <div className="col-span-2">
+            <Label className="label-brutal">Geschäftsführer (ein Name pro Zeile)</Label>
+            <textarea value={impressum.managers} onChange={(e) => setImpressum({...impressum, managers: e.target.value})} className="w-full border-2 border-black p-3 text-sm min-h-[80px]" placeholder={"Robin Alexander Harz\nMarvin Julius Gerhardt"} data-testid="impressum-managers" />
+          </div>
+          <div>
+            <Label className="label-brutal">Verantwortlich für den Inhalt (Name)</Label>
+            <Input value={impressum.responsible_person} onChange={(e) => setImpressum({...impressum, responsible_person: e.target.value})} className="input-brutal" />
+          </div>
+          <div>
+            <Label className="label-brutal">Verantwortlich (Adresse)</Label>
+            <Input value={impressum.responsible_address} onChange={(e) => setImpressum({...impressum, responsible_address: e.target.value})} className="input-brutal" placeholder="z.B. Hammer Landstr. 1 A, 41460 Neuss" />
+          </div>
+        </div>
+        <button onClick={async () => {
+          setSavingImpressum(true);
+          try {
+            await axios.put(`${API}/admin/impressum`, impressum, { withCredentials: true });
+            toast.success("Impressum gespeichert");
+          } catch (e) { toast.error("Speichern fehlgeschlagen"); }
+          finally { setSavingImpressum(false); }
+        }} disabled={savingImpressum} className="btn-primary w-full mt-4" data-testid="save-impressum">
+          {savingImpressum ? "Wird gespeichert..." : "Impressum speichern"}
+        </button>
+      </div>
     </div>
   );
 };
@@ -3566,6 +3657,27 @@ const DatenschutzPage = () => {
 
 // Impressum Page
 const ImpressumPage = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios.get(`${API}/impressum`).then(res => {
+      setData(res.data);
+    }).catch(() => {}).finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div className="flex justify-center py-20"><div className="spinner" /></div>;
+
+  // Fallback falls keine Daten in DB
+  const d = data && data.company_name ? data : {
+    company_name: "Josten Haus & Garten Handelsgesellschaft mbH",
+    street: "Hammer Landstr. 1 A", postal_code: "41460", city: "Neuss", country: "Deutschland",
+    email: "info@josten-hug.de", phone: "", register_court: "Amtsgericht Neuss",
+    register_number: "HRB 9186", euid: "DER1102.HRB9186", ust_id: "",
+    managers: "Robin Alexander Harz\nMarvin Julius Gerhardt",
+    responsible_person: "Robin Alexander Harz", responsible_address: "Hammer Landstr. 1 A, 41460 Neuss"
+  };
+
   return (
     <div className="py-8 bg-[#F4F4F5] min-h-screen" data-testid="impressum-page">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -3577,20 +3689,18 @@ const ImpressumPage = () => {
         <div className="bg-white border border-[#E4E4E7] p-8">
           <section className="mb-8">
             <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Angaben gemäß § 5 TMG</h2>
-            <p className="font-semibold">Josten Haus & Garten Handelsgesellschaft mbH</p>
-            <p>Hammer Landstr. 1 A</p>
-            <p>41460 Neuss</p>
-            <p>Deutschland</p>
+            <p className="font-semibold">{d.company_name}</p>
+            <p>{d.street}</p>
+            <p>{d.postal_code} {d.city}</p>
+            <p>{d.country}</p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Kontakt</h2>
             <table className="specs-table">
               <tbody>
-                <tr>
-                  <td>E-Mail:</td>
-                  <td>info@josten-hug.de</td>
-                </tr>
+                {d.email && <tr><td>E-Mail:</td><td>{d.email}</td></tr>}
+                {d.phone && <tr><td>Telefon:</td><td>{d.phone}</td></tr>}
               </tbody>
             </table>
           </section>
@@ -3599,34 +3709,35 @@ const ImpressumPage = () => {
             <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Registereintrag</h2>
             <table className="specs-table">
               <tbody>
-                <tr>
-                  <td>Registergericht:</td>
-                  <td>Amtsgericht Neuss</td>
-                </tr>
-                <tr>
-                  <td>Registernummer:</td>
-                  <td>HRB 9186</td>
-                </tr>
-                <tr>
-                  <td>EUID:</td>
-                  <td>DER1102.HRB9186</td>
-                </tr>
+                {d.register_court && <tr><td>Registergericht:</td><td>{d.register_court}</td></tr>}
+                {d.register_number && <tr><td>Registernummer:</td><td>{d.register_number}</td></tr>}
+                {d.euid && <tr><td>EUID:</td><td>{d.euid}</td></tr>}
               </tbody>
             </table>
           </section>
 
-          <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Geschäftsführer</h2>
-            <p>Robin Alexander Harz</p>
-            <p>Marvin Julius Gerhardt</p>
-          </section>
+          {d.ust_id && (
+            <section className="mb-8">
+              <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Umsatzsteuer-ID</h2>
+              <p>Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:</p>
+              <p className="font-semibold mt-2">{d.ust_id}</p>
+            </section>
+          )}
 
-          <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
-            <p>Robin Alexander Harz</p>
-            <p>Hammer Landstr. 1 A</p>
-            <p>41460 Neuss</p>
-          </section>
+          {d.managers && (
+            <section className="mb-8">
+              <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Geschäftsführer</h2>
+              {d.managers.split('\n').filter(m => m.trim()).map((m, i) => <p key={i}>{m.trim()}</p>)}
+            </section>
+          )}
+
+          {d.responsible_person && (
+            <section className="mb-8">
+              <h2 className="text-xl font-bold mb-4 border-b border-[#E4E4E7] pb-2">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
+              <p>{d.responsible_person}</p>
+              {d.responsible_address && d.responsible_address.split(',').map((line, i) => <p key={i}>{line.trim()}</p>)}
+            </section>
+          )}
         </div>
       </div>
     </div>
