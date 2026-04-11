@@ -3350,9 +3350,17 @@ const AdminSettings = () => {
         <button onClick={async () => {
           setSavingImpressum(true);
           try {
-            await axios.put(`${API}/admin/impressum`, impressum, { withCredentials: true });
+            console.log("Impressum wird gespeichert:", JSON.stringify(impressum));
+            const res = await axios.put(`${API}/admin/impressum`, impressum, { withCredentials: true });
+            console.log("Impressum Antwort:", res.data);
             toast.success("Impressum gespeichert");
-          } catch (e) { toast.error("Speichern fehlgeschlagen"); }
+            // Daten neu laden um Persistenz zu bestätigen
+            const verify = await axios.get(`${API}/admin/impressum`, { withCredentials: true });
+            console.log("Impressum nach Speichern:", JSON.stringify(verify.data));
+          } catch (e) {
+            console.error("Impressum Fehler:", e.response?.status, e.response?.data, e.message);
+            toast.error("Speichern fehlgeschlagen: " + (e.response?.data?.detail || e.message));
+          }
           finally { setSavingImpressum(false); }
         }} disabled={savingImpressum} className="btn-primary w-full mt-4" data-testid="save-impressum">
           {savingImpressum ? "Wird gespeichert..." : "Impressum speichern"}

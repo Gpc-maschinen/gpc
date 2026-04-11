@@ -34,7 +34,10 @@ services:
       - gpc-network
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL:-https://josten-garten.de}
     container_name: gpc-frontend
     restart: always
     ports:

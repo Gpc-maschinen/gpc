@@ -409,8 +409,8 @@ async def login(request: LoginRequest, response: Response):
     access_token = create_access_token(user_id, email)
     refresh_token = create_refresh_token(user_id)
     
-    response.set_cookie(key="access_token", value=access_token, httponly=True, secure=False, samesite="lax", max_age=86400, path="/")
-    response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, secure=False, samesite="lax", max_age=604800, path="/")
+    response.set_cookie(key="access_token", value=access_token, httponly=True, secure=True, samesite="lax", max_age=86400, path="/")
+    response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, secure=True, samesite="lax", max_age=604800, path="/")
     
     return {
         "id": user_id,
@@ -671,8 +671,10 @@ async def admin_update_impressum(data: dict = Body(...), user: dict = Depends(ge
                       "ust_id", "managers", "responsible_person", "responsible_address"]
     clean_data = {k: data.get(k, "") for k in allowed_fields}
     clean_data["type"] = "impressum"
-    await db.settings.replace_one({"type": "impressum"}, clean_data, upsert=True)
-    return {"message": "Impressum gespeichert"}
+    logger.info(f"Impressum speichern: {list(clean_data.keys())}")
+    result = await db.settings.replace_one({"type": "impressum"}, clean_data, upsert=True)
+    logger.info(f"Impressum gespeichert: modified={result.modified_count}, upserted={result.upserted_id is not None}")
+    return {"message": "Impressum gespeichert", "fields_saved": len(clean_data) - 1}
 
 # Public impressum endpoint
 @api_router.get("/impressum")
