@@ -394,13 +394,6 @@ SAMPLE_PRODUCTS = [
     }
 ]
 
-SAMPLE_CATEGORIES = [
-    {"id": "cat-001", "name": "Baumaschinen", "description": "Bagger, Kräne und schwere Baugeräte", "image_url": ""},
-    {"id": "cat-002", "name": "CNC-Maschinen", "description": "Fräs- und Drehmaschinen mit CNC-Steuerung", "image_url": ""},
-    {"id": "cat-003", "name": "Robotik", "description": "Industrieroboter und Automatisierungslösungen", "image_url": ""},
-    {"id": "cat-004", "name": "Blechbearbeitung", "description": "Pressen, Stanzen und Biegemaschinen", "image_url": ""},
-    {"id": "cat-005", "name": "Lasertechnik", "description": "Laserschneid- und Schweißanlagen", "image_url": ""},
-]
 
 # ==================== AUTH ROUTES ====================
 
@@ -696,17 +689,9 @@ async def get_products(category: Optional[str] = None, min_price: Optional[float
 
 @api_router.get("/products/categories")
 async def get_categories():
-    # First check if categories collection has data
-    categories = await db.categories.find({}, {"_id": 0}).to_list(100)
-    if not categories:
-        # Seed categories
-        for cat in SAMPLE_CATEGORIES:
-            cat_doc = {**cat}
-            cat_doc['created_at'] = datetime.now(timezone.utc).isoformat()
-            await db.categories.insert_one(cat_doc)
-        categories = await db.categories.find({}, {"_id": 0}).to_list(100)
-    
-    return [cat["name"] for cat in categories]
+    # Kategorien aus vorhandenen Produkten ableiten
+    categories = await db.products.distinct("category")
+    return [c for c in categories if c]
 
 @api_router.get("/products/{product_id}", response_model=Product)
 async def get_product(product_id: str):
