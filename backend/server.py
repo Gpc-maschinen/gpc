@@ -756,7 +756,7 @@ async def add_to_cart(session_id: str, item: CartItemAdd):
     cart_item = {
         "product_id": product["id"],
         "name": product["name"],
-        "price": product["price"],
+        "price": product.get("sale_price") or product["price"],
         "quantity": item.quantity,
         "image_url": product["image_url"]
     }
