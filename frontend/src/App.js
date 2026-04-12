@@ -811,7 +811,7 @@ const ProductDetailPage = () => {
                       <DialogTitle>Versand & Lieferinformation</DialogTitle>
                     </DialogHeader>
                     <div className="text-sm text-[#3F3F46] space-y-3 leading-relaxed" data-testid="shipping-info-content">
-                      <p>Bei josten-hug.de bestellen Sie ohne Mindestbestellwert. Lieferungen sind aktuell nur innerhalb Deutschlands möglich. Innerhalb Deutschlands betragen die Versandkosten <strong>5,95 Euro inkl. MwSt.</strong> pro Bestellung. Ab einem Warenwert von <strong>50 Euro</strong> liefern wir versandkostenfrei.</p>
+                      <p>Bei josten-garten.de bestellen Sie ohne Mindestbestellwert. Lieferungen sind aktuell nur innerhalb Deutschlands möglich. Innerhalb Deutschlands betragen die Versandkosten <strong>5,95 Euro inkl. MwSt.</strong> pro Bestellung. Ab einem Warenwert von <strong>50 Euro</strong> liefern wir versandkostenfrei.</p>
                       <p>Bei Speditionslieferungen auf Inseln ermitteln wir die Kosten auf Anfrage oder liefern frei Festland. Sofern Sie eine Lieferadresse auf einer Insel haben, bitten wir Sie sich bei uns zu melden und ein Angebot unter Angabe der Artikelnummer in der gewünschten Menge für die Lieferung auf eine Insel anzufordern.</p>
                       <div>
                         <p className="font-semibold text-[#09090B] mb-2">Welche Liefergebiete sind betroffen?</p>
@@ -1681,7 +1681,7 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <p className="label-brutal">E-Mail</p>
-                    <p className="font-semibold">info@josten-hug.de</p>
+                    <p className="font-semibold">info@josten-garten.de</p>
                   </div>
                 </div>
 
@@ -3780,7 +3780,7 @@ const WiderrufsrechtPage = () => {
               <p className="font-semibold">Josten Haus & Garten Handelsgesellschaft mbH</p>
               <p>Hammer Landstr. 1 A</p>
               <p>41460 Neuss</p>
-              <p>E-Mail: widerruf@josten-hug.de</p>
+              <p>E-Mail: widerruf@josten-garten.de</p>
             </div>
           </section>
         </div>
@@ -3837,7 +3837,7 @@ const DatenschutzPage = () => {
               <p className="font-semibold">Josten Haus & Garten Handelsgesellschaft mbH</p>
               <p>Hammer Landstr. 1 A</p>
               <p>41460 Neuss</p>
-              <p className="mt-1">E-Mail: info@josten-hug.de</p>
+              <p className="mt-1">E-Mail: info@josten-garten.de</p>
             </div>
             <p className="mb-4">Verantwortliche Stelle ist die natürliche oder juristische Person, die allein oder gemeinsam mit anderen über die Zwecke und Mittel der Verarbeitung von personenbezogenen Daten (z.&nbsp;B. Namen, E-Mail-Adressen o.&nbsp;Ä.) entscheidet.</p>
             <h3 className="font-bold mb-2">Speicherdauer</h3>
@@ -3916,7 +3916,7 @@ const ImpressumPage = () => {
   const d = data && data.company_name ? data : {
     company_name: "Josten Haus & Garten Handelsgesellschaft mbH",
     street: "Hammer Landstr. 1 A", postal_code: "41460", city: "Neuss", country: "Deutschland",
-    email: "info@josten-hug.de", phone: "", register_court: "Amtsgericht Neuss",
+    email: "info@josten-garten.de", phone: "", register_court: "Amtsgericht Neuss",
     register_number: "HRB 9186", euid: "DER1102.HRB9186", ust_id: "",
     managers: "Robin Alexander Harz\nMarvin Julius Gerhardt",
     responsible_person: "Robin Alexander Harz", responsible_address: "Hammer Landstr. 1 A, 41460 Neuss"
