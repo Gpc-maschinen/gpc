@@ -908,11 +908,46 @@ async def create_contact_message(contact_data: ContactMessageCreate):
 # Include routers
 # ==================== ANALYTICS ====================
 
+# IP Geolocation cache (in-memory)
+_geo_cache = {}
+
+async def get_geo_from_ip(ip: str):
+    """Get geolocation from IP using ip-api.com (free, no key needed)"""
+    if not ip or ip in ("127.0.0.1", "localhost", "::1"):
+        return None
+    # Strip port if present
+    ip = ip.split(",")[0].strip()
+    if ip in _geo_cache:
+        return _geo_cache[ip]
+    try:
+        resp = requests.get(f"http://ip-api.com/json/{ip}?fields=status,country,countryCode,regionName,city,lat,lon", timeout=3)
+        data = resp.json()
+        if data.get("status") == "success":
+            geo = {
+                "country": data.get("country", ""),
+                "country_code": data.get("countryCode", ""),
+                "region": data.get("regionName", ""),
+                "city": data.get("city", ""),
+                "lat": data.get("lat", 0),
+                "lng": data.get("lon", 0)
+            }
+            _geo_cache[ip] = geo
+            return geo
+    except Exception:
+        pass
+    return None
+
 # Public tracking endpoint - tracks page views
 @api_router.post("/track")
-async def track_event(data: dict = Body(...)):
+async def track_event(request: Request, data: dict = Body(...)):
     event_type = data.get("type", "page_view")
     now = datetime.now(timezone.utc)
+    
+    # Get client IP
+    client_ip = request.headers.get("X-Forwarded-For", request.headers.get("X-Real-IP", request.client.host if request.client else ""))
+    if client_ip:
+        client_ip = client_ip.split(",")[0].strip()
+    
     event = {
         "type": event_type,
         "page": data.get("page", ""),
@@ -920,8 +955,15 @@ async def track_event(data: dict = Body(...)):
         "product_name": data.get("product_name"),
         "timestamp": now.isoformat(),
         "date": now.strftime("%Y-%m-%d"),
-        "hour": now.hour
+        "hour": now.hour,
+        "ip": client_ip
     }
+    
+    # Geolocation lookup (non-blocking, fire and forget if fails)
+    geo = await get_geo_from_ip(client_ip)
+    if geo:
+        event["geo"] = geo
+    
     await db.analytics.insert_one(event)
     return {"ok": True}
 
@@ -1002,6 +1044,53 @@ async def get_analytics(user: dict = Depends(get_current_user)):
         "orders": {"total": orders_total, "month": orders_month},
         "revenue": {"total": revenue_total, "month": revenue_month}
     }
+
+# Admin visitor map data
+@admin_router.get("/analytics/geo")
+async def get_analytics_geo(user: dict = Depends(get_current_user)):
+    month_ago = (datetime.now(timezone.utc) - timedelta(days=30)).strftime("%Y-%m-%d")
+    
+    # Get all geo-tagged visits (last 30 days)
+    visitors_pipeline = [
+        {"$match": {"geo": {"$exists": True}, "date": {"$gte": month_ago}}},
+        {"$group": {
+            "_id": {"city": "$geo.city", "country": "$geo.country", "country_code": "$geo.country_code", "lat": "$geo.lat", "lng": "$geo.lng"},
+            "count": {"$sum": 1},
+            "last_visit": {"$max": "$timestamp"}
+        }},
+        {"$sort": {"count": -1}},
+        {"$limit": 100}
+    ]
+    visitors = await db.analytics.aggregate(visitors_pipeline).to_list(100)
+    
+    locations = [{
+        "city": v["_id"]["city"],
+        "country": v["_id"]["country"],
+        "country_code": v["_id"]["country_code"],
+        "lat": v["_id"]["lat"],
+        "lng": v["_id"]["lng"],
+        "count": v["count"],
+        "last_visit": v["last_visit"]
+    } for v in visitors if v["_id"].get("lat")]
+    
+    # Country breakdown
+    country_pipeline = [
+        {"$match": {"geo": {"$exists": True}, "date": {"$gte": month_ago}}},
+        {"$group": {
+            "_id": {"country": "$geo.country", "country_code": "$geo.country_code"},
+            "count": {"$sum": 1}
+        }},
+        {"$sort": {"count": -1}},
+        {"$limit": 20}
+    ]
+    countries = await db.analytics.aggregate(country_pipeline).to_list(20)
+    country_list = [{
+        "country": c["_id"]["country"],
+        "country_code": c["_id"]["country_code"],
+        "count": c["count"]
+    } for c in countries]
+    
+    return {"locations": locations, "countries": country_list}
 
 app.include_router(api_router)
 app.include_router(auth_router)

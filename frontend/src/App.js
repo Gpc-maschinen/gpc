@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -3399,13 +3401,18 @@ const AdminSettings = () => {
 // Admin Analytics Dashboard
 const AdminAnalytics = () => {
   const [analytics, setAnalytics] = useState(null);
+  const [geoData, setGeoData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const res = await axios.get(`${API}/admin/analytics`, { withCredentials: true });
-        setAnalytics(res.data);
+        const [analyticsRes, geoRes] = await Promise.all([
+          axios.get(`${API}/admin/analytics`, { withCredentials: true }),
+          axios.get(`${API}/admin/analytics/geo`, { withCredentials: true })
+        ]);
+        setAnalytics(analyticsRes.data);
+        setGeoData(geoRes.data);
       } catch (e) {
         console.error(e);
       } finally {
@@ -3491,6 +3498,67 @@ const AdminAnalytics = () => {
           </div>
         </div>
       )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Besucher-Karte */}
+        <div className="bg-white border border-[#E4E4E7] p-6 md:col-span-2" data-testid="visitor-map">
+          <h3 className="font-bold text-lg mb-4">
+            <MapPin className="w-5 h-5 inline mr-2 text-[#2D7A3A]" />
+            Besucher-Herkunft (letzte 30 Tage)
+          </h3>
+          {geoData && geoData.locations.length > 0 ? (
+            <div className="rounded overflow-hidden border border-[#E4E4E7]" style={{ height: "400px" }}>
+              <MapContainer center={[51.1657, 10.4515]} zoom={5} style={{ height: "100%", width: "100%" }} scrollWheelZoom={true}>
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                {geoData.locations.map((loc, i) => {
+                  const radius = Math.min(Math.max(Math.sqrt(loc.count) * 4, 6), 30);
+                  return (
+                    <CircleMarker
+                      key={i}
+                      center={[loc.lat, loc.lng]}
+                      radius={radius}
+                      fillColor="#2D7A3A"
+                      color="#1a5c25"
+                      weight={2}
+                      opacity={0.9}
+                      fillOpacity={0.6}
+                    >
+                      <Popup>
+                        <div className="text-sm">
+                          <p className="font-bold">{loc.city}, {loc.country}</p>
+                          <p>{loc.count} Aufrufe</p>
+                        </div>
+                      </Popup>
+                    </CircleMarker>
+                  );
+                })}
+              </MapContainer>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-48 bg-[#F4F4F5] rounded">
+              <p className="text-sm text-[#71717A]">Noch keine Standortdaten verfügbar. Daten werden gesammelt sobald Besucher die Seite aufrufen.</p>
+            </div>
+          )}
+        </div>
+
+        {/* Länder-Aufschlüsselung */}
+        {geoData && geoData.countries.length > 0 && (
+          <div className="bg-white border border-[#E4E4E7] p-6 md:col-span-2">
+            <h3 className="font-bold text-lg mb-4">Besucher nach Land</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {geoData.countries.map((c, i) => (
+                <div key={i} className="flex items-center justify-between py-2 px-3 bg-[#F4F4F5] rounded">
+                  <span className="text-sm font-medium">{c.country}</span>
+                  <span className="text-sm font-bold text-[#2D7A3A]">{c.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Meistbesuchte Produkte */}
