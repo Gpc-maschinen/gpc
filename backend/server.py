@@ -906,6 +906,103 @@ async def create_contact_message(contact_data: ContactMessageCreate):
     return contact
 
 # Include routers
+# ==================== ANALYTICS ====================
+
+# Public tracking endpoint - tracks page views
+@api_router.post("/track")
+async def track_event(data: dict = Body(...)):
+    event_type = data.get("type", "page_view")
+    now = datetime.now(timezone.utc)
+    event = {
+        "type": event_type,
+        "page": data.get("page", ""),
+        "product_id": data.get("product_id"),
+        "product_name": data.get("product_name"),
+        "timestamp": now.isoformat(),
+        "date": now.strftime("%Y-%m-%d"),
+        "hour": now.hour
+    }
+    await db.analytics.insert_one(event)
+    return {"ok": True}
+
+# Admin analytics dashboard
+@admin_router.get("/analytics")
+async def get_analytics(user: dict = Depends(get_current_user)):
+    now = datetime.now(timezone.utc)
+    today = now.strftime("%Y-%m-%d")
+    week_ago = (now - timedelta(days=7)).strftime("%Y-%m-%d")
+    month_ago = (now - timedelta(days=30)).strftime("%Y-%m-%d")
+
+    # Page views
+    views_today = await db.analytics.count_documents({"type": "page_view", "date": today})
+    views_week = await db.analytics.count_documents({"type": "page_view", "date": {"$gte": week_ago}})
+    views_month = await db.analytics.count_documents({"type": "page_view", "date": {"$gte": month_ago}})
+
+    # Unique visitors (by page per day as approximation)
+    visitors_today_pipeline = [
+        {"$match": {"type": "page_view", "date": today}},
+        {"$group": {"_id": "$page"}},
+        {"$count": "count"}
+    ]
+    visitors_today_result = await db.analytics.aggregate(visitors_today_pipeline).to_list(1)
+    unique_pages_today = visitors_today_result[0]["count"] if visitors_today_result else 0
+
+    # Top viewed products (last 30 days)
+    top_viewed_pipeline = [
+        {"$match": {"type": "product_view", "date": {"$gte": month_ago}}},
+        {"$group": {"_id": {"id": "$product_id", "name": "$product_name"}, "views": {"$sum": 1}}},
+        {"$sort": {"views": -1}},
+        {"$limit": 10}
+    ]
+    top_viewed = await db.analytics.aggregate(top_viewed_pipeline).to_list(10)
+    top_viewed_products = [{"product_id": t["_id"]["id"], "name": t["_id"]["name"], "views": t["views"]} for t in top_viewed]
+
+    # Most added to cart (last 30 days)
+    top_cart_pipeline = [
+        {"$match": {"type": "add_to_cart", "date": {"$gte": month_ago}}},
+        {"$group": {"_id": {"id": "$product_id", "name": "$product_name"}, "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 10}
+    ]
+    top_cart = await db.analytics.aggregate(top_cart_pipeline).to_list(10)
+    top_cart_products = [{"product_id": t["_id"]["id"], "name": t["_id"]["name"], "count": t["count"]} for t in top_cart]
+
+    # Daily views last 7 days
+    daily_pipeline = [
+        {"$match": {"type": "page_view", "date": {"$gte": week_ago}}},
+        {"$group": {"_id": "$date", "views": {"$sum": 1}}},
+        {"$sort": {"_id": 1}}
+    ]
+    daily_views = await db.analytics.aggregate(daily_pipeline).to_list(30)
+    daily_chart = [{"date": d["_id"], "views": d["views"]} for d in daily_views]
+
+    # Order stats
+    orders_total = await db.orders.count_documents({})
+    orders_month = await db.orders.count_documents({"created_at": {"$gte": month_ago}})
+    
+    revenue_pipeline = [
+        {"$match": {"created_at": {"$gte": month_ago}}},
+        {"$group": {"_id": None, "total": {"$sum": "$total"}}}
+    ]
+    revenue_result = await db.orders.aggregate(revenue_pipeline).to_list(1)
+    revenue_month = revenue_result[0]["total"] if revenue_result else 0
+
+    revenue_all_pipeline = [
+        {"$group": {"_id": None, "total": {"$sum": "$total"}}}
+    ]
+    revenue_all_result = await db.orders.aggregate(revenue_all_pipeline).to_list(1)
+    revenue_total = revenue_all_result[0]["total"] if revenue_all_result else 0
+
+    return {
+        "page_views": {"today": views_today, "week": views_week, "month": views_month},
+        "unique_pages_today": unique_pages_today,
+        "top_viewed_products": top_viewed_products,
+        "top_cart_products": top_cart_products,
+        "daily_chart": daily_chart,
+        "orders": {"total": orders_total, "month": orders_month},
+        "revenue": {"total": revenue_total, "month": revenue_month}
+    }
+
 app.include_router(api_router)
 app.include_router(auth_router)
 app.include_router(admin_router)
@@ -952,6 +1049,8 @@ async def startup_event():
     
     # Create indexes
     await db.users.create_index("email", unique=True)
+    await db.analytics.create_index([("type", 1), ("date", 1)])
+    await db.analytics.create_index("timestamp")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

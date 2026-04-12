@@ -1,9 +1,9 @@
 import { useState, useEffect, createContext, useContext } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route, Link, useParams, useNavigate, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, useParams, useNavigate, Navigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
-import { ShoppingCart, Menu, X, Phone, Mail, MapPin, ChevronRight, Plus, Minus, Trash2, Send, Package, ArrowLeft, LogOut, Settings, BarChart3, FolderOpen, Box, FileText, MessageSquare, Edit, Eye, Save, Image, Download } from "lucide-react";
+import { ShoppingCart, Menu, X, Phone, Mail, MapPin, ChevronRight, Plus, Minus, Trash2, Send, Package, ArrowLeft, LogOut, Settings, BarChart3, FolderOpen, Box, FileText, MessageSquare, Edit, Eye, Save, Image, Download, TrendingUp, Users, MousePointerClick, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +15,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+
+// Analytics tracking helper
+const trackEvent = (type, extra = {}) => {
+  axios.post(`${API}/track`, { type, ...extra }).catch(() => {});
+};
+
+// Page view tracker component
+const PageTracker = () => {
+  const location = useLocation();
+  useEffect(() => {
+    trackEvent("page_view", { page: location.pathname });
+  }, [location.pathname]);
+  return null;
+};
 
 // Auth Context
 const AuthContext = createContext();
@@ -86,6 +100,11 @@ const CartProvider = ({ children }) => {
     try {
       await axios.post(`${API}/cart/${sessionId}/add`, { product_id: productId, quantity });
       await fetchCart();
+      // Track add to cart
+      try {
+        const res = await axios.get(`${API}/products/${productId}`);
+        trackEvent("add_to_cart", { product_id: productId, product_name: res.data.name });
+      } catch (_) {}
       toast.success("Produkt zum Warenkorb hinzugefügt");
     } catch (e) {
       toast.error("Fehler beim Hinzufügen zum Warenkorb");
@@ -679,6 +698,7 @@ const ProductDetailPage = () => {
       try {
         const res = await axios.get(`${API}/products/${id}`);
         setProduct(res.data);
+        trackEvent("product_view", { product_id: res.data.id, product_name: res.data.name });
       } catch (e) {
         console.error("Error fetching product:", e);
       } finally {
@@ -1876,6 +1896,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="orders" className="rounded-none data-[state=active]:bg-[#2D7A3A] data-[state=active]:text-white">Bestellungen</TabsTrigger>
             <TabsTrigger value="quotes" className="rounded-none data-[state=active]:bg-[#2D7A3A] data-[state=active]:text-white">Anfragen</TabsTrigger>
             <TabsTrigger value="settings" className="rounded-none data-[state=active]:bg-[#2D7A3A] data-[state=active]:text-white">Einstellungen</TabsTrigger>
+            <TabsTrigger value="analytics" className="rounded-none data-[state=active]:bg-[#2D7A3A] data-[state=active]:text-white">Statistiken</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products">
@@ -1896,6 +1917,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="settings">
             <AdminSettings />
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <AdminAnalytics />
           </TabsContent>
         </Tabs>
       </div>
@@ -3370,6 +3395,149 @@ const AdminSettings = () => {
   );
 };
 
+
+// Admin Analytics Dashboard
+const AdminAnalytics = () => {
+  const [analytics, setAnalytics] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const res = await axios.get(`${API}/admin/analytics`, { withCredentials: true });
+        setAnalytics(res.data);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAnalytics();
+  }, []);
+
+  if (loading) return <div className="flex justify-center py-10"><div className="spinner" /></div>;
+  if (!analytics) return <p className="text-center py-10 text-[#71717A]">Keine Daten verfügbar</p>;
+
+  const maxViews = Math.max(...(analytics.daily_chart.map(d => d.views) || [1]), 1);
+
+  return (
+    <div className="space-y-6" data-testid="admin-analytics">
+      {/* Übersichtskarten */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white border border-[#E4E4E7] p-5">
+          <div className="flex items-center gap-2 mb-2">
+            <Eye className="w-4 h-4 text-[#2D7A3A]" />
+            <span className="text-xs text-[#71717A] uppercase tracking-wider">Seitenaufrufe heute</span>
+          </div>
+          <p className="text-3xl font-bold" data-testid="views-today">{analytics.page_views.today}</p>
+        </div>
+        <div className="bg-white border border-[#E4E4E7] p-5">
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp className="w-4 h-4 text-[#2D7A3A]" />
+            <span className="text-xs text-[#71717A] uppercase tracking-wider">Aufrufe diese Woche</span>
+          </div>
+          <p className="text-3xl font-bold" data-testid="views-week">{analytics.page_views.week}</p>
+        </div>
+        <div className="bg-white border border-[#E4E4E7] p-5">
+          <div className="flex items-center gap-2 mb-2">
+            <Users className="w-4 h-4 text-[#2D7A3A]" />
+            <span className="text-xs text-[#71717A] uppercase tracking-wider">Aufrufe (30 Tage)</span>
+          </div>
+          <p className="text-3xl font-bold" data-testid="views-month">{analytics.page_views.month}</p>
+        </div>
+        <div className="bg-white border border-[#E4E4E7] p-5">
+          <div className="flex items-center gap-2 mb-2">
+            <ShoppingBag className="w-4 h-4 text-[#2D7A3A]" />
+            <span className="text-xs text-[#71717A] uppercase tracking-wider">Umsatz (30 Tage)</span>
+          </div>
+          <p className="text-2xl font-bold" data-testid="revenue-month">{(analytics.revenue.month || 0).toLocaleString('de-DE')} &euro;</p>
+        </div>
+      </div>
+
+      {/* Bestellungen Übersicht */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white border border-[#E4E4E7] p-5">
+          <div className="flex items-center gap-2 mb-1">
+            <Package className="w-4 h-4 text-[#2D7A3A]" />
+            <span className="text-xs text-[#71717A] uppercase tracking-wider">Bestellungen gesamt</span>
+          </div>
+          <p className="text-3xl font-bold">{analytics.orders.total}</p>
+        </div>
+        <div className="bg-white border border-[#E4E4E7] p-5">
+          <div className="flex items-center gap-2 mb-1">
+            <FileText className="w-4 h-4 text-[#2D7A3A]" />
+            <span className="text-xs text-[#71717A] uppercase tracking-wider">Umsatz gesamt</span>
+          </div>
+          <p className="text-2xl font-bold">{(analytics.revenue.total || 0).toLocaleString('de-DE')} &euro;</p>
+        </div>
+      </div>
+
+      {/* Tägliche Aufrufe Chart */}
+      {analytics.daily_chart.length > 0 && (
+        <div className="bg-white border border-[#E4E4E7] p-6">
+          <h3 className="font-bold text-lg mb-4">Seitenaufrufe (letzte 7 Tage)</h3>
+          <div className="flex items-end gap-2 h-40">
+            {analytics.daily_chart.map((day, i) => {
+              const height = Math.max((day.views / maxViews) * 100, 4);
+              const dateStr = new Date(day.date + "T00:00:00").toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'numeric' });
+              return (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                  <span className="text-xs font-semibold text-[#2D7A3A]">{day.views}</span>
+                  <div className="w-full bg-[#2D7A3A] rounded-t" style={{ height: `${height}%` }} />
+                  <span className="text-[10px] text-[#71717A]">{dateStr}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Meistbesuchte Produkte */}
+        <div className="bg-white border border-[#E4E4E7] p-6">
+          <h3 className="font-bold text-lg mb-4">Meistbesuchte Produkte</h3>
+          {analytics.top_viewed_products.length > 0 ? (
+            <div className="space-y-3">
+              {analytics.top_viewed_products.map((p, i) => (
+                <div key={i} className="flex items-center justify-between py-2 border-b border-[#F4F4F5] last:border-0">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-bold text-[#2D7A3A] w-6">{i + 1}.</span>
+                    <span className="text-sm font-medium">{p.name}</span>
+                  </div>
+                  <span className="text-sm font-bold bg-[#F4F4F5] px-3 py-1 rounded">{p.views}x</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-[#71717A]">Noch keine Daten</p>
+          )}
+        </div>
+
+        {/* Am häufigsten in den Warenkorb */}
+        <div className="bg-white border border-[#E4E4E7] p-6">
+          <h3 className="font-bold text-lg mb-4">Am meisten in den Warenkorb</h3>
+          {analytics.top_cart_products.length > 0 ? (
+            <div className="space-y-3">
+              {analytics.top_cart_products.map((p, i) => (
+                <div key={i} className="flex items-center justify-between py-2 border-b border-[#F4F4F5] last:border-0">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-bold text-[#D97706] w-6">{i + 1}.</span>
+                    <span className="text-sm font-medium">{p.name}</span>
+                  </div>
+                  <span className="text-sm font-bold bg-[#FEF3C7] text-[#D97706] px-3 py-1 rounded">{p.count}x</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-[#71717A]">Noch keine Daten</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 // AGB Page
 const AGBPage = () => {
   return (
@@ -3812,6 +3980,7 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <CartProvider>
+            <PageTracker />
             <Toaster position="top-right" />
             <Routes>
               {/* Admin Routes */}
