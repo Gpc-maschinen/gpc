@@ -1118,8 +1118,11 @@ async def startup_event():
     admin_email = os.environ.get("ADMIN_EMAIL", "admin@gpc-maschinen.de")
     admin_password = os.environ.get("ADMIN_PASSWORD", "GPC2026Admin!")
     
+    # Remove any old admin users and ensure only the current .env admin exists
     existing = await db.users.find_one({"email": admin_email})
     if existing is None:
+        # Delete any previous admin accounts (email changed in .env)
+        await db.users.delete_many({"role": "admin"})
         hashed = hash_password(admin_password)
         await db.users.insert_one({
             "email": admin_email,
